@@ -85,26 +85,6 @@ passport.use(new GoogleStrategy({
   }
 ));
 
-app.get("/auth/google",
-  passport.authenticate('google', { scope: ["profile", "email"] })
-);
-
-app.get("/logout", function(req, res){
-  req.logout();
-  res.redirect(CLIENT_URL);
-});
-
-app.get("/auth/google/movelp",
-  passport.authenticate('google', { failureRedirect: CLIENT_URL, successRedirect: CLIENT_URL })
-);
-
-app.get("/isLoggedIn", function(req, res) {
-  res.json({
-    user: req.user
-  });
-});
-
-
 app.listen(port, () => {
   console.log(`Server has started at ${port}`);
 });
