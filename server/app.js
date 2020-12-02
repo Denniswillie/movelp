@@ -4,6 +4,7 @@ const cors = require('cors');
 const port = process.env.PORT || 5000;
 const inProduction = process.env.NODE_ENV === "production";
 const mongoose = require('mongoose');
+const path = require('path');
 
 if (inProduction) {
   app.use(express.static('desktop-client/build'));
