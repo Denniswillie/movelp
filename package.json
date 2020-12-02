@@ -6,7 +6,7 @@
   "engine": {
     "node": "12.14.0",
     "npm": "6.14.9"
-  }
+  },
   "scripts": {
     "backend": "node server/app.js",
     "start": "concurrently \"npm run backend\" \"cd desktop-client && npm start\"",
