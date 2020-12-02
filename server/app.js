@@ -1,3 +1,10 @@
+require('dotenv').config();
+const bodyParser = require('body-parser');
+const session = require('express-session');
+const passport = require('passport');
+const passportLocalMongoose = require('passport-local-mongoose');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const findOrCreate = require('mongoose-findorcreate');
 const express = require('express');
 const app = express();
 const cors = require('cors');
@@ -5,10 +12,7 @@ const port = process.env.PORT || 5000;
 const inProduction = process.env.NODE_ENV === "production";
 const mongoose = require('mongoose');
 const path = require('path');
-const CLIENT_URL = inProduction ? "https://fierce-temple-95150.herokuapp.com/" : "http://localhost:3000";
-
-mongoose.connect("mongodb+srv://admin-dennis:JOUwExYMLOD7KkDn@movelpdb.8hxbz.mongodb.net/movelpDB?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true});
-mongoose.set("useCreateIndex", true);
+const CLIENT_URL = inProduction ? "https://fierce-temple-95150.herokuapp.com" : "http://localhost:3000";
 
 if (inProduction) {
   app.use(express.static('desktop-client/build'));
@@ -17,20 +21,86 @@ if (inProduction) {
   })
 }
 
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+
+app.use(session({
+  secret: "535510n53cr3t",
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 600000
+  }
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(
   cors({
     origin: CLIENT_URL
   })
 );
 
-app.get("/testRoutingUrl", (req, res) => {
+mongoose.connect("mongodb+srv://admin-dennis:JOUwExYMLOD7KkDn@movelpdb.8hxbz.mongodb.net/movelpDB?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.set("useCreateIndex", true);
+
+const userSchema = new mongoose.Schema ({
+  email: String,
+  password: String,
+  googleId: String
+});
+
+userSchema.plugin(passportLocalMongoose);
+userSchema.plugin(findOrCreate);
+
+const User = new mongoose.model("User", userSchema);
+
+passport.use(User.createStrategy());
+
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+  User.findById(id, function(err, user) {
+    done(err, user);
+  });
+});
+
+passport.use(new GoogleStrategy({
+    clientID: process.env.CLIENT_ID,
+    clientSecret: process.env.CLIENT_SECRET,
+    callbackURL: CLIENT_URL + "/auth/google/movelp",
+    userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
+  },
+  function(accessToken, refreshToken, profile, cb) {
+    User.findOrCreate({ googleId: profile.id }, function (err, user) {
+      return cb(err, user);
+    });
+  }
+));
+
+app.get("/auth/google",
+  passport.authenticate('google', { scope: ["profile"] })
+);
+
+app.get("/logout", function(req, res){
+  req.logout();
   res.redirect(CLIENT_URL);
 });
 
-app.get("/testRoute", (req, res) => {
-  res.send("This is a reply from server");
-  res.end();
+app.get("/auth/google/movelp",
+  passport.authenticate('google', { failureRedirect: CLIENT_URL, successRedirect: CLIENT_URL })
+);
+
+app.get("/isLoggedIn", function(req, res) {
+  res.json({
+    user: req.user
+  })
 });
+
 
 app.listen(port, () => {
   console.log(`Server has started at ${port}`);
