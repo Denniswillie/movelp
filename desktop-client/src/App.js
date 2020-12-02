@@ -4,9 +4,7 @@ import './App.css';
 function App() {
 
   function handleClick() {
-    fetch("/testRoute")
-      .then(res => res.text())
-      .then(console.log);
+    fetch("/testRoute");
   }
   return (
     <div className="App">

@@ -17,7 +17,8 @@ mongoose.set("useCreateIndex", true);
 app.use(cors());
 
 app.get("/testRoute", (req, res) => {
-  res.send("This is a reply from the server.");
+  console.log("Caught request from client");
+  res.end();
 });
 
 app.listen(port, () => {
