@@ -12,7 +12,7 @@ export default function Login() {
     <center><div id="loginButton">
       <GoogleLoginButton
         onClick={() => {
-          window.open("/testRoutingUrl", "_self");
+          window.open("/auth/google", "_self");
         }}
         style={{backgroundColor: "black", fontFamily: "Nerko One"}}
         activeStyle={{backgroundColor: "#092e6b"}}
