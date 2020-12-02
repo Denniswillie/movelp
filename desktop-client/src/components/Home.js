@@ -17,7 +17,6 @@ export default function Home() {
     .then(res => res.json())
     .catch(err => console.log)
     .then(res => {
-      console.log(res.user);
       if (res.user) {
         setAuthStats({
           authenticated: true,
