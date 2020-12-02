@@ -6,15 +6,15 @@ const inProduction = process.env.NODE_ENV === "production";
 const mongoose = require('mongoose');
 const path = require('path');
 
+mongoose.connect("mongodb+srv://admin-dennis:Firicis78910@movelpdb.8hxbz.mongodb.net/movelpDB?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.set("useCreateIndex", true);
+
 if (inProduction) {
   app.use(express.static('desktop-client/build'));
   app.get('/', (req, res) => {
       res.sendFile(path.join(__dirname, '../desktop-client/build/index.html'))
   })
 }
-
-mongoose.connect("mongodb+srv://admin-dennis:Firicis78910@movelpdb.8hxbz.mongodb.net/movelpDB?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true});
-mongoose.set("useCreateIndex", true);
 
 app.use(
   cors({
