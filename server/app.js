@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const CLIENT_URL = inProduction ? "https://fierce-temple-95150.herokuapp.com/" : "http://localhost:3000";
 
-mongoose.connect("mongodb+srv://admin-dennis:Firicis78910@movelpdb.8hxbz.mongodb.net/movelpDB?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect("mongodb+srv://admin-dennis:JOUwExYMLOD7KkDn@movelpdb.8hxbz.mongodb.net/movelpDB?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true});
 mongoose.set("useCreateIndex", true);
 
 if (inProduction) {
