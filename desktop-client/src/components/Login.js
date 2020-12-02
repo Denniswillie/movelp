@@ -1,6 +1,9 @@
 import { GoogleLoginButton } from "react-social-login-buttons";
 
 export default function Login() {
+  function handleClick() {
+    window.open('/auth/google', '_self');
+  }
   return <div id="loginPageContainer">
     <center><div id="watchDiaryIntro">
       <h1 className="WatchDiaryTitle" style={{marginBottom: "0"}}>Movelp</h1>
@@ -11,9 +14,7 @@ export default function Login() {
     </div></center>
     <center><div id="loginButton">
       <GoogleLoginButton
-        onClick={() => {
-          window.open("/auth/google", "_self");
-        }}
+        onClick={handleClick}
         style={{backgroundColor: "black", fontFamily: "Nerko One"}}
         activeStyle={{backgroundColor: "#092e6b"}}
       />

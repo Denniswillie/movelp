@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import Posts from './Posts';
 import Login from './Login';
@@ -9,7 +8,7 @@ export default function Home() {
     user: undefined
   });
   useEffect(() => {
-    axios.get('/isLoggedIn', {
+    fetch('/isLoggedIn', {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -18,6 +17,7 @@ export default function Home() {
     .then(res => res.json())
     .catch(err => console.log)
     .then(res => {
+      console.log(res.user);
       if (res.user) {
         setAuthStats({
           authenticated: true,

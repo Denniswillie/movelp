@@ -2,14 +2,21 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 
 module.exports = function(app) {
   app.use(
-    '/testRoute',
+    '/auth/google',
     createProxyMiddleware({
       target: 'http://localhost:5000',
       changeOrigin: true,
     })
   );
   app.use(
-    '/testRoutingUrl',
+    '/isLoggedIn',
+    createProxyMiddleware({
+      target: 'http://localhost:5000',
+      changeOrigin: true,
+    })
+  );
+  app.use(
+    '/logout',
     createProxyMiddleware({
       target: 'http://localhost:5000',
       changeOrigin: true,

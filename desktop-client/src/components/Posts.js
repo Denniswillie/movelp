@@ -1,7 +1,17 @@
-import { useState } from 'react';
+// import { useState } from 'react';
 
-export default function Posts() {
+export default function Posts(props) {
   return <div>
-    <h1>This is posts page.</h1>
-  </div>
+    <h1>Posts</h1>
+
+    <button
+      variant="contained"
+      color="primary"
+      onClick={() => {
+        window.open("/logout", "_self");
+      }}
+    >
+      Logout
+    </button>
+</div>
 }

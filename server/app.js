@@ -13,6 +13,7 @@ const inProduction = process.env.NODE_ENV === "production";
 const mongoose = require('mongoose');
 const path = require('path');
 const CLIENT_URL = inProduction ? "https://fierce-temple-95150.herokuapp.com" : "http://localhost:3000";
+const AUTH_REDIRECT_URL = inProduction ? "https://fierce-temple-95150.herokuapp.com" : "http://localhost:5000";
 
 if (inProduction) {
   app.use(express.static('desktop-client/build'));
@@ -43,11 +44,12 @@ app.use(
   })
 );
 
-mongoose.connect("mongodb+srv://admin-dennis:JOUwExYMLOD7KkDn@movelpdb.8hxbz.mongodb.net/movelpDB?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true});
+// mongoose.connect("mongodb+srv://admin-dennis:JOUwExYMLOD7KkDn@movelpdb.8hxbz.mongodb.net/movelpDB?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect("mongodb://localhost:27017/movelpDB", {useNewUrlParser: true, useUnifiedTopology: true});
 mongoose.set("useCreateIndex", true);
 
 const userSchema = new mongoose.Schema ({
-  email: String,
+  username: String,
   password: String,
   googleId: String
 });
@@ -72,18 +74,18 @@ passport.deserializeUser(function(id, done) {
 passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: CLIENT_URL + "/auth/google/movelp",
+    callbackURL: AUTH_REDIRECT_URL + "/auth/google/movelp",
     userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
   },
   function(accessToken, refreshToken, profile, cb) {
-    User.findOrCreate({ googleId: profile.id }, function (err, user) {
+    User.findOrCreate({ username: profile.emails[0].value, googleId: profile.id }, function (err, user) {
       return cb(err, user);
     });
   }
 ));
 
 app.get("/auth/google",
-  passport.authenticate('google', { scope: ["profile"] })
+  passport.authenticate('google', { scope: ["profile", "email"] })
 );
 
 app.get("/logout", function(req, res){
@@ -98,7 +100,7 @@ app.get("/auth/google/movelp",
 app.get("/isLoggedIn", function(req, res) {
   res.json({
     user: req.user
-  })
+  });
 });
 
 
