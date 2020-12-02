@@ -23,7 +23,7 @@ app.use(
 );
 
 app.get("/testRoute", (req, res) => {
-  console.log("Caught request from client");
+  res.send("This is a reply from server");
   res.end();
 });
 
