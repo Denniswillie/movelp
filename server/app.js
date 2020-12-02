@@ -12,8 +12,9 @@ const port = process.env.PORT || 5000;
 const inProduction = process.env.NODE_ENV === "production";
 const mongoose = require('mongoose');
 const path = require('path');
-const CLIENT_URL = inProduction ? "https://fierce-temple-95150.herokuapp.com" : "http://localhost:3000";
-const AUTH_REDIRECT_URL = inProduction ? "https://fierce-temple-95150.herokuapp.com" : "http://localhost:5000";
+const DOMAIN_NAME = "http://movelp.com";
+const CLIENT_URL = inProduction ? DOMAIN_NAME : "http://localhost:3000";
+const AUTH_REDIRECT_URL = inProduction ? DOMAIN_NAME : "http://localhost:5000";
 
 if (inProduction) {
   app.use(express.static('desktop-client/build'));
