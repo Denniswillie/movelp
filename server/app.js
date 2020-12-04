@@ -12,7 +12,7 @@ const port = process.env.PORT || 5000;
 const inProduction = process.env.NODE_ENV === "production";
 const mongoose = require('mongoose');
 const path = require('path');
-const DOMAIN_NAME = "http://movelp.com";
+const DOMAIN_NAME = "https://movelp.com";
 const CLIENT_URL = inProduction ? DOMAIN_NAME : "http://localhost:3000";
 const AUTH_REDIRECT_URL = inProduction ? DOMAIN_NAME : "http://localhost:5000";
 
