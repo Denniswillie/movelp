@@ -1,10 +1,6 @@
 require('dotenv').config();
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const passport = require('passport');
-const passportLocalMongoose = require('passport-local-mongoose');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const findOrCreate = require('mongoose-findorcreate');
 const express = require('express');
 const app = express();
 const cors = require('cors');
@@ -12,9 +8,14 @@ const port = process.env.PORT || 5000;
 const inProduction = process.env.NODE_ENV === "production";
 const mongoose = require('mongoose');
 const path = require('path');
-const DOMAIN_NAME = "http://movelp.com";
-const CLIENT_URL = inProduction ? DOMAIN_NAME : "http://localhost:3000";
-const AUTH_REDIRECT_URL = inProduction ? DOMAIN_NAME : "http://localhost:5000";
+const CLIENT_URL = inProduction ? process.env.DOMAIN_NAME : "http://localhost:3000";
+const authRoutes = require('./routes/auth');
+const passport = require('passport');
+const passportSetup = require('./config/passport-setup');
+
+// mongoose.connect("mongodb+srv://admin-dennis:JOUwExYMLOD7KkDn@movelpdb.8hxbz.mongodb.net/movelpDB?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect("mongodb://localhost:27017/movelpDB", {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.set("useCreateIndex", true);
 
 if (inProduction) {
   app.use(express.static('desktop-client/build'));
@@ -45,45 +46,7 @@ app.use(
   })
 );
 
-// mongoose.connect("mongodb+srv://admin-dennis:JOUwExYMLOD7KkDn@movelpdb.8hxbz.mongodb.net/movelpDB?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true});
-mongoose.connect("mongodb://localhost:27017/movelpDB", {useNewUrlParser: true, useUnifiedTopology: true});
-mongoose.set("useCreateIndex", true);
-
-const userSchema = new mongoose.Schema ({
-  username: String,
-  password: String,
-  googleId: String
-});
-
-userSchema.plugin(passportLocalMongoose);
-userSchema.plugin(findOrCreate);
-
-const User = new mongoose.model("User", userSchema);
-
-passport.use(User.createStrategy());
-
-passport.serializeUser(function(user, done) {
-  done(null, user.id);
-});
-
-passport.deserializeUser(function(id, done) {
-  User.findById(id, function(err, user) {
-    done(err, user);
-  });
-});
-
-passport.use(new GoogleStrategy({
-    clientID: process.env.CLIENT_ID,
-    clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: AUTH_REDIRECT_URL + "/auth/google/movelp",
-    userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
-  },
-  function(accessToken, refreshToken, profile, cb) {
-    User.findOrCreate({ username: profile.emails[0].value, googleId: profile.id }, function (err, user) {
-      return cb(err, user);
-    });
-  }
-));
+app.use('/auth', authRoutes);
 
 app.listen(port, () => {
   console.log(`Server has started at ${port}`);

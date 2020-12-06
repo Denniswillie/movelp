@@ -1,24 +1,25 @@
 const router = require('express').Router();
 const passport = require('passport');
 const inProduction = process.env.NODE_ENV === "production";
-const DOMAIN_NAME = "http://movelp.com";
-const CLIENT_URL = inProduction ?
+const CLIENT_URL = inProduction ? process.env.DOMAIN_NAME : "http://localhost:3000"
 
-app.get("/auth/google",
+router.get("/google",
   passport.authenticate('google', { scope: ["profile", "email"] })
 );
 
-app.get("/auth/logout", function(req, res){
+router.get("/logout", function(req, res){
   req.logout();
   res.redirect(CLIENT_URL);
 });
 
-app.get("/auth/google/movelp",
+router.get("/google/movelp",
   passport.authenticate('google', { failureRedirect: CLIENT_URL, successRedirect: CLIENT_URL })
 );
 
-app.get("/auth/isLoggedIn", function(req, res) {
+router.get("/isLoggedIn", function(req, res) {
   res.json({
     user: req.user
   });
 });
+
+module.exports = router;
