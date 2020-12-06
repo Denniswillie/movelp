@@ -8,7 +8,7 @@ export default function Home() {
     user: undefined
   });
   useEffect(() => {
-    fetch('/isLoggedIn', {
+    fetch('/auth/isLoggedIn', {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",

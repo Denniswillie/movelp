@@ -8,7 +8,7 @@ export default function Posts(props) {
       variant="contained"
       color="primary"
       onClick={() => {
-        window.open("/logout", "_self");
+        window.open("/auth/logout", "_self");
       }}
     >
       Logout

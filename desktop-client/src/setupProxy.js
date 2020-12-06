@@ -9,14 +9,14 @@ module.exports = function(app) {
     })
   );
   app.use(
-    '/isLoggedIn',
+    '/auth/isLoggedIn',
     createProxyMiddleware({
       target: 'http://localhost:5000',
       changeOrigin: true,
     })
   );
   app.use(
-    '/logout',
+    '/auth/logout',
     createProxyMiddleware({
       target: 'http://localhost:5000',
       changeOrigin: true,

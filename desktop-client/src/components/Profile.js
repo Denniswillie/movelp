@@ -3,7 +3,7 @@ import { useRef, useEffect } from 'react';
 export default function Profile() {
   const user = useRef(null);
   useEffect(() => {
-    fetch("/isLoggedIn", {
+    fetch("/auth/isLoggedIn", {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -14,7 +14,7 @@ export default function Profile() {
       if (res.status === 200) {
         return res.json();
       } else {
-        window.open("/login", "_self");
+        window.open("/auth/login", "_self");
       }
     })
     .catch(err => console.log)
