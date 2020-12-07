@@ -2,14 +2,15 @@ const mongoose = require('mongoose');
 const ObjectId = require("mongodb").ObjectID;
 
 const postSchema = new mongoose.Schema ({
-  userId: ObjectId,
+  creatorId: ObjectId,
   type: String,
-  fileUrl: String,
+  fileIds: [String],
   text: String,
   timeOfCreation: Date,
   noOfLikes: Number,
   noOfComments: Number,
-  likers: [ObjectId]
+  likers: [ObjectId],
+  isEdited: Boolean
 });
 
 const Post = new mongoose.model("Post", postSchema);
