@@ -15,6 +15,10 @@ const passportSetup = require('./config/passport-setup');
 const multer  = require('multer');
 const upload = multer();
 const uploadFields = upload.fields([{ name: 'fileInput', maxCount: 10 }])
+const {Storage} = require('@google-cloud/storage');
+const projectId = 'movelp';
+const keyFilename = path.join(__dirname, '/key.json');
+const storage = new Storage({projectId, keyFilename});
 
 // mongoose.connect("mongodb+srv://admin-dennis:JOUwExYMLOD7KkDn@movelpdb.8hxbz.mongodb.net/movelpDB?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true});
 mongoose.connect("mongodb://localhost:27017/movelpDB", {useNewUrlParser: true, useUnifiedTopology: true});
