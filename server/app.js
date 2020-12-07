@@ -14,7 +14,7 @@ const passport = require('passport');
 const passportSetup = require('./config/passport-setup');
 const multer  = require('multer');
 const upload = multer();
-const uploadFields = upload.fields([{ name: 'postImages', maxCount: 5 }])
+const uploadFields = upload.fields([{ name: 'fileInput', maxCount: 10 }])
 
 // mongoose.connect("mongodb+srv://admin-dennis:JOUwExYMLOD7KkDn@movelpdb.8hxbz.mongodb.net/movelpDB?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true});
 mongoose.connect("mongodb://localhost:27017/movelpDB", {useNewUrlParser: true, useUnifiedTopology: true});
@@ -52,7 +52,7 @@ app.use(
 app.use('/auth', authRoutes);
 
 app.post('/createPost', uploadFields, (req, res, next) => {
-  console.log(req.files['postImages']);
+  console.log(req.files['fileInput']);
   console.log(req.body);
   res.end();
 })
