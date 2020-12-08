@@ -22,7 +22,7 @@ const PostModel = require('../../models/postModel');
 const PostLikeModel = require('../../models/postLikeModel');
 
 class MongoDBPostManager {
-  static async createPost(post) {
+  static async create(post) {
     await PostModel.create(this.constructSchemaFields(post))
       .then(docs => {
         return docs;
@@ -30,7 +30,7 @@ class MongoDBPostManager {
       .catch(err => console.log(err));
   }
 
-  static async editPost(post) {
+  static async edit(post) {
     await PostModel.findByIdAndUpdate(post._id, this.constructSchemaFields(post))
       .then(docs => {
         return docs;
@@ -51,7 +51,7 @@ class MongoDBPostManager {
     }
   }
 
-  static async deletePost(postId) {
+  static async delete(postId) {
     await PostModel.findByIdAndDelete(postId)
       .then(docs => {
         return docs;
@@ -59,7 +59,7 @@ class MongoDBPostManager {
       .catch(err => console.log(err));
   }
 
-  static async togglePostLike(postId, userId) {
+  static async toggleLike(postId, userId) {
     await PostLikeModel.findOneAndUpdate({postId: postId, userId: userId},
       {$bit: {liked: {xor: 1}}})
       .then(docs => {
