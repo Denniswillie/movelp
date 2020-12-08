@@ -9,25 +9,25 @@
 // •	timeOfCreation
 // •	noOfLikes
 // •	noOfComments
-// •	likers = [userId]
 // •	isEdited
 
 class Post {
 
   static FIELDS = {
+    _ID: '_id',
     CREATOR_ID: 'creatorId',
-    TYPE: 'type'
+    TYPE: 'type',
     FILE_IDS: 'fileIds',
     TEXT: 'text',
     TIME_OF_CREATION: 'timeOfCreation',
     NO_OF_LIKES: 'noOfLikes',
     NO_OF_COMMENTS: 'noOfComments',
-    LIKERS: 'likers',
     IS_EDITED: 'isEdited'
   }
 
   constructor(build) {
     if (arguments.length === 1 && this.validateBuild(build)) {
+      const _id = build._id;
       const creatorId = build.creatorId;
       const type = build.type;
       const fileIds = build.fileIds;
@@ -35,10 +35,13 @@ class Post {
       const timeOfCreation = build.timeOfCreation;
       const noOfLikes = build.noOfLikes;
       const noOfComments = build.noOfComments;
-      const likers = build.likers;
       const isEdited = build.isEdited;
 
       Object.defineProperties(this, {
+        _id: {
+          value: _id,
+          writable: false
+        },
         creatorId: {
           value: creatorId,
           writable: false
@@ -67,10 +70,6 @@ class Post {
           value: noOfComments,
           writable: false
         },
-        likers: {
-          value: likers,
-          writable: false
-        },
         isEdited: {
           value: isEdited,
           writable: false
@@ -83,6 +82,10 @@ class Post {
   }
   static get Builder() {
     class Builder {
+      setId(_id) {
+        this._id = _id;
+        return this;
+      }
       setCreatorId(creatorId) {
         this.creatorId = creatorId;
         return this;
@@ -109,10 +112,6 @@ class Post {
       }
       setNoOfComments(noOfComments) {
         this.noOfComments = noOfComments;
-        return this;
-      }
-      setLikers(likers) {
-        this.likers = likers;
         return this;
       }
       setIsEdited(isEdited) {

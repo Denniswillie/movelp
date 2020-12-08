@@ -19,10 +19,13 @@ const {Storage} = require('@google-cloud/storage');
 const projectId = 'movelp';
 const keyFilename = path.join(__dirname, '/key.json');
 const storage = new Storage({projectId, keyFilename});
+const MongoDBPostManager = require('./managers/mongoDB/MongoDBPostManager');
+const Post = require('./entities/Post');
 
 // mongoose.connect("mongodb+srv://admin-dennis:JOUwExYMLOD7KkDn@movelpdb.8hxbz.mongodb.net/movelpDB?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true});
 mongoose.connect("mongodb://localhost:27017/movelpDB", {useNewUrlParser: true, useUnifiedTopology: true});
 mongoose.set("useCreateIndex", true);
+mongoose.set('useFindAndModify', false);
 
 if (inProduction) {
   app.use(express.static('desktop-client/build'));
@@ -62,5 +65,5 @@ app.post('/createPost', uploadFields, (req, res, next) => {
 })
 
 app.listen(port, () => {
-  console.log(`Server has started at ${port}`);
+  console.log(`Server has started at ${port}`)
 });

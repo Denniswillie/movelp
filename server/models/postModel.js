@@ -9,7 +9,6 @@ const postSchema = new mongoose.Schema ({
   timeOfCreation: Date,
   noOfLikes: Number,
   noOfComments: Number,
-  likers: [ObjectId],
   isEdited: Boolean
 });
 
