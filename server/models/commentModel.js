@@ -7,7 +7,6 @@ const commentSchema = new mongoose.Schema ({
   timeOfCreation: Date,
   text: String,
   noOfLikes: Number,
-  likers: [ObjectId],
   isEdited: Boolean
 });
 

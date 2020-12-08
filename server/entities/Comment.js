@@ -7,7 +7,6 @@
 // •	timeOfCreation
 // •	comment_string
 // •	noOfLikes
-// •	likers = [userId]
 // •	isEdited
 
 class Comment {
@@ -18,7 +17,6 @@ class Comment {
     TIME_OF_CREATION: 'timeOfCreation',
     TEXT: 'text',
     NO_OF_LIKES: 'noOfLikes',
-    LIKERS: 'likers',
     IS_EDITED: 'isEdited'
   }
 
@@ -29,7 +27,6 @@ class Comment {
       const timeOfCreation = build.timeOfCreation;
       const text = build.text;
       const noOfLikes = build.noOfLikes;
-      const likers = build.likers;
       const isEdited = build.isEdited;
 
       Object.defineProperties(this, {
@@ -51,10 +48,6 @@ class Comment {
         },
         noOfLikes: {
           value: noOfLikes,
-          writable: false
-        },
-        likers: {
-          value: likers,
           writable: false
         },
         isEdited: {
@@ -87,10 +80,6 @@ class Comment {
       }
       setNoOfLikes(noOfLikes) {
         this.noOfLikes = noOfLikes;
-        return this;
-      }
-      setLikers(likers) {
-        this.likers = likers;
         return this;
       }
       setIsEdited(isEdited) {

@@ -59,21 +59,50 @@ class MongoDBPostManager {
       .catch(err => console.log(err));
   }
 
-  static async toggleLike(postId, userId) {
+  static async createOrToggleLike(postId, userId) {
     await PostLikeModel.findOneAndUpdate({postId: postId, userId: userId},
       {$bit: {liked: {xor: 1}}})
       .then(docs => {
         if (docs) {
-          return docs;
+          const liked = docs.liked;
+          if (liked === 1) {
+            this.updateNoOfLikes(postId, true);
+          } else {
+            this.updateNoOfLikes(postId, false);
+          }
         } else {
           PostLikeModel.create({postId: postId, userId: userId, liked: 1})
+            .then(docs => {
+              this.updateNoOfLikes(postId, true);
+            })
+            .catch(err => console.log(err))
         }
       })
-      .catch(err => console.log)
+      .catch(err => console.log(err))
       .then(docs => {
         return docs;
       })
-      .catch(err => console.log);
+      .catch(err => console.log(err));
+  }
+
+  static async updateNoOfLikes(postId, isIncreased) {
+    if (isIncreased) {
+      PostModel.findByIdAndUpdate(postId, {$inc: {noOfLikes: 1}}, (err, docs) => {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        return docs;
+      })
+    } else {
+      PostModel.findByIdAndUpdate(postId, {$inc: {noOfLikes: -1}}, (err, docs) => {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        return docs;
+      })
+    }
   }
 }
 
