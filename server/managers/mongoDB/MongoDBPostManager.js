@@ -64,17 +64,14 @@ class MongoDBPostManager {
       {$bit: {liked: {xor: 1}}})
       .then(docs => {
         if (docs) {
-          const liked = docs.liked;
-          if (liked === 1) {
+          if (docs.liked == 1) {
             this.updateNoOfLikes(postId, true);
           } else {
             this.updateNoOfLikes(postId, false);
           }
         } else {
           PostLikeModel.create({postId: postId, userId: userId, liked: 1})
-            .then(docs => {
-              this.updateNoOfLikes(postId, true);
-            })
+            .then(this.updateNoOfLikes(postId, true))
             .catch(err => console.log(err))
         }
       })

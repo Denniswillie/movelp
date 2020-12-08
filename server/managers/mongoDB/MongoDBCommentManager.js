@@ -51,17 +51,14 @@ class MongoDBCommentManager {
       {$bit: {liked: {xor: 1}}})
       .then(docs => {
         if (docs) {
-          const liked = docs.liked;
-          if (liked === 1) {
+          if (docs.liked == 1) {
             this.updateNoOfLikes(commentId, true);
           } else {
             this.updateNoOfLikes(commentId, false);
           }
         } else {
           CommentLikeModel.create({commentId: commentId, userId: userId, liked: 1})
-            .then(docs => {
-              this.updateNoOfLikes(commentId, true);
-            })
+            .then(this.updateNoOfLikes(commentId, true))
             .catch(err => console.log(err))
         }
       })
