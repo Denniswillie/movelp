@@ -1,10 +1,6 @@
 require('dotenv').config();
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const passport = require('passport');
-const passportLocalMongoose = require('passport-local-mongoose');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const findOrCreate = require('mongoose-findorcreate');
 const express = require('express');
 const app = express();
 const cors = require('cors');
@@ -12,9 +8,24 @@ const port = process.env.PORT || 5000;
 const inProduction = process.env.NODE_ENV === "production";
 const mongoose = require('mongoose');
 const path = require('path');
-const DOMAIN_NAME = "http://movelp.com";
-const CLIENT_URL = inProduction ? DOMAIN_NAME : "http://localhost:3000";
-const AUTH_REDIRECT_URL = inProduction ? DOMAIN_NAME : "http://localhost:5000";
+const CLIENT_URL = inProduction ? process.env.DOMAIN_NAME : "http://localhost:3000";
+const authRoutes = require('./routes/auth');
+const passport = require('passport');
+const passportSetup = require('./config/passport-setup');
+const multer  = require('multer');
+const upload = multer();
+const uploadFields = upload.fields([{ name: 'fileInput', maxCount: 10 }])
+const {Storage} = require('@google-cloud/storage');
+const projectId = 'movelp';
+const keyFilename = path.join(__dirname, '/key.json');
+const storage = new Storage({projectId, keyFilename});
+const MongoDBPostManager = require('./managers/mongoDB/MongoDBPostManager');
+const Post = require('./entities/Post');
+
+// mongoose.connect("mongodb+srv://admin-dennis:JOUwExYMLOD7KkDn@movelpdb.8hxbz.mongodb.net/movelpDB?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect("mongodb://localhost:27017/movelpDB", {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.set("useCreateIndex", true);
+mongoose.set('useFindAndModify', false);
 
 if (inProduction) {
   app.use(express.static('desktop-client/build'));
@@ -45,66 +56,14 @@ app.use(
   })
 );
 
-mongoose.connect("mongodb+srv://admin-dennis:JOUwExYMLOD7KkDn@movelpdb.8hxbz.mongodb.net/movelpDB?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true});
-// mongoose.connect("mongodb://localhost:27017/movelpDB", {useNewUrlParser: true, useUnifiedTopology: true});
-mongoose.set("useCreateIndex", true);
+app.use('/auth', authRoutes);
 
-const userSchema = new mongoose.Schema ({
-  username: String,
-  password: String,
-  googleId: String
-});
-
-userSchema.plugin(passportLocalMongoose);
-userSchema.plugin(findOrCreate);
-
-const User = new mongoose.model("User", userSchema);
-
-passport.use(User.createStrategy());
-
-passport.serializeUser(function(user, done) {
-  done(null, user.id);
-});
-
-passport.deserializeUser(function(id, done) {
-  User.findById(id, function(err, user) {
-    done(err, user);
-  });
-});
-
-passport.use(new GoogleStrategy({
-    clientID: process.env.CLIENT_ID,
-    clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: AUTH_REDIRECT_URL + "/auth/google/movelp",
-    userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
-  },
-  function(accessToken, refreshToken, profile, cb) {
-    User.findOrCreate({ username: profile.emails[0].value, googleId: profile.id }, function (err, user) {
-      return cb(err, user);
-    });
-  }
-));
-
-app.get("/auth/google",
-  passport.authenticate('google', { scope: ["profile", "email"] })
-);
-
-app.get("/logout", function(req, res){
-  req.logout();
-  res.redirect(CLIENT_URL);
-});
-
-app.get("/auth/google/movelp",
-  passport.authenticate('google', { failureRedirect: CLIENT_URL, successRedirect: CLIENT_URL })
-);
-
-app.get("/isLoggedIn", function(req, res) {
-  res.json({
-    user: req.user
-  });
-});
-
+app.post('/createPost', uploadFields, (req, res, next) => {
+  console.log(req.files['fileInput']);
+  console.log(req.body);
+  res.end();
+})
 
 app.listen(port, () => {
-  console.log(`Server has started at ${port}`);
+  console.log(`Server has started at ${port}`)
 });
