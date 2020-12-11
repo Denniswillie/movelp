@@ -4,8 +4,12 @@ import Toolbar from '@material-ui/core/Toolbar';
 import InputBase from '@material-ui/core/InputBase';
 import { makeStyles } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
-import CreateBox from './box/CreateBox';
 import Button from '@material-ui/core/Button';
+import CreateBox from './box/createBox/CreateBox';
+import CreateGeneralBox from './box/createBox/CreateGeneralBox';
+import CreateDiaryBox from './box/createBox/CreateDiaryBox';
+import CreateAskForSuggestionBox from './box/createBox/CreateAskForSuggestionBox';
+import CreateRecommendationBox from './box/createBox/CreateRecommendationBox';
 
 // const [postedData, setPostedData] = useState({
 //   text: "",
@@ -83,7 +87,7 @@ export default function SearchAppBar() {
     <div className={classes.root}>
       <AppBar position="static" style={{backgroundColor: "white"}}>
         <Toolbar style={{width: "80%", margin: "auto"}}>
-          <h1 className={classes.title} style={{color: "black", fontSize: "1.6em", margin: "0"}} noWrap>
+          <h1 className={classes.title} style={{color: "black", fontSize: "1.6em", margin: "0"}} nowrap="true">
             Movelp
           </h1>
           <div className={classes.search}>
@@ -100,14 +104,17 @@ export default function SearchAppBar() {
               inputProps={{ 'roboto': 'search' }}
             />
           </div>
-          <Button color="black" style={{marginLeft: "1em"}}>Profile</Button>
-          <Button color="black" style={{marginLeft: "1em"}}>Logout</Button>
+          <Button style={{marginLeft: "1em"}}>Profile</Button>
+          <Button href="/auth/logout" style={{marginLeft: "1em"}}>
+            Logout
+          </Button>
         </Toolbar>
       </AppBar>
     </div>
 
     <div style={{position: "relative", padding: "1em", textAlign: "center"}}>
       <CreateBox />
+      <CreateRecommendationBox />
     </div>
     </div>
   );
