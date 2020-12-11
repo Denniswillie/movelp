@@ -1,6 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Nerko+One&family=Pacifico&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nerko+One&family=Pacifico&family=Roboto:wght@300&display=swap');
 
-$background_color : #00cccc;
+$background_color : #F0F2F5;
 
 body {
   background-color: $background_color;
@@ -38,4 +38,17 @@ h3 {
 .WatchDiarySubTitleWrapper {
   padding-left: 1em;
   padding-right: 1em;
+}
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: white;
+  opacity: 1; /* Firefox */
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: white;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+  color: white;
 }
