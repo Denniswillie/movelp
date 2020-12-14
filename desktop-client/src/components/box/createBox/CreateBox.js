@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function CreateBox() {
+export default function CreateBox(props) {
   const classes = useStyles();
   return <div style={{
       width: "600px",
@@ -28,20 +28,20 @@ export default function CreateBox() {
       boxShadow: "0 0 2px #999",
       padding: "5px"}}>
     <form className={classes.root} noValidate autoComplete="off">
-      <TextField id="outlined-basic" label="Create a general post" variant="outlined" style={{width: "70%"}}/>
+      <TextField name="createGeneralButton" id="createGeneralButton" label="Create a general post" variant="outlined" style={{width: "70%"}} onClick={props.handleClick}/>
     </form>
     <div style={{borderTop: "1px solid #9ba89e", paddingTop: "5px"}}>
-    <Button style={{width: "30%"}}>
-      <Theaters />
-      <p style={{fontFamily: 'Roboto', marginLeft: "6px"}}>Diary</p>
+    <Button style={{width: "30%"}} name="createDiaryButton" onClick={props.handleClick}>
+      <Theaters id="Theaters"/>
+      <p style={{fontFamily: 'Roboto', marginLeft: "6px"}} id="createDiaryButton">Diary</p>
     </Button>
-    <Button style={{width: "30%"}}>
+    <Button style={{width: "30%"}} name="createRecommendationButton" onClick={props.handleClick}>
       <Movie />
-      <p style={{fontFamily: 'Roboto', marginLeft: "6px"}}>Recommendation</p>
+      <p style={{fontFamily: 'Roboto', marginLeft: "6px"}} id="createRecommendationButton">Recommendation</p>
     </Button>
-    <Button style={{width: "30%"}}>
+    <Button style={{width: "30%"}} name="createAskSuggestionButton" onClick={props.handleClick}>
       <LiveTv />
-      <p style={{fontFamily: 'Roboto', marginLeft: "6px"}}>Ask Suggestion</p>
+      <p style={{fontFamily: 'Roboto', marginLeft: "6px"}} id="createAskSuggestionButton">Ask Suggestion</p>
     </Button>
     </div>
   </div>
