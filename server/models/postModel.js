@@ -9,7 +9,8 @@ const postSchema = new mongoose.Schema ({
   timeOfCreation: Date,
   noOfLikes: Number,
   noOfComments: Number,
-  isEdited: Boolean
+  isEdited: Boolean,
+  movieIds: [Number]
 });
 
 const Post = new mongoose.model("Post", postSchema);
