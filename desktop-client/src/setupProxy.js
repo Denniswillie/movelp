@@ -23,7 +23,35 @@ module.exports = function(app) {
     })
   );
   app.use(
-    '/createPost',
+    '/post/create/diary',
+    createProxyMiddleware({
+      target: 'http://localhost:5000',
+      changeOrigin: true,
+    })
+  );
+  app.use(
+    '/post/create/recommendation',
+    createProxyMiddleware({
+      target: 'http://localhost:5000',
+      changeOrigin: true,
+    })
+  );
+  app.use(
+    '/post/create/general',
+    createProxyMiddleware({
+      target: 'http://localhost:5000',
+      changeOrigin: true,
+    })
+  );
+  app.use(
+    '/post/create/asksuggestion',
+    createProxyMiddleware({
+      target: 'http://localhost:5000',
+      changeOrigin: true,
+    })
+  );
+  app.use(
+    '/post/get',
     createProxyMiddleware({
       target: 'http://localhost:5000',
       changeOrigin: true,

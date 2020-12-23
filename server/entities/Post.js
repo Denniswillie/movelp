@@ -1,7 +1,6 @@
 "use strict";
 //jshint esversion:6
 
-// •	Id
 // •	creatorId
 // •	Type
 // •	File_url
@@ -14,20 +13,28 @@
 class Post {
 
   static FIELDS = {
-    _ID: '_id',
     CREATOR_ID: 'creatorId',
     TYPE: 'type',
     FILE_IDS: 'fileIds',
     TEXT: 'text',
+    TITLE: 'title',
+    RATING: 'rating',
     TIME_OF_CREATION: 'timeOfCreation',
     NO_OF_LIKES: 'noOfLikes',
     NO_OF_COMMENTS: 'noOfComments',
-    IS_EDITED: 'isEdited'
+    IS_EDITED: 'isEdited',
+    MOVIE_IDS: 'movieIds',
+  }
+
+  static TYPES = {
+    GENERAL: 'general',
+    RECOMMENDATION: 'recommendation',
+    DIARY: 'diary',
+    ASK_SUGGESTION: 'asksuggestion'
   }
 
   constructor(build) {
     if (arguments.length === 1 && this.validateBuild(build)) {
-      const _id = build._id;
       const creatorId = build.creatorId;
       const type = build.type;
       const fileIds = build.fileIds;
@@ -36,12 +43,11 @@ class Post {
       const noOfLikes = build.noOfLikes;
       const noOfComments = build.noOfComments;
       const isEdited = build.isEdited;
+      const title = build.title;
+      const rating = build.rating;
+      const movieIds = build.movieIds;
 
       Object.defineProperties(this, {
-        _id: {
-          value: _id,
-          writable: false
-        },
         creatorId: {
           value: creatorId,
           writable: false
@@ -73,6 +79,22 @@ class Post {
         isEdited: {
           value: isEdited,
           writable: false
+        },
+        title: {
+          value: title,
+          writable: false
+        },
+        rating: {
+          value: rating,
+          writable: false
+        },
+        movieIds: {
+          value: movieIds,
+          writable: false
+        },
+        fileIds: {
+          value: fileIds,
+          writable: false
         }
       });
     }
@@ -82,10 +104,6 @@ class Post {
   }
   static get Builder() {
     class Builder {
-      setId(_id) {
-        this._id = _id;
-        return this;
-      }
       setCreatorId(creatorId) {
         this.creatorId = creatorId;
         return this;
@@ -116,6 +134,18 @@ class Post {
       }
       setIsEdited(isEdited) {
         this.isEdited = isEdited;
+        return this;
+      }
+      setTitle(title) {
+        this.title = title;
+        return this;
+      }
+      setRating(rating) {
+        this.rating = rating;
+        return this;
+      }
+      setMovieIds(movieIds) {
+        this.movieIds = movieIds;
         return this;
       }
       build() {

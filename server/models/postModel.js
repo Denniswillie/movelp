@@ -5,12 +5,14 @@ const postSchema = new mongoose.Schema ({
   creatorId: ObjectId,
   type: String,
   fileIds: [String],
+  title: String, //For diary post only
+  rating: Number, //For Recommendation post only
   text: String,
   timeOfCreation: Date,
   noOfLikes: Number,
   noOfComments: Number,
   isEdited: Boolean,
-  movieIds: [Number]
+  movieIds: [Number] //for diary, general, and recommendation posts
 });
 
 const Post = new mongoose.model("Post", postSchema);

@@ -19,16 +19,32 @@ const useStyles = makeStyles((theme) => ({
 
 export default function AskForSuggestionBox(props) {
   const classes = useStyles();
+
+  function uploadPhoto() {
+    document.getElementById("imageUpload").click();
+  }
+
+  function submit() {
+    document.getElementById("submit").click();
+  }
+
   return <div>
-    <form className={classes.root} noValidate autoComplete="off">
-      <TextField multiline label="Ask for movie recommendations" rows={12} variant="outlined" style={{width: "90%"}}/>
+    <form className={classes.root} noValidate autoComplete="off" method="POST" action="/post/create/asksuggestion" encType="multipart/form-data">
+      <TextField multiline label="Ask for movie recommendations" rows={12} variant="outlined" style={{width: "90%"}} name="text"/>
+      <input type="file" id="imageUpload" name="fileInput" style={{display: "none"}} multiple/>
+      <input type="submit" style={{display: "none"}} id="submit"/>
     </form>
     <div>
-    <Button style={{width: "40%"}}>
+    <Button style={{width: "40%"}} onClick={uploadPhoto}>
       <InsertPhoto />
       <p style={{fontFamily: 'Roboto', marginLeft: "6px"}}>Upload Photo</p>
     </Button>
     </div>
-    <Button style={{backgroundColor: "black", color: "white"}} variant="contained" className={classes.button} startIcon={<AddCircleOutline />}>Create</Button>
+    <Button
+      onClick={submit}
+      style={{backgroundColor: "black", color: "white"}}
+      variant="contained"
+      className={classes.button}
+      startIcon={<AddCircleOutline />}>Create</Button>
   </div>
 }

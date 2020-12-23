@@ -29,13 +29,13 @@ export default function DiaryBox(props) {
 
   return <div>
     <div id = "createDiaryForm">
-      <form className={classes.root} noValidate autoComplete="off" method="POST">
-        <TextField label="Diary Title" variant="outlined" style={{width: "90%"}}/>
-        <TextField multiline label="Share your story" rows={4} variant="outlined" style={{width: "90%"}}/>
+      <form className={classes.root} noValidate autoComplete="off" method="POST" action="/post/create/diary" encType="multipart/form-data">
+        <TextField label="Diary Title" variant="outlined" name="title" style={{width: "90%"}}/>
+        <TextField multiline label="Share your story" rows={4} name="text" variant="outlined" style={{width: "90%"}}/>
         {props.chosenMoviesIds.map(chosenMovieId => {
           return <input type="hidden" name="chosenMoviesIds[]" value={chosenMovieId}/>
         })}
-        <input type="file" id="imageUpload" style={{display: "none"}}/>
+        <input type="file" id="imageUpload" name="fileInput" style={{display: "none"}} multiple/>
         <input type="submit" id="submit" style={{display: "none"}}/>
       </form>
       <div>

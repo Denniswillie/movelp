@@ -18,6 +18,7 @@
 
 const mongoose = require("mongoose");
 const ObjectId = require("mongodb").ObjectID;
+const Post = require('../../entities/Post');
 const PostModel = require('../../models/postModel');
 const PostLikeModel = require('../../models/postLikeModel');
 
@@ -27,15 +28,25 @@ class MongoDBPostManager {
       .then(docs => {
         return docs;
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        console.log(err);
+        return;
+      });
   }
 
-  static async edit(post) {
-    await PostModel.findByIdAndUpdate(post._id, this.constructSchemaFields(post))
+  static async edit(postId) {
+    await PostModel.findByIdAndUpdate(postId, this.constructSchemaFields(post))
       .then(docs => {
         return docs;
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        console.log(err);
+        return;
+      });
+  }
+
+  static async edit(postId, postBuilder) {
+    console.log(postBuilder);
   }
 
   static constructSchemaFields(post) {
@@ -43,12 +54,20 @@ class MongoDBPostManager {
       creatorId: post.creatorId,
       type: post.type,
       fileIds: post.fileIds,
+      title: post.title,
+      rating: post.rating,
       text: post.text,
       timeOfCreation: post.timeOfCreation,
       noOfLikes: post.noOfLikes,
       noOfComments: post.noOfComments,
-      isEdited: post.isEdited
+      isEdited: post.isEdited,
+      movieIds: post.movieIds
     }
+  }
+
+  static async getAll() {
+    const docs = await PostModel.find({}).sort({timeOfCreation: -1}).exec();
+    return docs;
   }
 
   static async delete(postId) {
@@ -56,7 +75,10 @@ class MongoDBPostManager {
       .then(docs => {
         return docs;
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        console.log(err);
+        return;
+      });
   }
 
   static async createOrToggleLike(postId, userId) {
@@ -79,7 +101,10 @@ class MongoDBPostManager {
       .then(docs => {
         return docs;
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        console.log(err);
+        return;
+      });
   }
 
   static async updateNoOfLikes(postId, isIncreased) {

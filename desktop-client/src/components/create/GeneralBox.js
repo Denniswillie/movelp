@@ -29,9 +29,12 @@ export default function GeneralBox(props) {
   }
 
   return <div>
-    <form className={classes.root} noValidate autoComplete="off">
-      <TextField multiline label="Create a general post" rows={7} variant="outlined" style={{width: "90%"}}/>
-      <input type="file" style={{display: "none"}} id="imageUpload"/>
+    <form className={classes.root} noValidate autoComplete="off" method="POST" action="/post/create/general" encType="multipart/form-data">
+      <TextField multiline label="Create a general post" rows={7} variant="outlined" style={{width: "90%"}} name="text"/>
+      {props.chosenMoviesIds.map(chosenMovieId => {
+        return <input type="hidden" name="chosenMoviesIds[]" value={chosenMovieId}/>
+      })}
+      <input type="file" id="imageUpload" name="fileInput" style={{display: "none"}} multiple/>
       <input type="submit" style={{display: "none"}} id="submit"/>
     </form>
     <div>

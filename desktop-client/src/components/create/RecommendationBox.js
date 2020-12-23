@@ -70,7 +70,7 @@ export default function RecommendationBox(props) {
 
   return (
     <div>
-      <form className={classes.root} noValidate autoComplete="off">
+      <form className={classes.root} noValidate autoComplete="off" method="POST" action="/post/create/recommendation" encType="multipart/form-data">
         <FormControl variant="outlined" className={classes.formControl}>
           <InputLabel id="demo-simple-select-outlined-label">Rate</InputLabel>
           <Select
@@ -80,6 +80,7 @@ export default function RecommendationBox(props) {
             onChange={handleRatingClick}
             label="Rating"
             style={{zIndex: "1000000000000000000000000000000"}}
+            name="rating"
           >
             {ratings.map((option) => (
               <MenuItem key={option.value} value={option.value}>
@@ -88,11 +89,11 @@ export default function RecommendationBox(props) {
             ))}
           </Select>
         </FormControl>
-        <TextField multiline label="Review for the movie" rows={3} variant="outlined" style={{width: "90%"}} />
+        <TextField multiline label="Review for the movie" rows={3} variant="outlined" style={{width: "90%"}} name="text"/>
         {props.chosenMoviesIds.map(chosenMovieId => {
           return <input type="hidden" name="chosenMoviesIds[]" value={chosenMovieId}/>
         })}
-        <input type="file" style={{display: "none"}} id="imageUpload"/>
+        <input type="file" id="imageUpload" name="fileInput" style={{display: "none"}} multiple/>
         <input type="submit" style={{display: "none"}} id="submit"/>
       </form>
       <div>
