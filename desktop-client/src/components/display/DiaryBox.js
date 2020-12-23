@@ -1,6 +1,8 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
+import "react-image-gallery/styles/css/image-gallery.css";
+import ImageGallery from "react-image-gallery";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -10,6 +12,21 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
+
+const images = [
+    {
+      original: 'https://picsum.photos/id/1018/1000/600/',
+      thumbnail: 'https://picsum.photos/id/1018/250/150/',
+    },
+    {
+      original: 'https://picsum.photos/id/1015/1000/600/',
+      thumbnail: 'https://picsum.photos/id/1015/250/150/',
+    },
+    {
+      original: 'https://picsum.photos/id/1019/1000/600/',
+      thumbnail: 'https://picsum.photos/id/1019/250/150/',
+    },
+  ];
 
 export default function DiaryBox(props) {
   const classes = useStyles();
@@ -34,6 +51,6 @@ export default function DiaryBox(props) {
       This is diary post. This type of post consists of the writer's experience with the movie. It can be a sad experience,
       happy, or whatever kinds of experience that the user may have.
     </div>
-    <img style={{width: "100%", height: "30em"}} src={process.env.PUBLIC_URL + '/images/clapperboard.png'} />
+    <ImageGallery items={images} />
   </div>
 }

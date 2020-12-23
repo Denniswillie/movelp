@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Navbar() {
   const classes = useStyles();
-  return <div className={classes.root}>
+  return <div className={classes.root} style={{position: "fixed", width: "100%", zIndex: "1000000000000000000000000000000000000000000000"}}>
     <AppBar position="static" style={{backgroundColor: "white"}}>
       <Toolbar style={{width: "80%", margin: "auto"}}>
         <h1 className={classes.title} style={{color: "black", fontSize: "1.6em", margin: "0", userSelect: "none"}} nowrap="true">

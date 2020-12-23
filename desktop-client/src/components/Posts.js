@@ -91,7 +91,7 @@ export default function Posts() {
   return (
     <div>
     <Navbar />
-    <div id="feed" style={{position: "relative", padding: "1em", textAlign: "center"}}>
+    <div id="feed" style={{position: "relative", padding: "1em", textAlign: "center", paddingTop: "5em"}}>
       <CreateBox handleClick={handleCreatePostClick}/>
       <DisplayDiaryBox />
       {posts[0].map((post, index) => {
