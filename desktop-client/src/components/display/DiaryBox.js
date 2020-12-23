@@ -24,23 +24,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const images = [
-    {
-      original: 'https://picsum.photos/id/1018/1000/600/',
-      thumbnail: 'https://picsum.photos/id/1018/250/150/',
-    },
-    {
-      original: 'https://picsum.photos/id/1015/1000/600/',
-      thumbnail: 'https://picsum.photos/id/1015/250/150/',
-    },
-    {
-      original: 'https://picsum.photos/id/1019/1000/600/',
-      thumbnail: 'https://picsum.photos/id/1019/250/150/',
-    },
-  ];
-
 export default function DiaryBox(props) {
   const classes = useStyles();
+
+  const images = [];
+  useEffect(() => {
+    props.urls.map(url => {
+      images.push({
+        original: url,
+        thumbnail: url,
+      })
+    })
+  })
+
   return <div style={{
       width: "610px",
       backgroundColor: "white",
@@ -64,10 +60,9 @@ export default function DiaryBox(props) {
       </div>
     </div>
     <div style={{padding: "1em", textAlign: "justify", fontFamily: "roboto"}}>
-      This is diary post. This type of post consists of the writer's experience with the movie. It can be a sad experience,
-      happy, or whatever kinds of experience that the user may have.
+      {props.text}
     </div>
-    <ImageGallery items={images} showFullscreenButton={false} showPlayButton={false} showThumbnails={false}/>
+    {images.length > 0 && <ImageGallery items={images} showFullscreenButton={false} showPlayButton={false} showThumbnails={false}/>}
     <div style={{
       display: 'flex',
       alignItems: 'center',
@@ -75,9 +70,9 @@ export default function DiaryBox(props) {
       padding: "10px"
     }}>
       <ThumbUpAltIcon />
-      <span style={{fontFamily: "roboto", marginLeft: "6px"}}>65</span>
+      <span style={{fontFamily: "roboto", marginLeft: "6px"}}>{props.noOfLikes}</span>
       <CommentIcon style={{marginLeft: "20px"}}/>
-      <span style={{fontFamily: "roboto", marginLeft: "6px"}}>65</span>
+      <span style={{fontFamily: "roboto", marginLeft: "6px"}}>{props.noOfComments}</span>
     </div>
     <div style={{padding: "5px"}}>
     <div style={{borderTop: "1px solid #9ba89e", paddingTop: "5px"}}>
