@@ -10,6 +10,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Chip from '@material-ui/core/Chip';
 import Paper from '@material-ui/core/Paper';
 import TagFacesIcon from '@material-ui/icons/TagFaces';
+import {useRef} from 'react';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,12 +35,18 @@ const useStyles = makeStyles((theme) => ({
 export default function DiaryBox(props) {
   const classes = useStyles();
 
+  const imageGallery = useRef(null);
+
   function uploadPhoto() {
     document.getElementById("imageUpload").click();
   }
 
   function submit() {
     document.getElementById("submit").click();
+  }
+
+  function getCurrentIndex() {
+    console.log(imageGallery.current.getCurrentIndex());
   }
 
   return <div>
@@ -108,9 +115,12 @@ export default function DiaryBox(props) {
           showPlayButton={false}
           showThumbnails={false}
           showNav={false}
-          autoPlay={true}/>
+          autoPlay={false}
+          infinite={false}
+          showBullets={true}
+          ref={imageGallery}/>
       </div>
-      <IconButton>
+      <IconButton onClick={getCurrentIndex}>
       <DeleteOutlinedIcon />
       </IconButton>
       </div>}
