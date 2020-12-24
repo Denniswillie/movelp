@@ -30,8 +30,22 @@ export default function AskForSuggestionBox(props) {
 
   return <div>
     <form className={classes.root} noValidate autoComplete="off" method="POST" action="/post/create/asksuggestion" encType="multipart/form-data">
-      <TextField multiline label="Ask for movie recommendations" rows={12} variant="outlined" style={{width: "90%"}} name="text"/>
-      <input type="file" id="imageUpload" name="fileInput" style={{display: "none"}} multiple/>
+      <TextField
+        multiline
+        label="Ask for movie recommendations"
+        rows={12}
+        variant="outlined"
+        style={{width: "90%"}}
+        name="text"
+        value={props.text}
+        onChange={props.handleTextChange}/>
+      <input
+        type="file"
+        id="imageUpload"
+        name="fileInput"
+        style={{display: "none"}}
+        multiple
+        onChange={props.handleUploadedFilesChange}/>
       <input type="submit" style={{display: "none"}} id="submit"/>
     </form>
     <div>

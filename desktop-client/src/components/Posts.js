@@ -1,13 +1,15 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useContext} from 'react';
 import Navbar from './Navbar';
 import CreateBox from './create/CreateBox';
 import Container from './create/Container';
 import DisplayDiaryBox from './display/DiaryBox';
-// import DisplayGeneralBox from './display/GeneralBox';
-// import DisplayRecommendationBox from './display/RecommendationBox';
-// import DisplayAskForSuggestionsBox from './display/AskForSuggestionsBox';
+import DisplayGeneralBox from './display/GeneralBox';
+import DisplayRecommendationBox from './display/RecommendationBox';
+import DisplayAskForSuggestionsBox from './display/AskForSuggestionsBox';
+import PostTypeContext from './PostTypeContext';
 
 export default function Posts() {
+  const PostType = useContext(PostTypeContext);
   const [posts, setPosts] = useState([[], []]);
 
   useEffect(() => {
@@ -20,72 +22,53 @@ export default function Posts() {
       .catch(err => console.log(err));
   }, []);
 
-  const [createType, setCreateType] = useState({
-    container: false,
-    generalBox: false,
-    recommendationBox: false,
-    diaryBox: false,
-    askSuggestionBox: false
+  const [createData, setCreateData] = useState({
+    isEditing: false,
+    type: null,
+    typeData: null
   });
 
+  function handleEditClick(post) {
+    if (post.type === PostType.DIARY) {
+      setCreateData({isEditing: true, type: PostType.DIARY, typeData: post});
+    } else if (post.type === PostType.RECOMMENDATION) {
+      setCreateData({isEditing: true, type: PostType.RECOMMENDATION, typeData: post});
+    } else if (post.type === PostType.GENERAL) {
+      setCreateData({isEditing: true, type: PostType.GENERAL, typeData: post});
+    } else if (post.type === PostType.ASK_SUGGESTION) {
+      setCreateData({isEditing: true, type: PostType.ASK_SUGGESTION, typeData: post});
+    }
+  }
+
   function handleExitClick(event) {
-    setCreateType({
-      container: false,
-      generalBox: false,
-      recommendationBox: false,
-      diaryBox: false,
-      askSuggestionBox: false
-    })
+    setCreateData({isEditing: false, type: null, typeData: null});
   }
 
   function handleCreatePostClick(event) {
+    console.log(event);
     var name;
     if (event.target.name) {
       name = event.target.name;
     } else if (event.target.id) {
       name = event.target.id;
     }
-    if (name === "createGeneralButton") {
-      setCreateType({
-        container: true,
-        generalBox: true,
-        recommendationBox: false,
-        diaryBox: false,
-        askSuggestionBox: false,
-        titleText: "General Post"
+    if (name === PostType.GENERAL) {
+      setCreateData(prevData => {
+        return {...prevData, type: PostType.GENERAL};
       })
-    } else if (name === "createRecommendationButton") {
-      setCreateType({
-        container: true,
-        generalBox: false,
-        recommendationBox: true,
-        diaryBox: false,
-        askSuggestionBox: false,
-        titleText: "Recommendation Post"
+    } else if (name === PostType.RECOMMENDATION) {
+      setCreateData(prevData => {
+        return {...prevData, type: PostType.RECOMMENDATION};
       })
-    } else if (name === "createDiaryButton") {
-      setCreateType({
-        container: true,
-        generalBox: false,
-        recommendationBox: false,
-        diaryBox: true,
-        askSuggestionBox: false,
-        titleText: "Diary Post"
+    } else if (name === PostType.DIARY) {
+      setCreateData(prevData => {
+        return {...prevData, type: PostType.DIARY};
       })
-    } else if (name === "createAskSuggestionButton"){
-      setCreateType({
-        container: true,
-        generalBox: false,
-        recommendationBox: false,
-        diaryBox: false,
-        askSuggestionBox: true,
-        titleText: "Ask for Recommendation"
+    } else if (name === PostType.ASK_SUGGESTION){
+      setCreateData(prevData => {
+        return {...prevData, type: PostType.ASK_SUGGESTION};
       })
     }
-  }
-
-  function handlePostClick(event) {
-    console.log(event);
   }
 
   return (
@@ -93,19 +76,59 @@ export default function Posts() {
     <Navbar />
     <div id="feed" style={{position: "relative", padding: "1em", textAlign: "center", paddingTop: "5em"}}>
       <CreateBox handleClick={handleCreatePostClick}/>
-      <DisplayDiaryBox />
       {posts[0].map((post, index) => {
-        return <div key={index} id={index} value={post.type} onClick={handlePostClick}>
-          <p>{post._id}</p>
-          <p>{post.type}</p>
-          {posts[1][index].map((url, index) => {
-            return <img key={index} src={url} />
-          })}
-        </div>
+        switch (post.type) {
+          case PostType.DIARY:
+            return <DisplayDiaryBox
+              _id={post._id}
+              key={post._id}
+              type={post.type}
+              text={post.text}
+              title={post.title}
+              urls={posts[1][index]}
+              noOfLikes={post.noOfLikes}
+              noOfComments={post.noOfComments}
+              handleEditClick={handleEditClick}
+              movieIds={post.movieIds}/>
+          case PostType.RECOMMENDATION:
+            return <DisplayRecommendationBox
+              _id={post._id}
+              key={post._id}
+              type={post.type}
+              text={post.text}
+              urls={posts[1][index]}
+              rating={post.rating}
+              noOfLikes={post.noOfLikes}
+              noOfComments={post.noOfComments}
+              handleEditClick={handleEditClick}
+              movieIds={post.movieIds}/>
+          case PostType.GENERAL:
+            return <DisplayGeneralBox
+              _id={post._id}
+              key={post._id}
+              type={post.type}
+              text={post.text}
+              urls={posts[1][index]}
+              noOfLikes={post.noOfLikes}
+              noOfComments={post.noOfComments}
+              handleEditClick={handleEditClick}
+              movieIds={post.movieIds}/>
+          case PostType.ASK_SUGGESTION:
+            return <DisplayAskForSuggestionsBox
+              _id={post._id}
+              key={post._id}
+              type={post.type}
+              text={post.text}
+              urls={posts[1][index]}
+              noOfLikes={post.noOfLikes}
+              noOfComments={post.noOfComments}
+              handleEditClick={handleEditClick}
+              movieIds={post.movieIds}/>
+        }
       })}
     </div>
     <div style={{textAlign: "center"}}>
-      {createType.container && <Container createType={createType} handleExitClick={handleExitClick} />}
+      {createData.type && <Container createData={createData} handleExitClick={handleExitClick} />}
     </div>
     </div>
   );

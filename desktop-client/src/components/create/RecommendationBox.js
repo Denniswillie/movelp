@@ -56,10 +56,6 @@ export default function RecommendationBox(props) {
   const classes = useStyles();
   const [currentRating, setCurrentRating] = useState('5');
 
-  const handleRatingClick = (event) => {
-    setCurrentRating(event.target.value);
-  };
-
   function uploadPhoto() {
     document.getElementById("imageUpload").click();
   }
@@ -76,8 +72,8 @@ export default function RecommendationBox(props) {
           <Select
             labelId="demo-simple-select-outlined-label"
             id="demo-simple-select-outlined"
-            value={currentRating}
-            onChange={handleRatingClick}
+            value={props.rating}
+            onChange={props.handleRatingChange}
             label="Rating"
             style={{zIndex: "1000000000000000000000000000000"}}
             name="rating"
@@ -89,11 +85,25 @@ export default function RecommendationBox(props) {
             ))}
           </Select>
         </FormControl>
-        <TextField multiline label="Review for the movie" rows={3} variant="outlined" style={{width: "90%"}} name="text"/>
-        {props.chosenMoviesIds.map(chosenMovieId => {
-          return <input type="hidden" name="chosenMoviesIds[]" value={chosenMovieId}/>
+        <TextField
+          multiline
+          label="Review for the movie"
+          rows={3}
+          variant="outlined"
+          style={{width: "90%"}}
+          name="text"
+          value={props.text}
+          onChange={props.handleTextChange}/>
+        {props.chosenMovies.map(chosenMovie => {
+          return <input type="hidden" name="chosenMoviesIds[]" value={chosenMovie}/>
         })}
-        <input type="file" id="imageUpload" name="fileInput" style={{display: "none"}} multiple/>
+        <input
+          type="file"
+          id="imageUpload"
+          name="fileInput"
+          style={{display: "none"}}
+          multiple
+          onChange={props.handleUploadedFilesChange}/>
         <input type="submit" style={{display: "none"}} id="submit"/>
       </form>
       <div>

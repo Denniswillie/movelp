@@ -58,11 +58,10 @@ router.get('/get', async (req, res) => {
   const urls = await GoogleStorageManager.downloadFilesForMultiplePosts(
       docs, GoogleStorageManager.STORAGE.BUCKET.POST
   );
-  console.log(docs);
   res.send([docs, urls]);
 })
 
-router.patch('/edit/:postId/:postType', uploadFields, async (req, res) => {
+router.post('/edit/:postId/:postType', uploadFields, async (req, res) => {
   const postId = req.params.postId;
   const type = req.params.postType;
 
@@ -102,10 +101,14 @@ router.patch('/edit/:postId/:postType', uploadFields, async (req, res) => {
     postBuilder.setFileIds(existingFileIds.concat(addedFileIds));
   }
 
-  // await MongoDBPostManager.edit(postBuilder);
+  await MongoDBPostManager.edit(postId, postBuilder);
 
   console.log(postBuilder);
   res.redirect(CLIENT_URL);
 })
+
+router.post('testPost', (req, res) => {
+  
+});
 
 module.exports = router;

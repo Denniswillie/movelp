@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import "react-image-gallery/styles/css/image-gallery.css";
@@ -9,6 +9,9 @@ import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
 import CommentIcon from '@material-ui/icons/Comment';
 import ThumbUpAltOutlinedIcon from '@material-ui/icons/ThumbUpAltOutlined';
 import ChatBubbleOutlineOutlinedIcon from '@material-ui/icons/ChatBubbleOutlineOutlined';
+import StarOutlinedIcon from '@material-ui/icons/StarOutlined';
+import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
+import IconButton from '@material-ui/core/IconButton';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -26,16 +29,19 @@ const useStyles = makeStyles((theme) => ({
 
 export default function DiaryBox(props) {
   const classes = useStyles();
+  const [urls, setUrls] = useState([]);
 
-  const images = [];
   useEffect(() => {
+    const ac = new AbortController();
+    const newUrls = [];
     props.urls.map(url => {
-      images.push({
-        original: url,
-        thumbnail: url,
+      newUrls.push({
+        original: url
       })
     })
-  })
+    setUrls(newUrls);
+    return () => ac.abort();
+  }, []);
 
   return <div style={{
       width: "610px",
@@ -59,30 +65,50 @@ export default function DiaryBox(props) {
         <p style={{bottom: "0", fontFamily: "roboto", fontWeight: "700"}}>Dennis Willie</p>
       </div>
     </div>
+    <div style={{paddingLeft: "1em", paddingRight: "1em", textAlign: "justify", fontFamily: "roboto", fontWeight: "700"}}>
+      {props.title}
+    </div>
     <div style={{padding: "1em", textAlign: "justify", fontFamily: "roboto"}}>
       {props.text}
     </div>
-    {images.length > 0 && <ImageGallery items={images} showFullscreenButton={false} showPlayButton={false} showThumbnails={false}/>}
+    {urls.length > 0 && <ImageGallery items={urls} showFullscreenButton={false} showPlayButton={false} showThumbnails={false}/>}
     <div style={{
       display: 'flex',
       alignItems: 'center',
       flexWrap: "wrap",
-      padding: "10px"
+      padding: "10px",
     }}>
-      <ThumbUpAltIcon />
-      <span style={{fontFamily: "roboto", marginLeft: "6px"}}>{props.noOfLikes}</span>
-      <CommentIcon style={{marginLeft: "20px"}}/>
-      <span style={{fontFamily: "roboto", marginLeft: "6px"}}>{props.noOfComments}</span>
+      <IconButton>
+        <ThumbUpAltIcon />
+      </IconButton>
+      <span style={{fontFamily: "roboto", marginLeft: "4px"}}>{props.noOfLikes}</span>
+      <IconButton style={{marginLeft: "20px"}}>
+      <CommentIcon />
+      </IconButton>
+      <span style={{fontFamily: "roboto", marginLeft: "4px"}}>{props.noOfComments}</span>
     </div>
     <div style={{padding: "5px"}}>
     <div style={{borderTop: "1px solid #9ba89e", paddingTop: "5px"}}>
-      <Button style={{width: "30%"}} name="createDiaryButton" onClick={props.handleClick}>
+      <Button style={{width: "30%"}}>
         <ThumbUpAltOutlinedIcon />
-        <p style={{fontFamily: 'Roboto', marginLeft: "6px"}} id="createDiaryButton">Like</p>
+        <p style={{fontFamily: 'Roboto', marginLeft: "6px"}}>Like</p>
       </Button>
-      <Button style={{width: "30%"}} name="createRecommendationButton" onClick={props.handleClick}>
+      <Button style={{width: "30%"}}>
         <ChatBubbleOutlineOutlinedIcon />
-        <p style={{fontFamily: 'Roboto', marginLeft: "6px"}} id="createRecommendationButton">Comment</p>
+        <p style={{fontFamily: 'Roboto', marginLeft: "6px"}}>Comment</p>
+      </Button>
+      <Button style={{width: "30%"}} onClick={() => {
+        props.handleEditClick({
+          _id: props._id,
+          type: props.type,
+          text: props.text,
+          title: props.title,
+          urls: props.urls,
+          movieIds: props.movieIds
+        })
+      }}>
+        <EditOutlinedIcon />
+        <p style={{fontFamily: 'Roboto', marginLeft: "6px"}}>Edit</p>
       </Button>
     </div>
     </div>

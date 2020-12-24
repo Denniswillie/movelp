@@ -42,7 +42,7 @@ export default function MovieSearch(props) {
       }
 
       return <Card className={classes.root} key={movie.id} style={{width: "30%", marginBottom: "2em"}} onClick={() => {
-        props.handleMovieClick(movie.id);
+        props.handleMovieClick(movie.id, title);
       }}>
         <CardActionArea>
           <CardMedia

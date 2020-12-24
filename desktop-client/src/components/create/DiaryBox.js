@@ -3,6 +3,13 @@ import TextField from '@material-ui/core/TextField';
 import InsertPhoto from '@material-ui/icons/InsertPhoto';
 import Button from '@material-ui/core/Button';
 import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
+import "react-image-gallery/styles/css/image-gallery.css";
+import ImageGallery from "react-image-gallery";
+import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
+import IconButton from '@material-ui/core/IconButton';
+import Chip from '@material-ui/core/Chip';
+import Paper from '@material-ui/core/Paper';
+import TagFacesIcon from '@material-ui/icons/TagFaces';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -13,6 +20,14 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     margin: theme.spacing(1),
+  },
+  movieTags: {
+    display: 'flex',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    '& > *': {
+      margin: theme.spacing(0.5),
+    },
   },
 }));
 
@@ -30,15 +45,77 @@ export default function DiaryBox(props) {
   return <div>
     <div id = "createDiaryForm">
       <form className={classes.root} noValidate autoComplete="off" method="POST" action="/post/create/diary" encType="multipart/form-data">
-        <TextField label="Diary Title" variant="outlined" name="title" style={{width: "90%"}}/>
-        <TextField multiline label="Share your story" rows={4} name="text" variant="outlined" style={{width: "90%"}}/>
-        {props.chosenMoviesIds.map(chosenMovieId => {
-          return <input type="hidden" name="chosenMoviesIds[]" value={chosenMovieId}/>
+        {props.chosenMovies.length > 0 && <p style={{fontFamily: "roboto", marginLeft: "auto", marginRight: "auto", marginTop: "8px"}}>Movie titles</p>}
+        {props.chosenMovies.length > 0 && <div
+          className={classes.movieTags}
+          style={{boxShadow: "1px",
+            borderRadius: "4px",
+            borderStyle: "solid",
+            borderColor:"#b5b5b5" ,
+            borderWidth: "1px",
+            width: "400px",
+            marginLeft: "auto",
+            marginRight: "auto",
+            marginTop: "9px"}}>
+        {props.chosenMovies.map(chosenMovie => {
+          return <Chip
+            label={chosenMovie.title}
+            onDelete={() => {props.handleDeleteChosenMovie(chosenMovie.id)}}
+          />
         })}
-        <input type="file" id="imageUpload" name="fileInput" style={{display: "none"}} multiple/>
+        </div>}
+        <TextField
+          label="Diary Title"
+          variant="outlined"
+          name="title"
+          style={{width: "90%"}}
+          value={props.diaryTitle}
+          onChange={props.handleDiaryTitleChange}
+          required={true}/>
+        <TextField
+          multiline
+          label="Share your story"
+          rows={4}
+          name="text"
+          variant="outlined"
+          style={{width: "90%"}}
+          value={props.text}
+          onChange={props.handleTextChange}/>
+        {props.chosenMovies.map(chosenMovie => {
+          return <input type="hidden" name="chosenMoviesIds[]" value={chosenMovie.id}/>
+        })}
+        <input
+          type="file"
+          id="imageUpload"
+          name="fileInput"
+          style={{display: "none"}}
+          multiple
+          onChange={props.handleUploadedFilesChange}/>
         <input type="submit" id="submit" style={{display: "none"}}/>
       </form>
       <div>
+
+      {props.uploadedFiles.length > 0 && <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        flexWrap: "wrap",
+        padding: "10px",
+      }}>
+      <div style={{width: "50%", margin: "auto"}}>
+        <ImageGallery
+          items={props.uploadedFiles}
+          showFullscreenButton={false}
+          showPlayButton={false}
+          showThumbnails={false}
+          showNav={false}
+          autoPlay={true}/>
+      </div>
+      <IconButton>
+      <DeleteOutlinedIcon />
+      </IconButton>
+      </div>}
+
+
         <Button style={{width: "40%"}} onClick={uploadPhoto}>
           <InsertPhoto />
           <p style={{fontFamily: 'Roboto', marginLeft: "6px"}}>Upload Photo</p>
@@ -49,7 +126,7 @@ export default function DiaryBox(props) {
         variant="contained"
         className={classes.button}
         startIcon={<AddCircleOutline />}
-        onClick={submit}>Create</Button>
+        onClick={submit}>{props.isEditing ? "edit" : "create"}</Button>
     </div>
   </div>
 }
