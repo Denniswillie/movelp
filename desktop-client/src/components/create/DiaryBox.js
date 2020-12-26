@@ -36,6 +36,7 @@ export default function DiaryBox(props) {
   const classes = useStyles();
 
   const imageGallery = useRef(null);
+  const form = useRef(null);
 
   function uploadPhoto() {
     document.getElementById("imageUpload").click();
@@ -45,13 +46,36 @@ export default function DiaryBox(props) {
     document.getElementById("submit").click();
   }
 
+  function deletePost() {
+    const formData = new FormData();
+    formData.set('postId', props.data._id);
+    fetch('/post/delete', {method: 'POST', body: formData});
+  }
+
+  function handleSubmit(event) {
+    if (props.isEditing) {
+      event.preventDefault();
+      const formData = new FormData(form.current);
+      formData.set('postId', props.data._id);
+      formData.set('postType', 'diary')
+      fetch('/post/edit', {method: 'POST', body: formData});
+    } else {
+      event.preventDefault();
+      const formData = new FormData(form.current);
+      for (var i = 0; i < props.uploadedFiles.length; i++) {
+        formData.append('fileInput[]', props.uploadedFiles[i].file);
+      }
+      fetch('/post/create/diary', {method: 'POST', body: formData});
+    }
+  }
+
   function getCurrentIndex() {
     console.log(imageGallery.current.getCurrentIndex());
   }
 
   return <div>
     <div id = "createDiaryForm">
-      <form className={classes.root} noValidate autoComplete="off" method="POST" action="/post/create/diary" encType="multipart/form-data">
+      <form className={classes.root} noValidate autoComplete="off" onSubmit={handleSubmit} ref={form}>
         {props.chosenMovies.length > 0 && <p style={{fontFamily: "roboto", marginLeft: "auto", marginRight: "auto", marginTop: "8px"}}>Movie titles</p>}
         {props.chosenMovies.length > 0 && <div
           className={classes.movieTags}
@@ -94,7 +118,6 @@ export default function DiaryBox(props) {
         <input
           type="file"
           id="imageUpload"
-          name="fileInput"
           style={{display: "none"}}
           multiple
           onChange={props.handleUploadedFilesChange}/>
@@ -137,6 +160,13 @@ export default function DiaryBox(props) {
         className={classes.button}
         startIcon={<AddCircleOutline />}
         onClick={submit}>{props.isEditing ? "edit" : "create"}</Button>
+      {props.isEditing && <Button
+        style={{backgroundColor: "black", color: "white"}}
+        variant="contained"
+        className={classes.button}
+        startIcon={<DeleteOutlinedIcon />}
+        onClick={deletePost}>Delete post</Button>}
+
     </div>
   </div>
 }

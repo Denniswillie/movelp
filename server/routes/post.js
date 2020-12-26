@@ -1,6 +1,6 @@
 const multer  = require('multer');
 const upload = multer();
-const uploadFields = upload.fields([{ name: 'fileInput', maxCount: 100 }])
+const uploadFields = upload.array('fileInput[]', 10);
 const router = require('express')();
 const _ = require('lodash');
 const MongoDBPostManager = require('../managers/mongoDB/MongoDBPostManager');
@@ -11,7 +11,7 @@ const CLIENT_URL = inProduction ? process.env.DOMAIN_NAME : "http://localhost:30
 
 router.post('/create/:type', uploadFields, async (req, res) => {
   const type = _.toLower(req.params.type);
-  const requestFiles = req.files['fileInput'];
+  const requestFiles = req.files;
 
   var fileIds;
 
@@ -61,9 +61,9 @@ router.get('/get', async (req, res) => {
   res.send([docs, urls]);
 })
 
-router.post('/edit/:postId/:postType', uploadFields, async (req, res) => {
-  const postId = req.params.postId;
-  const type = req.params.postType;
+router.post('/edit', upload.none(), async (req, res) => {
+  const postId = req.body.postId;
+  const type = req.body.postType;
 
   const postBuilder = new Post.Builder();
 
@@ -84,31 +84,22 @@ router.post('/edit/:postId/:postType', uploadFields, async (req, res) => {
       .setText(req.body.text)
       .setType(type);
 
-  const deletedFileIds = req.body.deletedFileIds;
-  const existingFileIds = req.body.existingFileIds;
-  const addedFiles = req.files['fileInput'];
-
-  if (deletedFileIds) {
-    await GoogleStorageManager.deleteMultipleFiles(deletedFileIds);
-  }
-
-  var addedFileIds = [];
-  if (addedFiles) {
-    addedFileIds = await GoogleStorageManager.uploadMultipleToBucket(
-      GoogleStorageManager.STORAGE.BUCKET.POST,
-      addedFiles
-    );
-    postBuilder.setFileIds(existingFileIds.concat(addedFileIds));
-  }
-
   await MongoDBPostManager.edit(postId, postBuilder);
 
   console.log(postBuilder);
   res.redirect(CLIENT_URL);
-})
-
-router.post('testPost', (req, res) => {
-  
 });
+
+router.post('/delete', upload.none(), async (req, res) => {
+  const postId = req.body.postId;
+  const fileIds = req.body.fileIds;
+  await MongoDBPostManager.delete(postId);
+  await GoogleStorageManager.deleteMultipleFiles(fileIds);
+});
+
+router.post('/deleteFile', upload.none(), async (req, res) => {
+  const fileId = req.body.fileId;
+  await GoogleStorageManager.deleteFile(fileId);
+})
 
 module.exports = router;

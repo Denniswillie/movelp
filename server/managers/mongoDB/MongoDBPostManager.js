@@ -34,19 +34,15 @@ class MongoDBPostManager {
       });
   }
 
-  static async edit(postId) {
-    await PostModel.findByIdAndUpdate(postId, this.constructSchemaFields(post))
-      .then(docs => {
-        return docs;
-      })
-      .catch(err => {
-        console.log(err);
-        return;
-      });
-  }
-
   static async edit(postId, postBuilder) {
-    console.log(postBuilder);
+    await PostModel.findByIdAndUpdate(postId, postBuilder)
+        .then(docs => {
+          return docs;
+        })
+        .catch(err => {
+          console.log(err);
+          return;
+        })
   }
 
   static constructSchemaFields(post) {

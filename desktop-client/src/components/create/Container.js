@@ -110,8 +110,9 @@ export default function Container(props) {
   }
 
   function handleUploadedFilesChange(event) {
+    const file = event.target.files[0];
     setUploadedFiles(prevData => {
-      return [...prevData, {original: URL.createObjectURL(event.target.files[0])}];
+      return [...prevData, {original: URL.createObjectURL(file), file: file}];
     })
   }
 

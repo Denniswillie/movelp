@@ -99,6 +99,10 @@ class GoogleStorageManager {
       await bucket.file(files[i]).delete();
     }
   }
+
+  static async deleteFile(fileId, bucket) {
+    await bucket.file(fileId).delete();
+  }
 }
 
 module.exports = GoogleStorageManager;
