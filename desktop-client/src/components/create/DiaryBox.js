@@ -3,14 +3,13 @@ import TextField from '@material-ui/core/TextField';
 import InsertPhoto from '@material-ui/icons/InsertPhoto';
 import Button from '@material-ui/core/Button';
 import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
-import "react-image-gallery/styles/css/image-gallery.css";
-import ImageGallery from "react-image-gallery";
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 import IconButton from '@material-ui/core/IconButton';
 import Chip from '@material-ui/core/Chip';
 import Paper from '@material-ui/core/Paper';
 import TagFacesIcon from '@material-ui/icons/TagFaces';
 import {useRef} from 'react';
+import PhotoGallery from 'react-photo-gallery';
 
 const useStyles = makeStyles((theme) => ({
   root: {
