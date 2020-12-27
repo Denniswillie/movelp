@@ -137,12 +137,9 @@ export default function DiaryBox(props) {
           showPlayButton={false}
           showThumbnails={false}
           showNav={false}
-          autoPlay={false}
-          infinite={false}
-          showBullets={true}
-          ref={imageGallery}/>
+          autoPlay={true}/>
       </div>
-      <IconButton onClick={getCurrentIndex}>
+      <IconButton>
       <DeleteOutlinedIcon />
       </IconButton>
       </div>}
