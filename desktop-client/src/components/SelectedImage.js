@@ -39,44 +39,54 @@ const cont = {
   position: "relative"
 };
 
-const SelectedImage = (props) => {
-  const [isSelected, setIsSelected] = useState(props.selected);
+const SelectedImage = ({
+  index,
+  photo,
+  margin,
+  direction,
+  top,
+  left,
+  selected,
+  handleChooseToDeleteFile,
+  handleChooseNotToDeleteFile
+}) => {
+  const [isSelected, setIsSelected] = useState(selected);
   //calculate x,y scale
-  const sx = (100 - (30 / props.photo.width) * 100) / 100;
-  const sy = (100 - (30 / props.photo.height) * 100) / 100;
+  const sx = (100 - (30 / photo.width) * 100) / 100;
+  const sy = (100 - (30 / photo.height) * 100) / 100;
   selectedImgStyle.transform = `translateZ(0px) scale3d(${sx}, ${sy}, 1)`;
 
-  if (props.direction === "column") {
+  if (direction === "column") {
     cont.position = "absolute";
-    cont.left = props.left;
-    cont.top = props.top;
+    cont.left = left;
+    cont.top = top;
   }
 
   const handleOnClick = e => {
     setIsSelected(!isSelected);
     if (!isSelected) {
-      props.handleChooseToDeleteFile(props.index);
+      handleChooseToDeleteFile(index);
     } else {
-      props.handleChooseToNotDeleteFile(props.index);
+      handleChooseNotToDeleteFile(index);
     }
   };
 
   useEffect(() => {
-    setIsSelected(props.selected);
-  }, [props.selected]);
+    setIsSelected(selected);
+  }, [selected]);
 
   return (
     <div
-      style={{ margin: props.margin, height: props.photo.height, width: props.photo.width, ...cont }}
+      style={{ margin, height: photo.height, width: photo.width, ...cont }}
       className={!isSelected ? "not-selected" : ""}
     >
       <Checkmark selected={isSelected ? true : false} />
       <img
-        alt={props.photo.title}
+        alt={photo.title}
         style={
           isSelected ? { ...imgStyle, ...selectedImgStyle } : { ...imgStyle }
         }
-        {...props.photo}
+        {...photo}
         onClick={handleOnClick}
       />
       <style>{`.not-selected:hover{outline:2px solid #06befa}`}</style>

@@ -18,6 +18,7 @@ export default function Container(props) {
   const [diaryTitle, setDiaryTitle] = useState("");
   const [text, setText] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [willBeDeletedFiles, setWillBeDeletedFiles] = useState([]);
   const [rating, setRating] = useState(5);
   const [movieTitleInputValue, setMovieTitleInputValue] = useState("");
   const PostType = useContext(PostTypeContext);
@@ -65,6 +66,10 @@ export default function Container(props) {
         isEditing={param.isEditing}/>
     } else if (param.type === PostType.DIARY) {
       return <DiaryBox
+        handleDeleteChosenFiles={handleDeleteChosenFiles}
+        handleChooseNotToDeleteFile={handleChooseNotToDeleteFile}
+        handleChooseToDeleteFile={handleChooseToDeleteFile}
+        willBeDeletedFiles={willBeDeletedFiles}
         chosenMovies={chosenMovies}
         data={param.typeData}
         uploadedFiles={uploadedFiles}
@@ -110,10 +115,34 @@ export default function Container(props) {
   }
 
   function handleUploadedFilesChange(event) {
+    console.log("uploaded a file");
     const file = event.target.files[0];
     setUploadedFiles(prevData => {
-      return [...prevData, {original: URL.createObjectURL(file), file: file}];
+      return [...prevData, {src: URL.createObjectURL(file), file: file, width: 1, height: 1}];
     })
+  }
+
+  function handleChooseToDeleteFile(index) {
+    setWillBeDeletedFiles(prevData => {
+      return [...prevData, index];
+    })
+  }
+
+  function handleChooseNotToDeleteFile(index) {
+    const temp = [...willBeDeletedFiles].filter(val => {
+      return val !== index;
+    });
+    setWillBeDeletedFiles(temp);
+  }
+
+  function handleDeleteChosenFiles() {
+    const tempDeletedFiles = [...willBeDeletedFiles].sort();
+    const tempUploadedFiles = [...uploadedFiles];
+    for (var i = tempDeletedFiles.length - 1; i >= 0; i--) {
+      tempUploadedFiles.splice(tempDeletedFiles[i], 1);
+    }
+    setUploadedFiles(tempUploadedFiles);
+    setWillBeDeletedFiles([]);
   }
 
   function handleRatingChange(event) {

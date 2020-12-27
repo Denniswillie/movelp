@@ -8,8 +8,9 @@ import IconButton from '@material-ui/core/IconButton';
 import Chip from '@material-ui/core/Chip';
 import Paper from '@material-ui/core/Paper';
 import TagFacesIcon from '@material-ui/icons/TagFaces';
-import {useRef} from 'react';
-import PhotoGallery from 'react-photo-gallery';
+import {useRef, useCallback, useState} from 'react';
+import Gallery from 'react-photo-gallery';
+import SelectedImage from "../SelectedImage";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,6 +35,24 @@ const useStyles = makeStyles((theme) => ({
 export default function DiaryBox(props) {
   const classes = useStyles();
   const form = useRef(null);
+  const [selectAll, setSelectAll] = useState(false);
+
+  const imageRenderer = useCallback(
+    ({ index, left, top, key, photo }) => (
+      <SelectedImage
+        selected={selectAll ? true : false}
+        key={key}
+        margin={"2px"}
+        index={index}
+        photo={photo}
+        left={left}
+        top={top}
+        handleChooseToDeleteFile={props.handleChooseToDeleteFile}
+        handleChooseNotToDeleteFile={props.handleChooseNotToDeleteFile}
+      />
+    ),
+    [selectAll]
+  );
 
   function uploadPhoto() {
     document.getElementById("imageUpload").click();
@@ -66,8 +85,12 @@ export default function DiaryBox(props) {
     }
   }
 
-  function getCurrentIndex() {
-    console.log(imageGallery.current.getCurrentIndex());
+  function logUploadedFiles() {
+    console.log(props.uploadedFiles);
+  }
+
+  function logWillBeDeletedFiles() {
+    console.log(props.willBeDeletedFiles);
   }
 
   return <div>
@@ -116,28 +139,16 @@ export default function DiaryBox(props) {
           type="file"
           id="imageUpload"
           style={{display: "none"}}
-          multiple
           onChange={props.handleUploadedFilesChange}/>
         <input type="submit" id="submit" style={{display: "none"}}/>
       </form>
       <div>
 
       {props.uploadedFiles.length > 0 && <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        flexWrap: "wrap",
         padding: "10px",
       }}>
-      <div style={{width: "50%", margin: "auto"}}>
-        <ImageGallery
-          items={props.uploadedFiles}
-          showFullscreenButton={false}
-          showPlayButton={false}
-          showThumbnails={false}
-          showNav={false}
-          autoPlay={true}/>
-      </div>
-      <IconButton>
+      <Gallery photos={props.uploadedFiles} renderImage={imageRenderer} />
+      <IconButton onClick={props.handleDeleteChosenFiles}>
       <DeleteOutlinedIcon />
       </IconButton>
       </div>}
@@ -154,6 +165,16 @@ export default function DiaryBox(props) {
         className={classes.button}
         startIcon={<AddCircleOutline />}
         onClick={submit}>{props.isEditing ? "edit" : "create"}</Button>
+      <Button
+        style={{backgroundColor: "black", color: "white"}}
+        variant="contained"
+        className={classes.button}
+        onClick={logWillBeDeletedFiles}>logWillBeDeletedFiles</Button>
+      <Button
+        style={{backgroundColor: "black", color: "white"}}
+        variant="contained"
+        className={classes.button}
+        onClick={logUploadedFiles}>logUploadedFiles</Button>
       {props.isEditing && <Button
         style={{backgroundColor: "black", color: "white"}}
         variant="contained"
