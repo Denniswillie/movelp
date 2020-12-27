@@ -11,6 +11,7 @@ const path = require('path');
 const CLIENT_URL = inProduction ? process.env.DOMAIN_NAME : "http://localhost:3000";
 const authRoutes = require('./routes/auth');
 const postRoutes = require('./routes/post');
+const commentRoutes = require('./routes/comment');
 const passport = require('passport');
 const passportSetup = require('./config/passport-setup');
 
@@ -52,6 +53,7 @@ app.use(
 
 app.use('/auth', authRoutes);
 app.use('/post', postRoutes);
+app.use('/comment', commentRoutes);
 
 app.listen(port, () => {
   console.log(`Server has started at ${port}`)
