@@ -33,8 +33,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function DiaryBox(props) {
   const classes = useStyles();
-
-  const imageGallery = useRef(null);
   const form = useRef(null);
 
   function uploadPhoto() {
