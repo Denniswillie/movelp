@@ -61,20 +61,29 @@ router.get('/get', async (req, res) => {
   res.send([docs, urls]);
 })
 
-router.post('/edit', upload.none(), async (req, res) => {
+router.post('/edit', uploadFields, async (req, res) => {
+
+  console.log(req.body);
+  console.log(req.files);
+
   const postId = req.body.postId;
   const type = req.body.postType;
+  const existingFileIds = req.body.fileInput ? req.body.fileInput : [];
+  const deletedFileIds = req.body.deletedFileIds;
+  const uploadedFiles = req.files;
+  var uploadedFileIds = [];
+  const movieIds = req.body.chosenMoviesIds ? req.body.chosenMoviesIds : [];
 
   const postBuilder = new Post.Builder();
 
   if (type === Post.TYPES.GENERAL) {
-    postBuilder.setMovieIds(req.body.chosenMoviesIds);
+    postBuilder.setMovieIds(movieIds);
   } else if (type === Post.TYPES.RECOMMENDATION) {
     postBuilder.setRating(req.body.rating)
-        .setMovieIds(req.body.chosenMoviesIds);
+        .setMovieIds(movieIds);
   } else if (type === Post.TYPES.DIARY) {
     postBuilder.setTitle(req.body.title)
-        .setMovieIds(req.body.chosenMoviesIds);
+        .setMovieIds(movieIds);
   } else if (type !== Post.TYPES.ASK_SUGGESTION) {
     throw new Error("No such post type exists");
   }
@@ -84,9 +93,25 @@ router.post('/edit', upload.none(), async (req, res) => {
       .setText(req.body.text)
       .setType(type);
 
+  // Delete deletedFileIds
+  if (deletedFileIds) {
+    await GoogleStorageManager.deleteMultipleFiles(deletedFileIds, GoogleStorageManager.STORAGE.BUCKET.POST);
+  }
+
+  // Store new uploaded files to Google Cloud Storage
+  if (uploadedFiles.length > 0) {
+    uploadedFileIds = await GoogleStorageManager.uploadMultipleToBucket(
+      GoogleStorageManager.STORAGE.BUCKET.POST,
+      uploadedFiles
+    );
+  } else {
+    uploadedFileIds = [];
+  }
+
+  postBuilder.setFileIds(existingFileIds.concat(uploadedFileIds));
+
   await MongoDBPostManager.edit(postId, postBuilder);
 
-  console.log(postBuilder);
   res.redirect(CLIENT_URL);
 });
 
@@ -94,12 +119,8 @@ router.post('/delete', upload.none(), async (req, res) => {
   const postId = req.body.postId;
   const fileIds = req.body.fileIds;
   await MongoDBPostManager.delete(postId);
-  await GoogleStorageManager.deleteMultipleFiles(fileIds);
+  await GoogleStorageManager.deleteMultipleFiles(fileIds, GoogleStorageManager.STORAGE.BUCKET.POST);
+  res.end();
 });
-
-router.post('/deleteFile', upload.none(), async (req, res) => {
-  const fileId = req.body.fileId;
-  await GoogleStorageManager.deleteFile(fileId);
-})
 
 module.exports = router;

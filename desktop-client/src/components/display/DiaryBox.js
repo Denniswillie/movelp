@@ -104,7 +104,8 @@ export default function DiaryBox(props) {
           text: props.text,
           title: props.title,
           urls: props.urls,
-          movieIds: props.movieIds
+          movieIds: props.movieIds,
+          fileIds: props.fileIds
         })
       }}>
         <EditOutlinedIcon />

@@ -19,6 +19,8 @@ export default function Container(props) {
   const [text, setText] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [willBeDeletedFiles, setWillBeDeletedFiles] = useState([]);
+  const [deletedExistingFiles, setDeletedExistingFiles] = useState([]);
+  const [initialUploadedFilesLength, setInitialUploadedFilesLength] = useState(0);
   const [rating, setRating] = useState(5);
   const [movieTitleInputValue, setMovieTitleInputValue] = useState("");
   const PostType = useContext(PostTypeContext);
@@ -36,6 +38,13 @@ export default function Container(props) {
       }
 
       setText(props.createData.typeData.text);
+
+      const existingFiles = props.createData.typeData.fileIds.map((fileId, index) => {
+        return {src: props.createData.typeData.urls[index], width: 1, height: 1, fileId: fileId};
+      })
+
+      setUploadedFiles(existingFiles);
+      setInitialUploadedFilesLength(existingFiles.length);
 
       // set chosen movies
       const movieIds = props.createData.typeData.movieIds;
@@ -66,6 +75,7 @@ export default function Container(props) {
         isEditing={param.isEditing}/>
     } else if (param.type === PostType.DIARY) {
       return <DiaryBox
+        deletedExistingFiles={deletedExistingFiles}
         handleDeleteChosenFiles={handleDeleteChosenFiles}
         handleChooseNotToDeleteFile={handleChooseNotToDeleteFile}
         handleChooseToDeleteFile={handleChooseToDeleteFile}
@@ -135,10 +145,15 @@ export default function Container(props) {
     setWillBeDeletedFiles(temp);
   }
 
-  function handleDeleteChosenFiles() {
+  async function handleDeleteChosenFiles() {
     const tempDeletedFiles = [...willBeDeletedFiles].sort();
     const tempUploadedFiles = [...uploadedFiles];
     for (var i = tempDeletedFiles.length - 1; i >= 0; i--) {
+      if (tempUploadedFiles[tempDeletedFiles[i]].fileId) {
+        await setDeletedExistingFiles(prevData => {
+          return [...prevData, tempUploadedFiles[tempDeletedFiles[i]].fileId];
+        })
+      }
       tempUploadedFiles.splice(tempDeletedFiles[i], 1);
     }
     setUploadedFiles(tempUploadedFiles);

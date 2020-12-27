@@ -65,6 +65,7 @@ export default function DiaryBox(props) {
   function deletePost() {
     const formData = new FormData();
     formData.set('postId', props.data._id);
+    formData.set('fileIds', props.data.fileIds);
     fetch('/post/delete', {method: 'POST', body: formData});
   }
 
@@ -73,7 +74,17 @@ export default function DiaryBox(props) {
       event.preventDefault();
       const formData = new FormData(form.current);
       formData.set('postId', props.data._id);
-      formData.set('postType', 'diary')
+      formData.set('postType', 'diary');
+      for (var i = 0; i < props.deletedExistingFiles.length; i++) {
+        formData.append('deletedFileIds[]', props.deletedExistingFiles[i]);
+      }
+      for (var i = 0; i < props.uploadedFiles.length; i++) {
+        if (props.uploadedFiles[i].file) {
+          formData.append('fileInput[]', props.uploadedFiles[i].file);
+        } else {
+          formData.append('fileInput[]', props.uploadedFiles[i].fileId);
+        }
+      }
       fetch('/post/edit', {method: 'POST', body: formData});
     } else {
       event.preventDefault();
@@ -91,6 +102,10 @@ export default function DiaryBox(props) {
 
   function logWillBeDeletedFiles() {
     console.log(props.willBeDeletedFiles);
+  }
+
+  function logDeletedExistingFiles() {
+    console.log(props.deletedExistingFiles);
   }
 
   return <div>
@@ -175,6 +190,11 @@ export default function DiaryBox(props) {
         variant="contained"
         className={classes.button}
         onClick={logUploadedFiles}>logUploadedFiles</Button>
+      {props.isEditing && <Button
+        style={{backgroundColor: "black", color: "white"}}
+        variant="contained"
+        className={classes.button}
+        onClick={logDeletedExistingFiles}>logDeletedExistingFiles</Button>}
       {props.isEditing && <Button
         style={{backgroundColor: "black", color: "white"}}
         variant="contained"

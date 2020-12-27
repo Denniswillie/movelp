@@ -94,9 +94,9 @@ class GoogleStorageManager {
     return urls;
   }
 
-  static async deleteMultipleFiles(files, bucket) {
-    for (var i = 0; i < files.length; i++) {
-      await bucket.file(files[i]).delete();
+  static async deleteMultipleFiles(filesIds, bucket) {
+    for (var i = 0; i < filesIds.length; i++) {
+      await bucket.file(filesIds[i]).delete();
     }
   }
 

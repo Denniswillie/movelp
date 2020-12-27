@@ -85,6 +85,7 @@ export default function Posts() {
               type={post.type}
               text={post.text}
               title={post.title}
+              fileIds={post.fileIds}
               urls={posts[1][index]}
               noOfLikes={post.noOfLikes}
               noOfComments={post.noOfComments}
