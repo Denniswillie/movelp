@@ -13,7 +13,7 @@ class Comment {
 
   static FIELDS = {
     POST_ID: 'postId',
-    CREATOR_ID: 'creatorId'
+    CREATOR_ID: 'creatorId',
     TIME_OF_CREATION: 'timeOfCreation',
     TEXT: 'text',
     NO_OF_LIKES: 'noOfLikes',

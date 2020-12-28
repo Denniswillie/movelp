@@ -23,8 +23,8 @@ const PostModel = require('../../models/postModel');
 const PostLikeModel = require('../../models/postLikeModel');
 
 class MongoDBPostManager {
-  static async create(post) {
-    await PostModel.create(this.constructSchemaFields(post))
+  static create(post) {
+    return PostModel.create(this.constructSchemaFields(post))
       .then(docs => {
         return docs;
       })
@@ -34,8 +34,8 @@ class MongoDBPostManager {
       });
   }
 
-  static async edit(postId, postBuilder) {
-    await PostModel.findByIdAndUpdate(postId, postBuilder)
+  static edit(postId, postBuilder) {
+    return PostModel.findByIdAndUpdate(postId, postBuilder)
         .then(docs => {
           return docs;
         })
@@ -78,7 +78,7 @@ class MongoDBPostManager {
   }
 
   static async createOrToggleLike(postId, userId) {
-    await PostLikeModel.findOneAndUpdate({postId: postId, userId: userId},
+    return PostLikeModel.findOneAndUpdate({postId: postId, userId: userId},
       {$bit: {liked: {xor: 1}}})
       .then(docs => {
         if (docs) {
@@ -105,7 +105,7 @@ class MongoDBPostManager {
 
   static async updateNoOfLikes(postId, isIncreased) {
     if (isIncreased) {
-      PostModel.findByIdAndUpdate(postId, {$inc: {noOfLikes: 1}}, (err, docs) => {
+      await PostModel.findByIdAndUpdate(postId, {$inc: {noOfLikes: 1}}, (err, docs) => {
         if (err) {
           console.log(err);
           return;
@@ -113,7 +113,7 @@ class MongoDBPostManager {
         return docs;
       })
     } else {
-      PostModel.findByIdAndUpdate(postId, {$inc: {noOfLikes: -1}}, (err, docs) => {
+      await PostModel.findByIdAndUpdate(postId, {$inc: {noOfLikes: -1}}, (err, docs) => {
         if (err) {
           console.log(err);
           return;

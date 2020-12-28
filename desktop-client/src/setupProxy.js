@@ -71,4 +71,18 @@ module.exports = function(app) {
       changeOrigin: true,
     })
   );
+  app.use(
+    '/comment/create',
+    createProxyMiddleware({
+      target: 'http://localhost:5000',
+      changeOrigin: true,
+    })
+  );
+  app.use(
+    '/comment/get',
+    createProxyMiddleware({
+      target: 'http://localhost:5000',
+      changeOrigin: true,
+    })
+  );
 };

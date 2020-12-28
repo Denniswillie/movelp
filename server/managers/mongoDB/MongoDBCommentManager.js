@@ -13,20 +13,12 @@ const CommentModel = require('../../models/commentModel');
 const CommentLikeModel = require('../../models/commentLikeModel');
 
 class MongoDBCommentManager {
-  static async create(comment) {
-    CommentModel.create(constructSchemaFields(comment))
+  static create(comment) {
+    return CommentModel.create(this.constructSchemaFields(comment))
       .then(docs => {
         return docs;
       })
-      .catch(err => console.log);
-  }
-
-  static async edit(comment) {
-    CommentModel.findByIdAndUpdate(comment._id, constructSchemaFields(comment))
-      .then(docs => {
-        return docs;
-      })
-      .catch(err => console.log);
+      .catch(console.log);
   }
 
   static constructSchemaFields(comment) {
@@ -40,10 +32,28 @@ class MongoDBCommentManager {
     }
   }
 
-  static async delete(commentId) {
-    CommentModel.findByIdAndDelete(commentId)
-      .then(docs => {return docs})
-      .catch(err => console.log(err));
+  static edit(commentId, commentBuilder) {
+    return CommentModel.findByIdAndUpdate(comment._id, commentBuilder)
+      .then(docs => {
+        return docs;
+      })
+      .catch(console.log);
+  }
+
+  static get(postId) {
+    return CommentModel.find({postId: postId})
+      .then(docs => {
+        return docs;
+      })
+      .catch(console.log);
+  }
+
+  static delete(commentId) {
+    return CommentModel.findByIdAndDelete(commentId)
+      .then(docs => {
+        return docs;
+      })
+      .catch(console.log);
   }
 
   static async createOrToggleLike(commentId, userId) {

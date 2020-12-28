@@ -136,8 +136,7 @@ export default function DiaryBox(props) {
           name="title"
           style={{width: "90%"}}
           value={props.diaryTitle}
-          onChange={props.handleDiaryTitleChange}
-          required={true}/>
+          onChange={props.handleDiaryTitleChange}/>
         <TextField
           multiline
           label="Share your story"
