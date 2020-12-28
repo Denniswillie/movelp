@@ -61,9 +61,21 @@ class MongoDBPostManager {
     }
   }
 
-  static async getAll() {
+  static async getAll(userId) {
     const docs = await PostModel.find({}).sort({timeOfCreation: -1}).exec();
-    return docs;
+
+    // likeList contains boolean values (true = the user has liked the post,
+    // false = the user has not liked the post)
+    const promises = [];
+    for (var i = 0; i < docs.length; i++) {
+      const result = await PostLikeModel.findOne({userId: userId, postId: docs[i]._id});
+      const userHasLiked = false;
+      if (result && result.liked == 1) {
+        promises.push(true);
+      }
+    }
+    const liked = await Promise.all(promises);
+    return [docs, liked];
   }
 
   static async delete(postId) {
@@ -80,7 +92,7 @@ class MongoDBPostManager {
   static async createOrToggleLike(postId, userId) {
     return PostLikeModel.findOneAndUpdate({postId: postId, userId: userId},
       {$bit: {liked: {xor: 1}}})
-      .then(docs => {
+      .then(async (docs) => {
         if (docs) {
           if (docs.liked == 1) {
             this.updateNoOfLikes(postId, true);
