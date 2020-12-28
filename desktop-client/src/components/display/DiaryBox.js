@@ -38,6 +38,7 @@ export default function DiaryBox(props) {
 
   useEffect(async () => {
     const ac = new AbortController();
+    console.log(props.liked);
     const newUrls = [];
     props.urls.map(url => {
       newUrls.push({
@@ -72,6 +73,13 @@ export default function DiaryBox(props) {
 
   function handleCommentInputChange(event) {
     setCommentInput(event.target.value);
+  }
+
+  function handleToggleLike() {
+    console.log('toggleLike');
+    const formData = new FormData();
+    formData.append('postId', props._id);
+    fetch('/post/toggleLike', {method: 'POST', body: formData});
   }
 
   return <div style={{
@@ -110,7 +118,7 @@ export default function DiaryBox(props) {
       padding: "10px",
     }}>
       <IconButton>
-        <ThumbUpAltIcon />
+        {props.liked ? <ThumbUpAltIcon /> : <ThumbUpAltOutlinedIcon />}
       </IconButton>
       <span style={{fontFamily: "roboto", marginLeft: "4px"}}>{props.noOfLikes}</span>
       <IconButton style={{marginLeft: "20px"}}>
@@ -120,7 +128,7 @@ export default function DiaryBox(props) {
     </div>
     <div style={{padding: "5px"}}>
     <div style={{borderTop: "1px solid #9ba89e", paddingTop: "5px", paddingBottom: "5px"}}>
-      <Button style={{width: "30%"}}>
+      <Button style={{width: "30%"}} onClick={handleToggleLike}>
         <ThumbUpAltOutlinedIcon />
         <p style={{fontFamily: 'Roboto', marginLeft: "6px"}}>Like</p>
       </Button>

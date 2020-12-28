@@ -18,7 +18,10 @@ export default function Posts() {
     }})
       .then(res => res.json())
       .catch(err => console.log(err))
-      .then(res => setPosts(res))
+      .then(res => {
+        console.log(res[2]);
+        setPosts(res);
+      })
       .catch(err => console.log(err));
   }, []);
 
@@ -87,6 +90,7 @@ export default function Posts() {
               title={post.title}
               fileIds={post.fileIds}
               urls={posts[1][index]}
+              liked={posts[2][index]}
               noOfLikes={post.noOfLikes}
               noOfComments={post.noOfComments}
               handleEditClick={handleEditClick}

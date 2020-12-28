@@ -121,22 +121,22 @@ class MongoDBPostManager {
   static async updateNoOfLikes(postId, isIncreased) {
     if (isIncreased) {
       console.log("increase noOfLikes");
-      await PostModel.findByIdAndUpdate(postId, {$inc: {noOfLikes: 1}}, {new: true}, (err, docs) => {
-        if (err) {
+      return PostModel.findByIdAndUpdate(postId, {$inc: {noOfLikes: 1}}, {new: true})
+        .then(docs => {
+          return docs;
+        })
+        .catch(err => {
           console.log(err);
-          return;
-        }
-        return docs;
-      })
+        })
     } else {
       console.log("decrease noOfLikes");
-      await PostModel.findByIdAndUpdate(postId, {$inc: {noOfLikes: -1}}, {new: true}, (err, docs) => {
-        if (err) {
+      return PostModel.findByIdAndUpdate(postId, {$inc: {noOfLikes: -1}}, {new: true})
+        .then(docs => {
+          return docs;
+        })
+        .catch(err => {
           console.log(err);
-          return;
-        }
-        return docs;
-      })
+        })
     }
   }
 }
