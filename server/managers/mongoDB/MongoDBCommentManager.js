@@ -13,20 +13,12 @@ const CommentModel = require('../../models/commentModel');
 const CommentLikeModel = require('../../models/commentLikeModel');
 
 class MongoDBCommentManager {
-  static async create(comment) {
-    CommentModel.create(constructSchemaFields(comment))
+  static create(comment) {
+    return CommentModel.create(this.constructSchemaFields(comment))
       .then(docs => {
         return docs;
       })
-      .catch(err => console.log);
-  }
-
-  static async edit(comment) {
-    CommentModel.findByIdAndUpdate(comment._id, constructSchemaFields(comment))
-      .then(docs => {
-        return docs;
-      })
-      .catch(err => console.log);
+      .catch(console.log);
   }
 
   static constructSchemaFields(comment) {
@@ -40,15 +32,33 @@ class MongoDBCommentManager {
     }
   }
 
-  static async delete(commentId) {
-    CommentModel.findByIdAndDelete(commentId)
-      .then(docs => {return docs})
-      .catch(err => console.log(err));
+  static edit(commentId, commentBuilder) {
+    return CommentModel.findByIdAndUpdate(comment._id, commentBuilder, {new: true})
+      .then(docs => {
+        return docs;
+      })
+      .catch(console.log);
+  }
+
+  static get(postId) {
+    return CommentModel.find({postId: postId})
+      .then(docs => {
+        return docs;
+      })
+      .catch(console.log);
+  }
+
+  static delete(commentId) {
+    return CommentModel.findByIdAndDelete(commentId)
+      .then(docs => {
+        return docs;
+      })
+      .catch(console.log);
   }
 
   static async createOrToggleLike(commentId, userId) {
     await CommentLikeModel.findOneAndUpdate({commentId: commentId, userId: userId},
-      {$bit: {liked: {xor: 1}}})
+      {$bit: {liked: {xor: 1}}}, {new: true})
       .then(docs => {
         if (docs) {
           if (docs.liked == 1) {
@@ -71,7 +81,7 @@ class MongoDBCommentManager {
 
   static async updateNoOfLikes(commentId, isIncreased) {
     if (isIncreased) {
-      CommentModel.findByIdAndUpdate(commentId, {$inc: {noOfLikes: 1}}, (err, docs) => {
+      CommentModel.findByIdAndUpdate(commentId, {$inc: {noOfLikes: 1}}, {new: true}, (err, docs) => {
         if (err) {
           console.log(err);
           return;
@@ -79,7 +89,7 @@ class MongoDBCommentManager {
         return docs;
       })
     } else {
-      CommentModel.findByIdAndUpdate(commentId, {$inc: {noOfLikes: -1}}, (err, docs) => {
+      CommentModel.findByIdAndUpdate(commentId, {$inc: {noOfLikes: -1}}, {new: true}, (err, docs) => {
         if (err) {
           console.log(err);
           return;

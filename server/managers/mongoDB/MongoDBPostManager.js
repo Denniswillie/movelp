@@ -23,8 +23,8 @@ const PostModel = require('../../models/postModel');
 const PostLikeModel = require('../../models/postLikeModel');
 
 class MongoDBPostManager {
-  static async create(post) {
-    await PostModel.create(this.constructSchemaFields(post))
+  static create(post) {
+    return PostModel.create(this.constructSchemaFields(post))
       .then(docs => {
         return docs;
       })
@@ -34,8 +34,8 @@ class MongoDBPostManager {
       });
   }
 
-  static async edit(postId, postBuilder) {
-    await PostModel.findByIdAndUpdate(postId, postBuilder)
+  static edit(postId, postBuilder) {
+    return PostModel.findByIdAndUpdate(postId, postBuilder, {new: true})
         .then(docs => {
           return docs;
         })
@@ -61,9 +61,24 @@ class MongoDBPostManager {
     }
   }
 
-  static async getAll() {
+  static async getAll(userId) {
     const docs = await PostModel.find({}).sort({timeOfCreation: -1}).exec();
-    return docs;
+
+    // likeList contains boolean values (true = the user has liked the post,
+    // false = the user has not liked the post)
+    const promises = [];
+    for (var i = 0; i < docs.length; i++) {
+      console.log("userId: " + userId);
+      console.log("postId: " + docs[i]._id);
+      const result = await PostLikeModel.findOne({userId: userId, postId: docs[i]._id});
+      if (result && result.liked == 1) {
+        promises.push(true);
+      } else {
+        promises.push(false);
+      }
+    }
+    const liked = await Promise.all(promises);
+    return [docs, liked];
   }
 
   static async delete(postId) {
@@ -78,9 +93,9 @@ class MongoDBPostManager {
   }
 
   static async createOrToggleLike(postId, userId) {
-    await PostLikeModel.findOneAndUpdate({postId: postId, userId: userId},
-      {$bit: {liked: {xor: 1}}})
-      .then(docs => {
+    return PostLikeModel.findOneAndUpdate({postId: postId, userId: userId},
+      {$bit: {liked: {xor: 1}}}, {new: true})
+      .then(async (docs) => {
         if (docs) {
           if (docs.liked == 1) {
             this.updateNoOfLikes(postId, true);
@@ -105,21 +120,23 @@ class MongoDBPostManager {
 
   static async updateNoOfLikes(postId, isIncreased) {
     if (isIncreased) {
-      PostModel.findByIdAndUpdate(postId, {$inc: {noOfLikes: 1}}, (err, docs) => {
-        if (err) {
+      console.log("increase noOfLikes");
+      return PostModel.findByIdAndUpdate(postId, {$inc: {noOfLikes: 1}}, {new: true})
+        .then(docs => {
+          return docs;
+        })
+        .catch(err => {
           console.log(err);
-          return;
-        }
-        return docs;
-      })
+        })
     } else {
-      PostModel.findByIdAndUpdate(postId, {$inc: {noOfLikes: -1}}, (err, docs) => {
-        if (err) {
+      console.log("decrease noOfLikes");
+      return PostModel.findByIdAndUpdate(postId, {$inc: {noOfLikes: -1}}, {new: true})
+        .then(docs => {
+          return docs;
+        })
+        .catch(err => {
           console.log(err);
-          return;
-        }
-        return docs;
-      })
+        })
     }
   }
 }

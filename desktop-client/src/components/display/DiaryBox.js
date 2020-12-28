@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import "react-image-gallery/styles/css/image-gallery.css";
@@ -12,6 +12,7 @@ import ChatBubbleOutlineOutlinedIcon from '@material-ui/icons/ChatBubbleOutlineO
 import StarOutlinedIcon from '@material-ui/icons/StarOutlined';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import IconButton from '@material-ui/core/IconButton';
+import TextField from '@material-ui/core/TextField';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,9 +31,14 @@ const useStyles = makeStyles((theme) => ({
 export default function DiaryBox(props) {
   const classes = useStyles();
   const [urls, setUrls] = useState([]);
+  const commentField = useRef(null);
+  const form = useRef(null);
+  const [commentInput, setCommentInput] = useState("");
+  const [comments, setComments] = useState([]);
 
-  useEffect(() => {
+  useEffect(async () => {
     const ac = new AbortController();
+    console.log(props.liked);
     const newUrls = [];
     props.urls.map(url => {
       newUrls.push({
@@ -40,8 +46,41 @@ export default function DiaryBox(props) {
       })
     })
     setUrls(newUrls);
+
+    const formData = new FormData();
+    formData.append('postId', props._id);
+    fetch('/comment/get', {method: 'POST', body: formData})
+        .then(res => res.json())
+        .catch(err => console.log(err))
+        .then(res => setComments(res))
+        .catch(err => console.log(err));
+
     return () => ac.abort();
   }, []);
+
+  function focusCommentField() {
+    commentField.current.focus();
+  }
+
+  function handleCommentSubmit(event) {
+    event.preventDefault();
+    if (commentInput.length !== 0) {
+      const formData = new FormData(form.current);
+      formData.append('postId', props._id);
+      fetch('/comment/create', {method: 'POST', body: formData});
+    }
+  }
+
+  function handleCommentInputChange(event) {
+    setCommentInput(event.target.value);
+  }
+
+  function handleToggleLike() {
+    console.log('toggleLike');
+    const formData = new FormData();
+    formData.append('postId', props._id);
+    fetch('/post/toggleLike', {method: 'POST', body: formData});
+  }
 
   return <div style={{
       width: "610px",
@@ -79,7 +118,7 @@ export default function DiaryBox(props) {
       padding: "10px",
     }}>
       <IconButton>
-        <ThumbUpAltIcon />
+        {props.liked ? <ThumbUpAltIcon /> : <ThumbUpAltOutlinedIcon />}
       </IconButton>
       <span style={{fontFamily: "roboto", marginLeft: "4px"}}>{props.noOfLikes}</span>
       <IconButton style={{marginLeft: "20px"}}>
@@ -88,12 +127,12 @@ export default function DiaryBox(props) {
       <span style={{fontFamily: "roboto", marginLeft: "4px"}}>{props.noOfComments}</span>
     </div>
     <div style={{padding: "5px"}}>
-    <div style={{borderTop: "1px solid #9ba89e", paddingTop: "5px"}}>
-      <Button style={{width: "30%"}}>
+    <div style={{borderTop: "1px solid #9ba89e", paddingTop: "5px", paddingBottom: "5px"}}>
+      <Button style={{width: "30%"}} onClick={handleToggleLike}>
         <ThumbUpAltOutlinedIcon />
         <p style={{fontFamily: 'Roboto', marginLeft: "6px"}}>Like</p>
       </Button>
-      <Button style={{width: "30%"}}>
+      <Button style={{width: "30%"}} onClick={focusCommentField}>
         <ChatBubbleOutlineOutlinedIcon />
         <p style={{fontFamily: 'Roboto', marginLeft: "6px"}}>Comment</p>
       </Button>
@@ -111,6 +150,31 @@ export default function DiaryBox(props) {
         <EditOutlinedIcon />
         <p style={{fontFamily: 'Roboto', marginLeft: "6px"}}>Edit</p>
       </Button>
+    </div>
+    <div style={{borderTop: "1px solid #9ba89e", padding: "10px"}}>
+      {comments.map(comment => {
+        return <div style={{width: "100%", marginBottom: "1em", textAlign: "left", display: "flex"}}>
+          <div className={classes.root}>
+            <Avatar src={process.env.PUBLIC_URL + '/images/loginImage.png'} />
+          </div>
+          <div style={{backgroundColor: "#F0F2F5", paddingLeft: "10px", paddingRight: "10px", borderRadius: "15px"}}>
+            <p style={{bottom: "0", fontFamily: "roboto", fontSize: "0.9em", fontWeight: "700", marginBottom: "0"}}>Dennis Willie</p>
+            <p style={{marginTop: "0", fontFamily: "roboto", fontSize: "0.7em"}}>41m</p>
+            <p style={{bottom: "0", fontFamily: "roboto", fontSize: "0.9em", marginTop: "0"}}>{comment.text}</p>
+          </div>
+        </div>
+      })}
+    <form ref={form} className={classes.root} noValidate autoComplete="off" style={{width: "100%"}} onSubmit={handleCommentSubmit}>
+      <Avatar src={process.env.PUBLIC_URL + '/images/loginImage.png'} />
+      <TextField
+        inputRef={commentField}
+        label="Write a comment..."
+        variant="outlined"
+        name="text"
+        value={commentInput}
+        onChange={handleCommentInputChange}
+        style={{margin: "auto", width: "90%"}}/>
+    </form>
     </div>
     </div>
   </div>
