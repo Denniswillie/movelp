@@ -54,11 +54,12 @@ router.post('/create/:type', uploadFields, async (req, res) => {
 })
 
 router.get('/get', async (req, res) => {
-  const docs = await MongoDBPostManager.getAll();
+  const userId = req.user._id;
+  const [docs, liked] = await MongoDBPostManager.getAll(userId);
   const urls = await GoogleStorageManager.downloadFilesForMultiplePosts(
       docs, GoogleStorageManager.STORAGE.BUCKET.POST
   );
-  res.send([docs, urls]);
+  res.send([docs, urls, liked]);
 })
 
 router.post('/edit', uploadFields, async (req, res) => {
@@ -120,6 +121,13 @@ router.post('/delete', upload.none(), async (req, res) => {
   const fileIds = req.body.fileIds;
   await MongoDBPostManager.delete(postId);
   await GoogleStorageManager.deleteMultipleFiles(fileIds, GoogleStorageManager.STORAGE.BUCKET.POST);
+  res.end();
+});
+
+router.post('/toggleLike', upload.none(), async (req, res) => {
+  const postId = req.body.postId;
+  const userId = req.user._id;
+  await MongoDBPostManager.createOrToggleLike(postId, userId);
   res.end();
 });
 

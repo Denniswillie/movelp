@@ -33,7 +33,7 @@ class MongoDBCommentManager {
   }
 
   static edit(commentId, commentBuilder) {
-    return CommentModel.findByIdAndUpdate(comment._id, commentBuilder)
+    return CommentModel.findByIdAndUpdate(comment._id, commentBuilder, {new: true})
       .then(docs => {
         return docs;
       })
@@ -58,7 +58,7 @@ class MongoDBCommentManager {
 
   static async createOrToggleLike(commentId, userId) {
     await CommentLikeModel.findOneAndUpdate({commentId: commentId, userId: userId},
-      {$bit: {liked: {xor: 1}}})
+      {$bit: {liked: {xor: 1}}}, {new: true})
       .then(docs => {
         if (docs) {
           if (docs.liked == 1) {
@@ -81,7 +81,7 @@ class MongoDBCommentManager {
 
   static async updateNoOfLikes(commentId, isIncreased) {
     if (isIncreased) {
-      CommentModel.findByIdAndUpdate(commentId, {$inc: {noOfLikes: 1}}, (err, docs) => {
+      CommentModel.findByIdAndUpdate(commentId, {$inc: {noOfLikes: 1}}, {new: true}, (err, docs) => {
         if (err) {
           console.log(err);
           return;
@@ -89,7 +89,7 @@ class MongoDBCommentManager {
         return docs;
       })
     } else {
-      CommentModel.findByIdAndUpdate(commentId, {$inc: {noOfLikes: -1}}, (err, docs) => {
+      CommentModel.findByIdAndUpdate(commentId, {$inc: {noOfLikes: -1}}, {new: true}, (err, docs) => {
         if (err) {
           console.log(err);
           return;

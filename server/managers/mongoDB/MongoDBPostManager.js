@@ -35,7 +35,7 @@ class MongoDBPostManager {
   }
 
   static edit(postId, postBuilder) {
-    return PostModel.findByIdAndUpdate(postId, postBuilder)
+    return PostModel.findByIdAndUpdate(postId, postBuilder, {new: true})
         .then(docs => {
           return docs;
         })
@@ -68,10 +68,13 @@ class MongoDBPostManager {
     // false = the user has not liked the post)
     const promises = [];
     for (var i = 0; i < docs.length; i++) {
+      console.log("userId: " + userId);
+      console.log("postId: " + docs[i]._id);
       const result = await PostLikeModel.findOne({userId: userId, postId: docs[i]._id});
-      const userHasLiked = false;
       if (result && result.liked == 1) {
         promises.push(true);
+      } else {
+        promises.push(false);
       }
     }
     const liked = await Promise.all(promises);
@@ -91,7 +94,7 @@ class MongoDBPostManager {
 
   static async createOrToggleLike(postId, userId) {
     return PostLikeModel.findOneAndUpdate({postId: postId, userId: userId},
-      {$bit: {liked: {xor: 1}}})
+      {$bit: {liked: {xor: 1}}}, {new: true})
       .then(async (docs) => {
         if (docs) {
           if (docs.liked == 1) {
@@ -117,7 +120,8 @@ class MongoDBPostManager {
 
   static async updateNoOfLikes(postId, isIncreased) {
     if (isIncreased) {
-      await PostModel.findByIdAndUpdate(postId, {$inc: {noOfLikes: 1}}, (err, docs) => {
+      console.log("increase noOfLikes");
+      await PostModel.findByIdAndUpdate(postId, {$inc: {noOfLikes: 1}}, {new: true}, (err, docs) => {
         if (err) {
           console.log(err);
           return;
@@ -125,7 +129,8 @@ class MongoDBPostManager {
         return docs;
       })
     } else {
-      await PostModel.findByIdAndUpdate(postId, {$inc: {noOfLikes: -1}}, (err, docs) => {
+      console.log("decrease noOfLikes");
+      await PostModel.findByIdAndUpdate(postId, {$inc: {noOfLikes: -1}}, {new: true}, (err, docs) => {
         if (err) {
           console.log(err);
           return;
