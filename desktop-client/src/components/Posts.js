@@ -24,10 +24,10 @@ export default function Posts() {
       .catch(err => console.log(err));
   }, []);
 
-  const [createData, setCreateData] = useState({
+  const [createState, setCreateState] = useState({
     isEditing: false,
     type: null,
-    typeData: null
+    data: null
   });
 
   function handleDeletePost(postId) {
@@ -101,7 +101,6 @@ export default function Posts() {
   }
 
   function handleCreatePostClick(event) {
-    console.log(event);
     var name;
     if (event.target.name) {
       name = event.target.name;
@@ -109,19 +108,19 @@ export default function Posts() {
       name = event.target.id;
     }
     if (name === PostType.GENERAL) {
-      setCreateData(prevData => {
+      setCreateState(prevData => {
         return {...prevData, type: PostType.GENERAL};
       })
     } else if (name === PostType.RECOMMENDATION) {
-      setCreateData(prevData => {
+      setCreateState(prevData => {
         return {...prevData, type: PostType.RECOMMENDATION};
       })
     } else if (name === PostType.DIARY) {
-      setCreateData(prevData => {
+      setCreateState(prevData => {
         return {...prevData, type: PostType.DIARY};
       })
     } else if (name === PostType.ASK_SUGGESTION){
-      setCreateData(prevData => {
+      setCreateState(prevData => {
         return {...prevData, type: PostType.ASK_SUGGESTION};
       })
     }
@@ -129,71 +128,63 @@ export default function Posts() {
 
   return (
     <div>
-    <Navbar />
-    <div id="feed" style={{position: "relative", padding: "1em", textAlign: "center", paddingTop: "5em"}}>
-      <CreateBox handleClick={handleCreatePostClick}/>
-      {posts[0].map((post, index) => {
-        switch (post.type) {
-          case PostType.DIARY:
-            return <DisplayDiaryBox
-              _id={post._id}
-              key={post._id}
-              creatorName={post.creatorName}
-              type={post.type}
-              text={post.text}
-              title={post.title}
-              fileIds={post.fileIds}
-              urls={posts[1][index]}
-              liked={posts[2][index]}
-              noOfLikes={post.noOfLikes}
-              noOfComments={post.noOfComments}
-              handleEditClick={handleEditClick}
-              movieIds={post.movieIds}/>
-          case PostType.RECOMMENDATION:
-            return <DisplayRecommendationBox
-              _id={post._id}
-              key={post._id}
-              type={post.type}
-              text={post.text}
-              urls={posts[1][index]}
-              rating={post.rating}
-              noOfLikes={post.noOfLikes}
-              noOfComments={post.noOfComments}
-              handleEditClick={handleEditClick}
-              movieIds={post.movieIds}/>
-          case PostType.GENERAL:
-            return <DisplayGeneralBox
-              _id={post._id}
-              key={post._id}
-              type={post.type}
-              text={post.text}
-              urls={posts[1][index]}
-              noOfLikes={post.noOfLikes}
-              noOfComments={post.noOfComments}
-              handleEditClick={handleEditClick}
-              movieIds={post.movieIds}/>
-          case PostType.ASK_SUGGESTION:
-            return <DisplayAskForSuggestionsBox
-              _id={post._id}
-              key={post._id}
-              type={post.type}
-              text={post.text}
-              urls={posts[1][index]}
-              noOfLikes={post.noOfLikes}
-              noOfComments={post.noOfComments}
-              handleEditClick={handleEditClick}
-              movieIds={post.movieIds}/>
-        }
-      })}
-    </div>
-    <div style={{textAlign: "center"}}>
-      {createData.type && <Container
-        createData={createData}
-        handleExitClick={handleExitClick}
-        handleAddPost={handleAddPost}
-        handleEditPost={handleEditPost}
-        handleDeletePost={handleDeletePost}/>}
-    </div>
+      <Navbar />
+      <div id="feed" style={{position: "relative", padding: "1em", textAlign: "center", paddingTop: "5em"}}>
+        <CreateBox handleClick={handleCreatePostClick}/>
+        {posts[0].map((post, index) => {
+          switch (post.type) {
+            case PostType.DIARY:
+              return <DisplayDiaryBox
+                key={post._id}
+                post={post}
+                urls={posts[1][index]}
+                liked={posts[2][index]}
+                handleEditClick={handleEditClick} />
+            case PostType.RECOMMENDATION:
+              return <DisplayRecommendationBox
+                _id={post._id}
+                key={post._id}
+                type={post.type}
+                text={post.text}
+                urls={posts[1][index]}
+                rating={post.rating}
+                noOfLikes={post.noOfLikes}
+                noOfComments={post.noOfComments}
+                handleEditClick={handleEditClick}
+                movieIds={post.movieIds}/>
+            case PostType.GENERAL:
+              return <DisplayGeneralBox
+                _id={post._id}
+                key={post._id}
+                type={post.type}
+                text={post.text}
+                urls={posts[1][index]}
+                noOfLikes={post.noOfLikes}
+                noOfComments={post.noOfComments}
+                handleEditClick={handleEditClick}
+                movieIds={post.movieIds}/>
+            case PostType.ASK_SUGGESTION:
+              return <DisplayAskForSuggestionsBox
+                _id={post._id}
+                key={post._id}
+                type={post.type}
+                text={post.text}
+                urls={posts[1][index]}
+                noOfLikes={post.noOfLikes}
+                noOfComments={post.noOfComments}
+                handleEditClick={handleEditClick}
+                movieIds={post.movieIds}/>
+          }
+        })}
+      </div>
+      <div style={{textAlign: "center"}}>
+        {createData.type && <Container
+          createData={createData}
+          handleExitClick={handleExitClick}
+          handleAddPost={handleAddPost}
+          handleEditPost={handleEditPost}
+          handleDeletePost={handleDeletePost}/>}
+      </div>
     </div>
   );
 }

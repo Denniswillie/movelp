@@ -56,8 +56,11 @@ router.post('/create/:type', uploadFields, async (req, res) => {
     GoogleStorageManager.STORAGE.BUCKET.POST
   );
   const liked = false;
-  console.log(urls);
-  res.send([createdPost, urls, liked]);
+  res.send({
+    post: createdPost,
+    urls: urls,
+    liked: liked
+  });
 })
 
 router.get('/get', async (req, res) => {
@@ -66,7 +69,11 @@ router.get('/get', async (req, res) => {
   const urls = await GoogleStorageManager.downloadFilesForMultiplePosts(
       docs, GoogleStorageManager.STORAGE.BUCKET.POST
   );
-  res.send([docs, urls, liked]);
+  res.send({
+    posts: docs,
+    urls: urls,
+    liked: liked
+  })
 })
 
 router.post('/edit', uploadFields, async (req, res) => {
@@ -125,6 +132,11 @@ router.post('/edit', uploadFields, async (req, res) => {
   );
   const liked = await MongoDBPostManager.userHasLiked(req.user._id, editedPost._id);
   res.send([editedPost, urls, liked]);
+  res.send({
+    post: editedPost,
+    urls: urls,
+    liked: liked
+  })
 });
 
 router.post('/delete', upload.none(), async (req, res) => {
