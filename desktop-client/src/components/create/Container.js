@@ -75,6 +75,7 @@ export default function Container(props) {
         isEditing={param.isEditing}/>
     } else if (param.type === PostType.DIARY) {
       return <DiaryBox
+        handleAddPost={props.handleAddPost}
         deletedExistingFiles={deletedExistingFiles}
         handleDeleteChosenFiles={handleDeleteChosenFiles}
         handleChooseNotToDeleteFile={handleChooseNotToDeleteFile}

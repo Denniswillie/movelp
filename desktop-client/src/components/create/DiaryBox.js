@@ -92,7 +92,11 @@ export default function DiaryBox(props) {
       for (var i = 0; i < props.uploadedFiles.length; i++) {
         formData.append('fileInput[]', props.uploadedFiles[i].file);
       }
-      fetch('/post/create/diary', {method: 'POST', body: formData});
+      fetch('/post/create/diary', {method: 'POST', body: formData})
+          .then(res => res.json())
+          .catch(err => console.log(err))
+          .then(res => props.handleAddPost(res))
+          .catch(err => console.log(err));
     }
   }
 

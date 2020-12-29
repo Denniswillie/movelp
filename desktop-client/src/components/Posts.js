@@ -30,6 +30,18 @@ export default function Posts() {
     typeData: null
   });
 
+  function handleAddPost(post) {
+    console.log(post);
+    setPosts(prevData => {
+      return [
+        [post[0], ...prevData[0]],
+        [post[1], ...prevData[1]],
+        [post[2], ...prevData[2]]
+      ]
+    })
+    setCreateData({isEditing: false, type: null, typeData: null});
+  }
+
   function handleEditClick(post) {
     if (post.type === PostType.DIARY) {
       setCreateData({isEditing: true, type: PostType.DIARY, typeData: post});
@@ -132,7 +144,7 @@ export default function Posts() {
       })}
     </div>
     <div style={{textAlign: "center"}}>
-      {createData.type && <Container createData={createData} handleExitClick={handleExitClick} />}
+      {createData.type && <Container createData={createData} handleExitClick={handleExitClick} handleAddPost={handleAddPost}/>}
     </div>
     </div>
   );

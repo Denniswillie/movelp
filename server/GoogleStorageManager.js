@@ -82,12 +82,24 @@ class GoogleStorageManager {
     if (!post.fileIds || post.fileIds.length <= 0) {
       return [];
     }
+    console.log(post._id);
+    var counterTrialPerFile = 0;
     for (var i = 0; i < post.fileIds.length; i++) {
+      if (counterTrialPerFile > 3) {
+        counterTrialPerFile = 0;
+        continue;
+      }
       const file = await bucket.file(post.fileIds[i]);
       const fileExists = await file.exists();
+      console.log(fileExists);
       if (fileExists[0]) {
         const signedUrlList = await file.getSignedUrl(this.STORAGE.DOWNLOAD_OPTIONS);
         promises.push(signedUrlList[0]);
+      } else {
+        await setTimeout(() => {
+          i--;
+          counterTrialPerFile++;
+        }, 2000);
       }
     }
     const urls = await Promise.all(promises);

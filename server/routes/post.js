@@ -49,8 +49,14 @@ router.post('/create/:type', uploadFields, async (req, res) => {
       .setIsEdited(false)
       .build();
 
-  await MongoDBPostManager.create(post);
-  res.redirect(CLIENT_URL);
+  const createdPost = await MongoDBPostManager.create(post);
+  const urls = await GoogleStorageManager.downloadFilesForSinglePost(
+    createdPost,
+    GoogleStorageManager.STORAGE.BUCKET.POST
+  );
+  const liked = false;
+  console.log(urls);
+  res.send([createdPost, urls, liked]);
 })
 
 router.get('/get', async (req, res) => {
