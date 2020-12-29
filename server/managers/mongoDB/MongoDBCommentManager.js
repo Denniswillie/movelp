@@ -25,6 +25,7 @@ class MongoDBCommentManager {
     return {
       postId: comment.postId,
       creatorId: comment.creatorId,
+      creatorName: comment.creatorName,
       timeOfCreation: comment.timeOfCreation,
       text: comment.text,
       noOfLikes: comment.noOfLikes,

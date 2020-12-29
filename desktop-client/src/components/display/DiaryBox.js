@@ -13,6 +13,9 @@ import StarOutlinedIcon from '@material-ui/icons/StarOutlined';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import CancelIcon from '@material-ui/icons/Cancel';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -59,12 +62,21 @@ export default function DiaryBox(props) {
     commentField.current.focus();
   }
 
-  function handleCommentSubmit(event) {
+  async function handleCommentSubmit(event) {
     event.preventDefault();
     if (commentInput.length !== 0) {
       const formData = new FormData(form.current);
       formData.append('postId', props._id);
-      fetch('/comment/create', {method: 'POST', body: formData});
+      await setCommentInput("");
+      fetch('/comment/create', {method: 'POST', body: formData})
+          .then(res => res.json())
+          .catch(err => console.log(err))
+          .then(createdComment => {
+            setComments(prevData => {
+              return [...prevData, createdComment];
+            })
+          })
+          .catch(err => console.log(err));
     }
   }
 
@@ -77,6 +89,11 @@ export default function DiaryBox(props) {
     const formData = new FormData();
     formData.append('postId', props._id);
     fetch('/post/toggleLike', {method: 'POST', body: formData});
+  }
+
+  function handleEditComment(event) {
+    event.preventDefault();
+    console.log(event);
   }
 
   return <div style={{
@@ -155,7 +172,7 @@ export default function DiaryBox(props) {
             <Avatar src={process.env.PUBLIC_URL + '/images/loginImage.png'} />
           </div>
           <div style={{backgroundColor: "#F0F2F5", paddingLeft: "10px", paddingRight: "10px", borderRadius: "15px"}}>
-            <p style={{bottom: "0", fontFamily: "roboto", fontSize: "0.9em", fontWeight: "700", marginBottom: "0"}}>Dennis Willie</p>
+            <p style={{bottom: "0", fontFamily: "roboto", fontSize: "0.9em", fontWeight: "700", marginBottom: "0", width: "100%"}}>{comment.creatorName}</p>
             <p style={{marginTop: "0", fontFamily: "roboto", fontSize: "0.7em"}}>41m</p>
             <p style={{bottom: "0", fontFamily: "roboto", fontSize: "0.9em", marginTop: "0"}}>{comment.text}</p>
           </div>
