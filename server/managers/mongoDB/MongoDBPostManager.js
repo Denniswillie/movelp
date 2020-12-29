@@ -92,6 +92,17 @@ class MongoDBPostManager {
       });
   }
 
+  static async userHasLiked(userId, postId) {
+    return PostLikeModel.findOne({userId: userId, postId: postId})
+      .then(docs => {
+        if (docs && docs.liked == 1) {
+          return true;
+        }
+        return false;
+      })
+      .catch(err => console.log(err));
+  }
+
   static async createOrToggleLike(postId, userId) {
     return PostLikeModel.findOneAndUpdate({postId: postId, userId: userId},
       {$bit: {liked: {xor: 1}}}, {new: true})

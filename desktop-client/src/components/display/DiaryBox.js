@@ -30,7 +30,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function DiaryBox(props) {
   const classes = useStyles();
-  const [urls, setUrls] = useState([]);
   const commentField = useRef(null);
   const form = useRef(null);
   const [commentInput, setCommentInput] = useState("");
@@ -38,14 +37,6 @@ export default function DiaryBox(props) {
 
   useEffect(async () => {
     const ac = new AbortController();
-    console.log(props.liked);
-    const newUrls = [];
-    props.urls.map(url => {
-      newUrls.push({
-        original: url
-      })
-    })
-    setUrls(newUrls);
 
     const formData = new FormData();
     formData.append('postId', props._id);
@@ -57,6 +48,12 @@ export default function DiaryBox(props) {
 
     return () => ac.abort();
   }, []);
+
+  function constructGalleryUrls(urls) {
+    return urls.map(url => {
+      return {original: url};
+    })
+  }
 
   function focusCommentField() {
     commentField.current.focus();
@@ -110,7 +107,7 @@ export default function DiaryBox(props) {
     <div style={{padding: "1em", textAlign: "justify", fontFamily: "roboto"}}>
       {props.text}
     </div>
-    {urls.length > 0 && <ImageGallery items={urls} showFullscreenButton={false} showPlayButton={false} showThumbnails={false}/>}
+    {props.urls.length > 0 && <ImageGallery items={constructGalleryUrls(props.urls)} showFullscreenButton={false} showPlayButton={false} showThumbnails={false}/>}
     <div style={{
       display: 'flex',
       alignItems: 'center',

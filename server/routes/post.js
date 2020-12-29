@@ -117,9 +117,13 @@ router.post('/edit', uploadFields, async (req, res) => {
 
   postBuilder.setFileIds(existingFileIds.concat(uploadedFileIds));
 
-  await MongoDBPostManager.edit(postId, postBuilder);
-
-  res.redirect(CLIENT_URL);
+  const editedPost = await MongoDBPostManager.edit(postId, postBuilder);
+  const urls = await GoogleStorageManager.downloadFilesForSinglePost(
+    editedPost,
+    GoogleStorageManager.STORAGE.BUCKET.POST
+  );
+  const liked = await MongoDBPostManager.userHasLiked(req.user._id, editedPost._id);
+  res.send([editedPost, urls, liked]);
 });
 
 router.post('/delete', upload.none(), async (req, res) => {

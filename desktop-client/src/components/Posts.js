@@ -30,15 +30,41 @@ export default function Posts() {
     typeData: null
   });
 
+  function handleEditPost(post) {
+    setPosts(prevData => {
+      const temp = [...prevData];
+      var previousPostDataFound = false;
+      for (var i = 0; i < temp[0].length; i++) {
+        if (temp[0][i]._id.trim() == post[0]._id.trim()) {
+          temp[0][i] = post[0];
+          temp[1][i] = post[1];
+          temp[2][i] = post[2];
+          previousPostDataFound = true;
+          break;
+        }
+      }
+      if (!previousPostDataFound) {
+        return [
+          [post[0], ...prevData[0]],
+          [post[1], ...prevData[1]],
+          [post[2], ...prevData[2]]
+        ]
+      } else {
+        console.log(temp);
+        return temp;
+      }
+    });
+    setCreateData({isEditing: false, type: null, typeData: null});
+  }
+
   function handleAddPost(post) {
-    console.log(post);
     setPosts(prevData => {
       return [
         [post[0], ...prevData[0]],
         [post[1], ...prevData[1]],
         [post[2], ...prevData[2]]
       ]
-    })
+    });
     setCreateData({isEditing: false, type: null, typeData: null});
   }
 
@@ -144,7 +170,7 @@ export default function Posts() {
       })}
     </div>
     <div style={{textAlign: "center"}}>
-      {createData.type && <Container createData={createData} handleExitClick={handleExitClick} handleAddPost={handleAddPost}/>}
+      {createData.type && <Container createData={createData} handleExitClick={handleExitClick} handleAddPost={handleAddPost} handleEditPost={handleEditPost}/>}
     </div>
     </div>
   );

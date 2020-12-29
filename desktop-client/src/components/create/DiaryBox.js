@@ -85,7 +85,14 @@ export default function DiaryBox(props) {
           formData.append('fileInput[]', props.uploadedFiles[i].fileId);
         }
       }
-      fetch('/post/edit', {method: 'POST', body: formData});
+      fetch('/post/edit', {method: 'POST', body: formData})
+        .then(res => res.json())
+        .catch(err => console.log(err))
+        .then(res => {
+          console.log(res);
+          props.handleEditPost(res);
+        })
+        .catch(err => console.log(err));
     } else {
       event.preventDefault();
       const formData = new FormData(form.current);
