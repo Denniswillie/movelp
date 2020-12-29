@@ -19,7 +19,6 @@ export default function Posts() {
       .then(res => res.json())
       .catch(err => console.log(err))
       .then(res => {
-        console.log(res[2]);
         setPosts(res);
       })
       .catch(err => console.log(err));
