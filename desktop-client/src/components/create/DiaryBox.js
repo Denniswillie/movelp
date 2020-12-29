@@ -66,7 +66,14 @@ export default function DiaryBox(props) {
     const formData = new FormData();
     formData.set('postId', props.data._id);
     formData.set('fileIds', props.data.fileIds);
-    fetch('/post/delete', {method: 'POST', body: formData});
+    fetch('/post/delete', {method: 'POST', body: formData})
+        .then(res => res.json())
+        .catch(err => console.log(err))
+        .then(res => {
+          if (res) {
+            props.handleDeletePost(props.data._id);
+          }
+        })
   }
 
   function handleSubmit(event) {

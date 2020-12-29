@@ -130,8 +130,7 @@ router.post('/delete', upload.none(), async (req, res) => {
   const postId = req.body.postId;
   const fileIds = req.body.fileIds;
   await MongoDBPostManager.delete(postId);
-  await GoogleStorageManager.deleteMultipleFiles(fileIds, GoogleStorageManager.STORAGE.BUCKET.POST);
-  res.end();
+  res.status(200).send(true);
 });
 
 router.post('/toggleLike', upload.none(), async (req, res) => {

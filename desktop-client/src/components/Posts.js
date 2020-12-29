@@ -30,6 +30,22 @@ export default function Posts() {
     typeData: null
   });
 
+  function handleDeletePost(postId) {
+    setPosts(prevData => {
+      const temp = [...prevData];
+      for (var i = 0; i < temp.length; i++) {
+        if (temp[0][i]._id.trim() == postId.trim()) {
+          temp[0].splice(i, 1);
+          temp[1].splice(i, 1);
+          temp[2].splice(i, 1);
+          return temp;
+        }
+      }
+      return temp;
+    })
+    setCreateData({isEditing: false, type: null, typeData: null});
+  }
+
   function handleEditPost(post) {
     setPosts(prevData => {
       const temp = [...prevData];
@@ -170,7 +186,12 @@ export default function Posts() {
       })}
     </div>
     <div style={{textAlign: "center"}}>
-      {createData.type && <Container createData={createData} handleExitClick={handleExitClick} handleAddPost={handleAddPost} handleEditPost={handleEditPost}/>}
+      {createData.type && <Container
+        createData={createData}
+        handleExitClick={handleExitClick}
+        handleAddPost={handleAddPost}
+        handleEditPost={handleEditPost}
+        handleDeletePost={handleDeletePost}/>}
     </div>
     </div>
   );
