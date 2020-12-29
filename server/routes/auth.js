@@ -17,9 +17,7 @@ router.get("/google/movelp",
 );
 
 router.get("/isLoggedIn", function(req, res) {
-  res.json({
-    user: req.user
-  });
+  res.send(req.user);
 });
 
 module.exports = router;

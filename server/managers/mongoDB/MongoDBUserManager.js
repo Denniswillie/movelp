@@ -15,6 +15,27 @@ const UserModel = require('../../models/userModel');
 const FollowModel = require('../../models/followModel');
 
 class MongoDBUserManager {
+  static async saveNickname(userId, nickname) {
+    return UserModel.findByIdAndUpdate(userId, {nickname: nickname}, {new: true})
+        .then(docs => {
+          return docs;
+        })
+        .catch(err => {
+          console.log(err);
+        })
+  }
+
+  static async nicknameExists(nickname) {
+    return UserModel.findOne({nickname: nickname})
+      .then(docs => {
+        if (docs) {
+          return true;
+        }
+        return false;
+      })
+      .catch(err => console.log(err));
+  }
+
   static async createOrEditProfile(user) {
     UserModel.findByIdAndUpdate(user._id, {
       nickname: user.nickname,
@@ -39,7 +60,7 @@ class MongoDBUserManager {
 
   static async createOrToggleFollow(followerId, followedId) {
     FollowModel.findOneAndUpdate({followerId: followerId, followedId: followedId}, {
-      {$bit: {followed: {xor: 1}}}
+      $bit: {followed: {xor: 1}}
     })
     .then(docs => {
       if (docs) {
@@ -49,7 +70,7 @@ class MongoDBUserManager {
           this.updateFollowNumber(followerId, followedId, false);
         }
       } else {
-        FollowModel.create({followerId: followerId, followedId: followedId, followed: 1});
+        FollowModel.create({followerId: followerId, followedId: followedId, followed: 1})
           .then(this.updateFollowNumber(followerId, followedId, true))
           .catch(err => console.log(err))
       }
@@ -79,7 +100,7 @@ class MongoDBUserManager {
   }
 
   static async fetchFollowings(userId, lastFollowId) {
-    const query;
+    var query;
     if (lastFollowId) {
       query = FollowModel.find({followerId: userId, _id: {$gte: lastFollowId}});
     } else {
@@ -95,7 +116,7 @@ class MongoDBUserManager {
   }
 
   static async fetchFollowers(userId, lastFollowId) {
-    const query;
+    var query;
     if (lastFollowId) {
       query = FollowModel.find({followedId: userId, _id: {$gte: lastFollowId}});
     } else {

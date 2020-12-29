@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react';
 import Posts from './Posts';
 import Login from './Login';
+import UserInfoForm from './UserInfoForm';
 
 export default function Home() {
-  const [authStats, setAuthStats] = useState({
-    authenticated: false,
-    user: undefined
-  });
+  const [user, setUser] = useState(null);
   useEffect(() => {
     fetch('/auth/isLoggedIn', {
       headers: {
@@ -15,19 +13,23 @@ export default function Home() {
       }
     })
     .then(res => res.json())
-    .catch(err => console.log)
-    .then(res => {
-      if (res.user) {
-        setAuthStats({
-          authenticated: true,
-          user: res.user
-        })
-      }
-    })
-    .catch(err => console.log);
+    .catch(err => console.log(err))
+    .then(res => setUser(res))
+    .catch(err => console.log(err));
   }, []);
 
+  function renderPage() {
+    if (user) {
+      if (user.nickname) {
+        return <Posts user={user} />;
+      }
+      return <UserInfoForm user={user}/>
+    } else {
+      return <Login />;
+    }
+  }
+
   return <div>
-    {authStats.authenticated ? <Posts user={authStats.user} /> : <Login />}
+    {renderPage()}
   </div>
 }
