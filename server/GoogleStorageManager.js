@@ -77,6 +77,10 @@ class GoogleStorageManager {
     return result;
   }
 
+  static async delay(ms) {
+    return new Promise(function (resolve) { return setTimeout(resolve, ms); });
+  };
+
   static async downloadFilesForSinglePost(post, bucket) {
     const promises = [];
     if (!post.fileIds || post.fileIds.length <= 0) {
@@ -96,10 +100,9 @@ class GoogleStorageManager {
         const signedUrlList = await file.getSignedUrl(this.STORAGE.DOWNLOAD_OPTIONS);
         promises.push(signedUrlList[0]);
       } else {
-        await setTimeout(() => {
-          i--;
-          counterTrialPerFile++;
-        }, 2000);
+        i--;
+        counterTrialPerFile++;
+        await this.delay(1000);
       }
     }
     const urls = await Promise.all(promises);
