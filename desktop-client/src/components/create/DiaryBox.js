@@ -190,21 +190,6 @@ export default function DiaryBox(props) {
         className={classes.button}
         startIcon={<AddCircleOutline />}
         onClick={submit}>{props.isEditing ? "edit" : "create"}</Button>
-      <Button
-        style={{backgroundColor: "black", color: "white"}}
-        variant="contained"
-        className={classes.button}
-        onClick={logWillBeDeletedFiles}>logWillBeDeletedFiles</Button>
-      <Button
-        style={{backgroundColor: "black", color: "white"}}
-        variant="contained"
-        className={classes.button}
-        onClick={logUploadedFiles}>logUploadedFiles</Button>
-      {props.isEditing && <Button
-        style={{backgroundColor: "black", color: "white"}}
-        variant="contained"
-        className={classes.button}
-        onClick={logDeletedExistingFiles}>logDeletedExistingFiles</Button>}
       {props.isEditing && <Button
         style={{backgroundColor: "black", color: "white"}}
         variant="contained"
