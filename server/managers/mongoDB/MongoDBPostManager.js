@@ -48,6 +48,7 @@ class MongoDBPostManager {
   static constructSchemaFields(post) {
     return {
       creatorId: post.creatorId,
+      creatorName: post.creatorName,
       type: post.type,
       fileIds: post.fileIds,
       title: post.title,

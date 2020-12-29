@@ -40,6 +40,7 @@ router.post('/create/:type', uploadFields, async (req, res) => {
 
   const post =
       postBuilder.setCreatorId(req.user._id)
+      .setCreatorName(req.user.nickname)
       .setFileIds(fileIds)
       .setType(type)
       .setText(req.body.text)

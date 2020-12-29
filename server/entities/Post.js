@@ -14,6 +14,7 @@ class Post {
 
   static FIELDS = {
     CREATOR_ID: 'creatorId',
+    CREATOR_NAME: 'creatorName',
     TYPE: 'type',
     FILE_IDS: 'fileIds',
     TEXT: 'text',
@@ -36,6 +37,7 @@ class Post {
   constructor(build) {
     if (arguments.length === 1 && this.validateBuild(build)) {
       const creatorId = build.creatorId;
+      const creatorName = build.creatorName;
       const type = build.type;
       const fileIds = build.fileIds;
       const text = build.text;
@@ -50,6 +52,10 @@ class Post {
       Object.defineProperties(this, {
         creatorId: {
           value: creatorId,
+          writable: false
+        },
+        creatorName: {
+          value: creatorName,
           writable: false
         },
         type: {
@@ -106,6 +112,10 @@ class Post {
     class Builder {
       setCreatorId(creatorId) {
         this.creatorId = creatorId;
+        return this;
+      }
+      setCreatorName(creatorName) {
+        this.creatorName = creatorName;
         return this;
       }
       setType(type) {

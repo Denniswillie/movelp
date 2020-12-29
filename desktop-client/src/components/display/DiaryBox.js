@@ -98,7 +98,7 @@ export default function DiaryBox(props) {
         <div className={classes.root}>
           <Avatar src={process.env.PUBLIC_URL + '/images/loginImage.png'} />
         </div>
-        <p style={{bottom: "0", fontFamily: "roboto", fontWeight: "700"}}>Dennis Willie</p>
+        <p style={{bottom: "0", fontFamily: "roboto", fontWeight: "700"}}>{props.creatorName}</p>
       </div>
     </div>
     <div style={{paddingLeft: "1em", paddingRight: "1em", textAlign: "justify", fontFamily: "roboto", fontWeight: "700"}}>

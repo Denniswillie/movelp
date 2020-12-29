@@ -138,6 +138,7 @@ export default function Posts() {
             return <DisplayDiaryBox
               _id={post._id}
               key={post._id}
+              creatorName={post.creatorName}
               type={post.type}
               text={post.text}
               title={post.title}
