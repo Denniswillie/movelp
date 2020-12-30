@@ -69,8 +69,6 @@ class MongoDBPostManager {
     // false = the user has not liked the post)
     const promises = [];
     for (var i = 0; i < docs.length; i++) {
-      console.log("userId: " + userId);
-      console.log("postId: " + docs[i]._id);
       const result = await PostLikeModel.findOne({userId: userId, postId: docs[i]._id});
       if (result && result.liked == 1) {
         promises.push(true);

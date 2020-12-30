@@ -10,7 +10,7 @@ import PostTypeContext from './PostTypeContext';
 
 export default function Posts() {
   const PostType = useContext(PostTypeContext);
-  const [posts, setPosts] = useState([[], []]);
+  const [postData, setPostData] = useState([[], []]);
 
   useEffect(() => {
     fetch('/post/get', {method: 'GET', headers: {
@@ -19,7 +19,7 @@ export default function Posts() {
       .then(res => res.json())
       .catch(err => console.log(err))
       .then(res => {
-        setPosts(res);
+        setPostData(res);
       })
       .catch(err => console.log(err));
   }, []);
@@ -131,49 +131,36 @@ export default function Posts() {
       <Navbar />
       <div id="feed" style={{position: "relative", padding: "1em", textAlign: "center", paddingTop: "5em"}}>
         <CreateBox handleClick={handleCreatePostClick}/>
-        {posts[0].map((post, index) => {
+        {postData.posts.map((post, index) => {
           switch (post.type) {
             case PostType.DIARY:
               return <DisplayDiaryBox
                 key={post._id}
                 post={post}
-                urls={posts[1][index]}
-                liked={posts[2][index]}
+                urls={postData.urls[index]}
+                liked={postData.liked[index]}
                 handleEditClick={handleEditClick} />
             case PostType.RECOMMENDATION:
               return <DisplayRecommendationBox
-                _id={post._id}
                 key={post._id}
-                type={post.type}
-                text={post.text}
-                urls={posts[1][index]}
-                rating={post.rating}
-                noOfLikes={post.noOfLikes}
-                noOfComments={post.noOfComments}
-                handleEditClick={handleEditClick}
-                movieIds={post.movieIds}/>
+                post={post}
+                urls={postData.urls[index]}
+                liked={postData.liked[index]}
+                handleEditClick={handleEditClick} />
             case PostType.GENERAL:
               return <DisplayGeneralBox
-                _id={post._id}
                 key={post._id}
-                type={post.type}
-                text={post.text}
-                urls={posts[1][index]}
-                noOfLikes={post.noOfLikes}
-                noOfComments={post.noOfComments}
-                handleEditClick={handleEditClick}
-                movieIds={post.movieIds}/>
+                post={post}
+                urls={postData.urls[index]}
+                liked={postData.liked[index]}
+                handleEditClick={handleEditClick} />
             case PostType.ASK_SUGGESTION:
               return <DisplayAskForSuggestionsBox
-                _id={post._id}
                 key={post._id}
-                type={post.type}
-                text={post.text}
-                urls={posts[1][index]}
-                noOfLikes={post.noOfLikes}
-                noOfComments={post.noOfComments}
-                handleEditClick={handleEditClick}
-                movieIds={post.movieIds}/>
+                post={post}
+                urls={postData.urls[index]}
+                liked={postData.liked[index]}
+                handleEditClick={handleEditClick} />
           }
         })}
       </div>

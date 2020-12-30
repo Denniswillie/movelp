@@ -42,7 +42,7 @@ export default function DiaryBox(props) {
     const ac = new AbortController();
 
     const formData = new FormData();
-    formData.append('postId', props._id);
+    formData.append('postId', props.post._id);
     fetch('/comment/get', {method: 'POST', body: formData})
         .then(res => res.json())
         .catch(err => console.log(err))
@@ -85,7 +85,6 @@ export default function DiaryBox(props) {
   }
 
   function handleToggleLike() {
-    console.log('toggleLike');
     const formData = new FormData();
     formData.append('postId', props._id);
     fetch('/post/toggleLike', {method: 'POST', body: formData});
