@@ -66,7 +66,7 @@ export default function DiaryBox(props) {
     event.preventDefault();
     if (commentInput.length !== 0) {
       const formData = new FormData(form.current);
-      formData.append('postId', props._id);
+      formData.append('postId', props.post._id);
       await setCommentInput("");
       fetch('/comment/create', {method: 'POST', body: formData})
           .then(res => res.json())
@@ -86,13 +86,12 @@ export default function DiaryBox(props) {
 
   function handleToggleLike() {
     const formData = new FormData();
-    formData.append('postId', props._id);
+    formData.append('postId', props.post._id);
     fetch('/post/toggleLike', {method: 'POST', body: formData});
   }
 
   function handleEditComment(event) {
     event.preventDefault();
-    console.log(event);
   }
 
   return <div style={{
@@ -114,14 +113,14 @@ export default function DiaryBox(props) {
         <div className={classes.root}>
           <Avatar src={process.env.PUBLIC_URL + '/images/loginImage.png'} />
         </div>
-        <p style={{bottom: "0", fontFamily: "roboto", fontWeight: "700"}}>{props.creatorName}</p>
+        <p style={{bottom: "0", fontFamily: "roboto", fontWeight: "700"}}>{props.post.creatorName}</p>
       </div>
     </div>
     <div style={{paddingLeft: "1em", paddingRight: "1em", textAlign: "justify", fontFamily: "roboto", fontWeight: "700"}}>
-      {props.title}
+      {props.post.title}
     </div>
     <div style={{padding: "1em", textAlign: "justify", fontFamily: "roboto"}}>
-      {props.text}
+      {props.post.text}
     </div>
     {props.urls.length > 0 && <ImageGallery items={constructGalleryUrls(props.urls)} showFullscreenButton={false} showPlayButton={false} showThumbnails={false}/>}
     <div style={{
@@ -133,11 +132,11 @@ export default function DiaryBox(props) {
       <IconButton>
         {props.liked ? <ThumbUpAltIcon /> : <ThumbUpAltOutlinedIcon />}
       </IconButton>
-      <span style={{fontFamily: "roboto", marginLeft: "4px"}}>{props.noOfLikes}</span>
+      <span style={{fontFamily: "roboto", marginLeft: "4px"}}>{props.post.noOfLikes}</span>
       <IconButton style={{marginLeft: "20px"}}>
       <CommentIcon />
       </IconButton>
-      <span style={{fontFamily: "roboto", marginLeft: "4px"}}>{props.noOfComments}</span>
+      <span style={{fontFamily: "roboto", marginLeft: "4px"}}>{props.post.noOfComments}</span>
     </div>
     <div style={{padding: "5px"}}>
     <div style={{borderTop: "1px solid #9ba89e", paddingTop: "5px", paddingBottom: "5px"}}>
@@ -151,13 +150,8 @@ export default function DiaryBox(props) {
       </Button>
       <Button style={{width: "30%"}} onClick={() => {
         props.handleEditClick({
-          _id: props._id,
-          type: props.type,
-          text: props.text,
-          title: props.title,
-          urls: props.urls,
-          movieIds: props.movieIds,
-          fileIds: props.fileIds
+          post: props.post,
+          urls: props.urls
         })
       }}>
         <EditOutlinedIcon />

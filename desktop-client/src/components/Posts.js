@@ -10,7 +10,11 @@ import PostTypeContext from './PostTypeContext';
 
 export default function Posts() {
   const PostType = useContext(PostTypeContext);
-  const [postData, setPostData] = useState([[], []]);
+  const [postData, setPostData] = useState({
+    posts: [],
+    urls: [],
+    liked: []
+  });
 
   useEffect(() => {
     fetch('/post/get', {method: 'GET', headers: {
@@ -30,74 +34,78 @@ export default function Posts() {
     data: null
   });
 
-  function handleDeletePost(postId) {
-    setPosts(prevData => {
-      const temp = [...prevData];
-      for (var i = 0; i < temp.length; i++) {
-        if (temp[0][i]._id.trim() == postId.trim()) {
-          temp[0].splice(i, 1);
-          temp[1].splice(i, 1);
-          temp[2].splice(i, 1);
-          return temp;
-        }
+  function handleAddPost(addedPostData) {
+    setPostData(prevData => {
+      return {
+        posts: [addedPostData.post, ...prevData.posts],
+        urls: [addedPostData.urls, ...prevData.urls],
+        liked: [addedPostData.liked, ...prevData.liked]
       }
-      return temp;
-    })
-    setCreateData({isEditing: false, type: null, typeData: null});
+    });
+    setCreateState({isEditing: false, type: null, data: null});
   }
 
-  function handleEditPost(post) {
-    setPosts(prevData => {
-      const temp = [...prevData];
+  function handleEditPost(editedPostData) {
+    setPostData(prevData => {
       var previousPostDataFound = false;
-      for (var i = 0; i < temp[0].length; i++) {
-        if (temp[0][i]._id.trim() == post[0]._id.trim()) {
-          temp[0][i] = post[0];
-          temp[1][i] = post[1];
-          temp[2][i] = post[2];
+      for (var i = 0; i < prevData.posts.length; i++) {
+        if (prevData.posts[i]._id.trim() == editedPostData.post._id.trim()) {
+          prevData.posts[i] = editedPostData.post;
+          prevData.urls[i] = editedPostData.urls;
+          prevData.liked[i] = editedPostData.liked;
           previousPostDataFound = true;
           break;
         }
       }
       if (!previousPostDataFound) {
-        return [
-          [post[0], ...prevData[0]],
-          [post[1], ...prevData[1]],
-          [post[2], ...prevData[2]]
-        ]
+        return {
+          posts: [editedPostData.post, ...prevData.posts],
+          urls: [editedPostData.urls, ...prevData.urls],
+          liked: [editedPostData.liked, ...prevData.liked]
+        }
       } else {
-        console.log(temp);
-        return temp;
+        return prevData;
       }
     });
-    setCreateData({isEditing: false, type: null, typeData: null});
+    setCreateState({isEditing: false, type: null, data: null});
   }
 
-  function handleAddPost(post) {
-    setPosts(prevData => {
-      return [
-        [post[0], ...prevData[0]],
-        [post[1], ...prevData[1]],
-        [post[2], ...prevData[2]]
-      ]
-    });
-    setCreateData({isEditing: false, type: null, typeData: null});
+  function handleDeletePost(postId) {
+    setPostData(prevData => {
+      const temp = {...prevData};
+      for (var i = 0; i < temp.posts.length; i++) {
+        if (temp.posts[i]._id.trim() == postId.trim()) {
+          temp.posts.splice(i, 1);
+          temp.urls.splice(i, 1);
+          temp.liked.splice(i, 1);
+          return temp;
+        }
+      }
+      return temp;
+    })
+    setCreateState({isEditing: false, type: null, data: null});
   }
 
-  function handleEditClick(post) {
-    if (post.type === PostType.DIARY) {
-      setCreateData({isEditing: true, type: PostType.DIARY, typeData: post});
-    } else if (post.type === PostType.RECOMMENDATION) {
-      setCreateData({isEditing: true, type: PostType.RECOMMENDATION, typeData: post});
-    } else if (post.type === PostType.GENERAL) {
-      setCreateData({isEditing: true, type: PostType.GENERAL, typeData: post});
-    } else if (post.type === PostType.ASK_SUGGESTION) {
-      setCreateData({isEditing: true, type: PostType.ASK_SUGGESTION, typeData: post});
+  const handlePostAction = {
+    handleAddPost: handleAddPost,
+    handleEditPost: handleEditPost,
+    handleDeletePost: handleDeletePost
+  }
+
+  function handleEditClick(data) {
+    if (data.post.type === PostType.DIARY) {
+      setCreateState({isEditing: true, type: PostType.DIARY, data: data});
+    } else if (data.post.type === PostType.RECOMMENDATION) {
+      setCreateState({isEditing: true, type: PostType.RECOMMENDATION, data: data});
+    } else if (data.post.type === PostType.GENERAL) {
+      setCreateState({isEditing: true, type: PostType.GENERAL, data: data});
+    } else if (data.post.type === PostType.ASK_SUGGESTION) {
+      setCreateState({isEditing: true, type: PostType.ASK_SUGGESTION, data: data});
     }
   }
 
-  function handleExitClick(event) {
-    setCreateData({isEditing: false, type: null, typeData: null});
+  function handleExitClick() {
+    setCreateState({isEditing: false, type: null, data: null});
   }
 
   function handleCreatePostClick(event) {
@@ -165,12 +173,10 @@ export default function Posts() {
         })}
       </div>
       <div style={{textAlign: "center"}}>
-        {createData.type && <Container
-          createData={createData}
+        {createState.type && <Container
+          createState={createState}
           handleExitClick={handleExitClick}
-          handleAddPost={handleAddPost}
-          handleEditPost={handleEditPost}
-          handleDeletePost={handleDeletePost}/>}
+          handlePostAction={handlePostAction}/>}
       </div>
     </div>
   );

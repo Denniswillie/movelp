@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useRef, useCallback, useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -8,6 +8,11 @@ import TextField from '@material-ui/core/TextField';
 import InsertPhoto from '@material-ui/icons/InsertPhoto';
 import Button from '@material-ui/core/Button';
 import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
+import Gallery from 'react-photo-gallery';
+import SelectedImage from "../SelectedImage";
+import Chip from '@material-ui/core/Chip';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -54,7 +59,35 @@ const ratings = [
 
 export default function RecommendationBox(props) {
   const classes = useStyles();
-  const [currentRating, setCurrentRating] = useState('5');
+  const form = useRef(null);
+  const [selectAll, setSelectAll] = useState(false);
+  const RECOMMENDATION = 'recommendation';
+
+  const {
+    createInput,
+    deletedExistingFiles,
+    handlePostAction,
+    post,
+    isEditing,
+    handleInputChange
+  } = props.renderProps;
+
+  const imageRenderer = useCallback(
+    ({ index, left, top, key, photo }) => (
+      <SelectedImage
+        selected={selectAll ? true : false}
+        key={key}
+        margin={"2px"}
+        index={index}
+        photo={photo}
+        left={left}
+        top={top}
+        handleChooseToDeleteFile={handleInputChange.handleChooseToDeleteFile}
+        handleChooseNotToDeleteFile={handleInputChange.handleChooseNotToDeleteFile}
+      />
+    ),
+    [selectAll]
+  );
 
   function uploadPhoto() {
     document.getElementById("imageUpload").click();
@@ -64,16 +97,86 @@ export default function RecommendationBox(props) {
     document.getElementById("submit").click();
   }
 
+  function deletePost() {
+    const formData = new FormData();
+    formData.set('postId', post._id);
+    formData.set('fileIds', post.fileIds);
+    fetch('/post/delete', {method: 'POST', body: formData})
+        .then(res => res.json())
+        .catch(err => console.log(err))
+        .then(res => {
+          if (res) {
+            handleInputChange.handleDeletePost(post._id);
+          }
+        })
+  }
+
+  function handleSubmit(event) {
+    if (isEditing) {
+      event.preventDefault();
+      const formData = new FormData(form.current);
+      formData.set('postId', post._id);
+      formData.set('postType', RECOMMENDATION);
+      for (var i = 0; i < deletedExistingFiles.length; i++) {
+        formData.append('deletedFileIds[]', deletedExistingFiles[i]);
+      }
+      for (var i = 0; i < createInput.uploadedFiles.length; i++) {
+        if (createInput.uploadedFiles[i].file) {
+          formData.append('fileInput[]', createInput.uploadedFiles[i].file);
+        } else {
+          formData.append('fileInput[]', createInput.uploadedFiles[i].fileId);
+        }
+      }
+      fetch('/post/edit', {method: 'POST', body: formData})
+        .then(res => res.json())
+        .catch(err => console.log(err))
+        .then(res => {
+          handlePostAction.handleEditPost(res);
+        })
+        .catch(err => console.log(err));
+    } else {
+      event.preventDefault();
+      const formData = new FormData(form.current);
+      for (var i = 0; i < createInput.uploadedFiles.length; i++) {
+        formData.append('fileInput[]', createInput.uploadedFiles[i].file);
+      }
+      fetch('/post/create/recommendation', {method: 'POST', body: formData})
+          .then(res => res.json())
+          .catch(err => console.log(err))
+          .then(res => handlePostAction.handleAddPost(res))
+          .catch(err => console.log(err));
+    }
+  }
+
   return (
     <div>
-      <form className={classes.root} noValidate autoComplete="off" method="POST" action="/post/create/recommendation" encType="multipart/form-data">
+      <form className={classes.root} noValidate autoComplete="off" onSubmit={handleSubmit} ref={form}>
+        {createInput.chosenMovies.length > 0 && <p style={{fontFamily: "roboto", marginLeft: "auto", marginRight: "auto", marginTop: "8px"}}>Movie titles</p>}
+        {createInput.chosenMovies.length > 0 && <div
+          className={classes.movieTags}
+          style={{boxShadow: "1px",
+            borderRadius: "4px",
+            borderStyle: "solid",
+            borderColor:"#b5b5b5" ,
+            borderWidth: "1px",
+            width: "400px",
+            marginLeft: "auto",
+            marginRight: "auto",
+            marginTop: "9px"}}>
+        {createInput.chosenMovies.map(chosenMovie => {
+          return <Chip
+            label={chosenMovie.title}
+            onDelete={() => {handleInputChange.handleDeleteChosenMovie(chosenMovie.id)}}
+          />
+        })}
+        </div>}
         <FormControl variant="outlined" className={classes.formControl}>
           <InputLabel id="demo-simple-select-outlined-label">Rate</InputLabel>
           <Select
             labelId="demo-simple-select-outlined-label"
             id="demo-simple-select-outlined"
-            value={props.rating}
-            onChange={props.handleRatingChange}
+            value={createInput.rating}
+            onChange={handleInputChange.handleRatingChange}
             label="Rating"
             style={{zIndex: "1000000000000000000000000000000"}}
             name="rating"
@@ -92,32 +195,44 @@ export default function RecommendationBox(props) {
           variant="outlined"
           style={{width: "90%"}}
           name="text"
-          value={props.text}
-          onChange={props.handleTextChange}/>
-        {props.chosenMovies.map(chosenMovie => {
+          value={createInput.text}
+          onChange={handleInputChange.handleTextChange}/>
+        {createInput.chosenMovies.map(chosenMovie => {
           return <input type="hidden" name="chosenMoviesIds[]" value={chosenMovie}/>
         })}
         <input
           type="file"
           id="imageUpload"
-          name="fileInput"
           style={{display: "none"}}
-          multiple
-          onChange={props.handleUploadedFilesChange}/>
-        <input type="submit" style={{display: "none"}} id="submit"/>
+          onChange={handleInputChange.handleUploadedFilesChange}/>
+        <input type="submit" id="submit" style={{display: "none"}}/>
       </form>
       <div>
+      {createInput.uploadedFiles.length > 0 && <div style={{
+        padding: "10px",
+      }}>
+      <Gallery photos={createInput.uploadedFiles} renderImage={imageRenderer} />
+      <IconButton onClick={handleInputChange.handleDeleteChosenFiles}>
+      <DeleteOutlinedIcon />
+      </IconButton>
+      </div>}
       <Button style={{width: "40%"}} onClick={uploadPhoto}>
         <InsertPhoto />
         <p style={{fontFamily: 'Roboto', marginLeft: "6px"}}>Upload Photo</p>
       </Button>
       </div>
       <Button
-        onClick={submit}
         style={{backgroundColor: "black", color: "white"}}
         variant="contained"
         className={classes.button}
-        startIcon={<AddCircleOutline />}>Create</Button>
+        startIcon={<AddCircleOutline />}
+        onClick={submit}>{props.isEditing ? "edit" : "create"}</Button>
+      {props.isEditing && <Button
+        style={{backgroundColor: "black", color: "white"}}
+        variant="contained"
+        className={classes.button}
+        startIcon={<DeleteOutlinedIcon />}
+        onClick={deletePost}>Delete post</Button>}
     </div>
   );
 }
