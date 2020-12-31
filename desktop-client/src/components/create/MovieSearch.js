@@ -1,10 +1,11 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
+import PostTypeContext from '../PostTypeContext';
 
 const useStyles = makeStyles({
   root: {
@@ -14,6 +15,7 @@ const useStyles = makeStyles({
 
 export default function MovieSearch(props) {
   const classes = useStyles();
+  const PostType = useContext(PostTypeContext);
 
   return <div style={{paddingTop: "0.5em"}}>
   <div style={{marginTop: "1em",
@@ -27,8 +29,8 @@ export default function MovieSearch(props) {
     margin: "auto",
     overflow: "auto"}}>
 
-    {props.createInput.chosenMovies.length >= 4
-      ? <p style={{fontFamily: "roboto"}}>You can only choose up to 4 movies.</p>
+    {(props.createInput.chosenMovies.length >= 4 && props.postType !== PostType.RECOMMENDATION) || (props.createInput.chosenMovies.length >= 1 && props.postType === PostType.RECOMMENDATION)
+      ? <p style={{fontFamily: "roboto"}}>You can only choose up to {props.postType === PostType.RECOMMENDATION ? "1" : "4"} movies.</p>
       : props.moviesList.reduce((result, movie) => {
 
       var imagePath;

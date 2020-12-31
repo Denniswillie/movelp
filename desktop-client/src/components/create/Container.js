@@ -220,6 +220,7 @@ export default function Container(props) {
         onChange={handleInputChange.handleMovieTitleInput}
         value={!isSearchingMovie ? "" : createInput.movieTitleInputValue}/>}
       {isSearchingMovie ? <MovieSearch
+        postType={props.createState.type}
         createInput={createInput}
         moviesList={moviesList}
         handleMovieClick={handleInputChange.handleMovieClick}/> : renderBox(props.createState)}
