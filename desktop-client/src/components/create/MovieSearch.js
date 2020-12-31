@@ -26,7 +26,11 @@ export default function MovieSearch(props) {
     height: "300px",
     margin: "auto",
     overflow: "auto"}}>
-    {props.moviesList.map(movie => {
+
+    {props.createInput.chosenMovies.length >= 4
+      ? <p style={{fontFamily: "roboto"}}>You can only choose up to 4 movies.</p>
+      : props.moviesList.reduce((result, movie) => {
+
       var imagePath;
       var title;
       if (!movie.poster_path) {
@@ -41,25 +45,33 @@ export default function MovieSearch(props) {
         title = movie.name;
       }
 
-      return <Card className={classes.root} key={movie.id} style={{width: "30%", marginBottom: "2em"}} onClick={() => {
-        props.handleMovieClick(movie.id, title);
-      }}>
-        <CardActionArea>
-          <CardMedia
-            component="img"
-            alt={movie.title}
-            height="200"
-            image={imagePath}
-            title={title}
-          />
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="h2">
-              {title}
-            </Typography>
-          </CardContent>
-        </CardActionArea>
-      </Card>
-    })}
+      var alreadyChosen = false;
+      for (var i = 0; i < props.createInput.chosenMovies.length; i++) {
+        if (props.createInput.chosenMovies[i].id === movie.id) {
+          alreadyChosen = true;
+        }
+      }
+      if (!alreadyChosen) {
+        result.push(<Card className={classes.root} key={movie.id} style={{width: "33.3333%", marginBottom: "2em", float: "right"}} onClick={() => {
+          props.handleMovieClick(movie.id, title);
+        }}>
+          <CardActionArea>
+            <CardMedia
+              component="img"
+              alt={movie.title}
+              height="200"
+              image={imagePath}
+              title={title}
+            />
+            <CardContent style={{paddingTop: "0.5em", paddingBottom: "0.5em"}}>
+              <p style={{fontFamily: "roboto", marginTop: "0", marginBottom: "0"}}>{title.toUpperCase()}</p>
+            </CardContent>
+          </CardActionArea>
+        </Card>)
+      }
+
+      return result;
+    }, [])}
   </div>
   </div>
 }
