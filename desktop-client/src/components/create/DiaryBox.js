@@ -193,8 +193,8 @@ export default function DiaryBox(props) {
         variant="contained"
         className={classes.button}
         startIcon={<AddCircleOutline />}
-        onClick={submit}>{props.isEditing ? "edit" : "create"}</Button>
-      {props.isEditing && <Button
+        onClick={submit}>{isEditing ? "edit" : "create"}</Button>
+      {isEditing && <Button
         style={{backgroundColor: "black", color: "white"}}
         variant="contained"
         className={classes.button}

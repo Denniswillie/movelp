@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import "react-image-gallery/styles/css/image-gallery.css";
@@ -13,6 +13,10 @@ import StarOutlinedIcon from '@material-ui/icons/StarOutlined';
 import NavigateNextOutlinedIcon from '@material-ui/icons/NavigateNextOutlined';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import IconButton from '@material-ui/core/IconButton';
+import TextField from '@material-ui/core/TextField';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import CancelIcon from '@material-ui/icons/Cancel';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,19 +34,74 @@ const useStyles = makeStyles((theme) => ({
 
 export default function RecommendationBox(props) {
   const classes = useStyles();
+  const commentField = useRef(null);
+  const form = useRef(null);
+  const [commentInput, setCommentInput] = useState("");
+  const [comments, setComments] = useState([]);
+  const [movieTitle, setMovieTitle] = useState("MOVIE TITLE");
 
-  const [urls, setUrls] = useState([]);
-  useEffect(() => {
+  useEffect(async () => {
     const ac = new AbortController();
-    const newUrls = [];
-    props.urls.map(url => {
-      newUrls.push({
-        original: url
-      })
-    })
-    setUrls(newUrls);
+
+    const formData = new FormData();
+    formData.append('postId', props.post._id);
+    const movieDataRaw = await fetch("https://api.themoviedb.org/3/movie/" + props.post.movieIds[0] + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
+    if (movieDataRaw !== false) {
+      const movieData = await movieDataRaw.json();
+      const title = movieData.title ? movieData.title : movieData.name;
+      await setMovieTitle(title);
+    }
+
+    fetch('/comment/get', {method: 'POST', body: formData})
+        .then(res => res.json())
+        .catch(err => console.log(err))
+        .then(res => setComments(res))
+        .catch(err => console.log(err));
+
     return () => ac.abort();
   }, []);
+
+  function constructGalleryUrls(urls) {
+    return urls.map(url => {
+      return {original: url};
+    })
+  }
+
+  function focusCommentField() {
+    commentField.current.focus();
+  }
+
+  async function handleCommentSubmit(event) {
+    event.preventDefault();
+    if (commentInput.length !== 0) {
+      const formData = new FormData(form.current);
+      formData.append('postId', props.post._id);
+      await setCommentInput("");
+      fetch('/comment/create', {method: 'POST', body: formData})
+          .then(res => res.json())
+          .catch(err => console.log(err))
+          .then(createdComment => {
+            setComments(prevData => {
+              return [...prevData, createdComment];
+            })
+          })
+          .catch(err => console.log(err));
+    }
+  }
+
+  function handleCommentInputChange(event) {
+    setCommentInput(event.target.value);
+  }
+
+  function handleToggleLike() {
+    const formData = new FormData();
+    formData.append('postId', props.post._id);
+    fetch('/post/toggleLike', {method: 'POST', body: formData});
+  }
+
+  function handleEditComment(event) {
+    event.preventDefault();
+  }
 
   return <div style={{
       width: "610px",
@@ -63,51 +122,81 @@ export default function RecommendationBox(props) {
         <div className={classes.root}>
           <Avatar src={process.env.PUBLIC_URL + '/images/loginImage.png'} />
         </div>
-        <p style={{bottom: "0", fontFamily: "roboto", fontWeight: "700"}}>Dennis Willie</p>
+        <p style={{bottom: "0", fontFamily: "roboto", fontWeight: "700"}}>{props.post.creatorName}</p>
       </div>
     </div>
-    <div style={{paddingLeft: "1em", paddingRight: "1em", textAlign: "justify", fontFamily: "roboto", fontWeight: "700"}}>
-      This is the movie title.
+    <div style={{paddingLeft: "1em", paddingRight: "1em", textAlign: "justify", fontFamily: "roboto", fontWeight: "700", wordWrap: "break-word"}}>
+      {movieTitle}
     </div>
     <div style={{paddingTop: "1em", paddingLeft: "1em", paddingRight: "1em", textAlign: "justify", fontFamily: "roboto"}}>
-      {[...Array(props.rating).keys()].map(count => {
+      {[...Array(props.post.rating).keys()].map(count => {
         return <StarOutlinedIcon key={count}/>
       })}
     </div>
     <div style={{padding: "1em", textAlign: "justify", fontFamily: "roboto"}}>
-      {props.text}
+      {props.post.text}
     </div>
-    {urls.length > 0 && <ImageGallery items={urls} showFullscreenButton={false} showPlayButton={false} showThumbnails={false}/>}
+    {props.urls.length > 0 && <ImageGallery items={constructGalleryUrls(props.urls)} showFullscreenButton={false} showPlayButton={false} showThumbnails={false}/>}
     <div style={{
       display: 'flex',
       alignItems: 'center',
       flexWrap: "wrap",
       padding: "10px",
     }}>
-      <IconButton>
-      <ThumbUpAltIcon />
-      </IconButton>
-      <span style={{fontFamily: "roboto", marginLeft: "4px"}}>{props.noOfLikes}</span>
-      <IconButton style={{marginLeft: "20px"}}>
-      <CommentIcon/>
-      </IconButton>
-      <span style={{fontFamily: "roboto", marginLeft: "4px"}}>{props.noOfComments}</span>
-    </div>
-    <div style={{padding: "5px"}}>
-    <div style={{borderTop: "1px solid #9ba89e", paddingTop: "5px"}}>
-    <Button style={{width: "30%"}}>
+    <IconButton>
+      {props.liked ? <ThumbUpAltIcon /> : <ThumbUpAltOutlinedIcon />}
+    </IconButton>
+    <span style={{fontFamily: "roboto", marginLeft: "4px"}}>{props.post.noOfLikes}</span>
+    <IconButton style={{marginLeft: "20px"}}>
+    <CommentIcon />
+    </IconButton>
+    <span style={{fontFamily: "roboto", marginLeft: "4px"}}>{props.post.noOfComments}</span>
+  </div>
+  <div style={{padding: "5px"}}>
+  <div style={{borderTop: "1px solid #9ba89e", paddingTop: "5px", paddingBottom: "5px"}}>
+    <Button style={{width: "30%"}} onClick={handleToggleLike}>
       <ThumbUpAltOutlinedIcon />
       <p style={{fontFamily: 'Roboto', marginLeft: "6px"}}>Like</p>
     </Button>
-    <Button style={{width: "30%"}}>
+    <Button style={{width: "30%"}} onClick={focusCommentField}>
       <ChatBubbleOutlineOutlinedIcon />
       <p style={{fontFamily: 'Roboto', marginLeft: "6px"}}>Comment</p>
     </Button>
-    <Button style={{width: "30%"}}>
+    <Button style={{width: "30%"}} onClick={() => {
+      props.handleEditClick({
+        post: props.post,
+        urls: props.urls
+      })
+    }}>
       <EditOutlinedIcon />
       <p style={{fontFamily: 'Roboto', marginLeft: "6px"}}>Edit</p>
     </Button>
-    </div>
-    </div>
   </div>
+  <div style={{borderTop: "1px solid #9ba89e", padding: "10px"}}>
+    {comments.map(comment => {
+      return <div style={{width: "100%", marginBottom: "1em", textAlign: "left", display: "flex"}}>
+        <div className={classes.root}>
+          <Avatar src={process.env.PUBLIC_URL + '/images/loginImage.png'} />
+        </div>
+        <div style={{backgroundColor: "#F0F2F5", paddingLeft: "10px", paddingRight: "10px", borderRadius: "15px"}}>
+          <p style={{bottom: "0", fontFamily: "roboto", fontSize: "0.9em", fontWeight: "700", marginBottom: "0", width: "100%"}}>{comment.creatorName}</p>
+          <p style={{marginTop: "0", fontFamily: "roboto", fontSize: "0.7em"}}>41m</p>
+          <p style={{bottom: "0", fontFamily: "roboto", fontSize: "0.9em", marginTop: "0"}}>{comment.text}</p>
+        </div>
+      </div>
+    })}
+  <form ref={form} className={classes.root} noValidate autoComplete="off" style={{width: "100%"}} onSubmit={handleCommentSubmit}>
+    <Avatar src={process.env.PUBLIC_URL + '/images/loginImage.png'} />
+    <TextField
+      inputRef={commentField}
+      label="Write a comment..."
+      variant="outlined"
+      name="text"
+      value={commentInput}
+      onChange={handleCommentInputChange}
+      style={{margin: "auto", width: "90%"}}/>
+  </form>
+  </div>
+  </div>
+</div>
 }

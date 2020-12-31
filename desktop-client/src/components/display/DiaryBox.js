@@ -116,10 +116,10 @@ export default function DiaryBox(props) {
         <p style={{bottom: "0", fontFamily: "roboto", fontWeight: "700"}}>{props.post.creatorName}</p>
       </div>
     </div>
-    <div style={{paddingLeft: "1em", paddingRight: "1em", textAlign: "justify", fontFamily: "roboto", fontWeight: "700"}}>
+    <div style={{paddingLeft: "1em", paddingRight: "1em", textAlign: "justify", fontFamily: "roboto", fontWeight: "700", wordWrap: "break-word"}}>
       {props.post.title}
     </div>
-    <div style={{padding: "1em", textAlign: "justify", fontFamily: "roboto"}}>
+    <div style={{padding: "1em", textAlign: "justify", fontFamily: "roboto", wordWrap: "break-word"}}>
       {props.post.text}
     </div>
     {props.urls.length > 0 && <ImageGallery items={constructGalleryUrls(props.urls)} showFullscreenButton={false} showPlayButton={false} showThumbnails={false}/>}

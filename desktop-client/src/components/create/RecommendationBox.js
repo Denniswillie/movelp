@@ -197,9 +197,9 @@ export default function RecommendationBox(props) {
           name="text"
           value={createInput.text}
           onChange={handleInputChange.handleTextChange}/>
-        {createInput.chosenMovies.map(chosenMovie => {
-          return <input type="hidden" name="chosenMoviesIds[]" value={chosenMovie}/>
-        })}
+          {createInput.chosenMovies.map(chosenMovie => {
+            return <input type="hidden" name="chosenMoviesIds[]" value={chosenMovie.id}/>
+          })}
         <input
           type="file"
           id="imageUpload"
@@ -226,8 +226,8 @@ export default function RecommendationBox(props) {
         variant="contained"
         className={classes.button}
         startIcon={<AddCircleOutline />}
-        onClick={submit}>{props.isEditing ? "edit" : "create"}</Button>
-      {props.isEditing && <Button
+        onClick={submit}>{isEditing ? "edit" : "create"}</Button>
+      {isEditing && <Button
         style={{backgroundColor: "black", color: "white"}}
         variant="contained"
         className={classes.button}
