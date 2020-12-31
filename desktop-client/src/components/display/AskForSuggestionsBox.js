@@ -49,7 +49,7 @@ export default function AskForSuggestionsBox(props) {
         .then(res => setComments(res))
         .catch(err => console.log(err));
     return () => ac.abort();
-  }, []);
+  }, [props.post._id]);
 
   function constructGalleryUrls(urls) {
     return urls.map(url => {

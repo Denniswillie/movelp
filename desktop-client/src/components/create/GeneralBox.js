@@ -6,8 +6,6 @@ import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 import IconButton from '@material-ui/core/IconButton';
 import Chip from '@material-ui/core/Chip';
-import Paper from '@material-ui/core/Paper';
-import TagFacesIcon from '@material-ui/icons/TagFaces';
 import {useRef, useCallback, useState} from 'react';
 import Gallery from 'react-photo-gallery';
 import SelectedImage from "../SelectedImage";
@@ -35,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
 export default function GeneralBox(props) {
   const classes = useStyles();
   const form = useRef(null);
-  const [selectAll, setSelectAll] = useState(false);
+  const [selectAll] = useState(false);
   const GENERAL = 'general';
 
   const {
@@ -61,7 +59,7 @@ export default function GeneralBox(props) {
         handleChooseNotToDeleteFile={handleInputChange.handleChooseNotToDeleteFile}
       />
     ),
-    [selectAll]
+    [selectAll, handleInputChange.handleChooseToDeleteFile, handleInputChange.handleChooseNotToDeleteFile]
   );
 
   function uploadPhoto() {
@@ -95,11 +93,11 @@ export default function GeneralBox(props) {
       for (var i = 0; i < deletedExistingFiles.length; i++) {
         formData.append('deletedFileIds[]', deletedExistingFiles[i]);
       }
-      for (var i = 0; i < createInput.uploadedFiles.length; i++) {
-        if (createInput.uploadedFiles[i].file) {
-          formData.append('fileInput[]', createInput.uploadedFiles[i].file);
+      for (var j = 0; j < createInput.uploadedFiles.length; j++) {
+        if (createInput.uploadedFiles[j].file) {
+          formData.append('fileInput[]', createInput.uploadedFiles[j].file);
         } else {
-          formData.append('fileInput[]', createInput.uploadedFiles[i].fileId);
+          formData.append('fileInput[]', createInput.uploadedFiles[j].fileId);
         }
       }
       fetch('/post/edit', {method: 'POST', body: formData})
@@ -112,8 +110,8 @@ export default function GeneralBox(props) {
     } else {
       event.preventDefault();
       const formData = new FormData(form.current);
-      for (var i = 0; i < createInput.uploadedFiles.length; i++) {
-        formData.append('fileInput[]', createInput.uploadedFiles[i].file);
+      for (var k = 0; k < createInput.uploadedFiles.length; k++) {
+        formData.append('fileInput[]', createInput.uploadedFiles[k].file);
       }
       fetch('/post/create/general', {method: 'POST', body: formData})
           .then(res => res.json())
@@ -139,6 +137,7 @@ export default function GeneralBox(props) {
           marginTop: "9px"}}>
       {createInput.chosenMovies.map(chosenMovie => {
         return <Chip
+          key={chosenMovie.id}
           label={chosenMovie.title}
           onDelete={() => {handleInputChange.handleDeleteChosenMovie(chosenMovie.id)}}
         />
@@ -154,7 +153,7 @@ export default function GeneralBox(props) {
         value={createInput.text}
         onChange={handleInputChange.handleTextChange}/>
       {createInput.chosenMovies.map(chosenMovie => {
-        return <input type="hidden" name="chosenMoviesIds[]" value={chosenMovie.id}/>
+        return <input type="hidden" name="chosenMoviesIds[]" key={chosenMovie.id} value={chosenMovie.id}/>
       })}
       <input
         type="file"

@@ -140,35 +140,34 @@ export default function Posts() {
       <div id="feed" style={{position: "relative", padding: "1em", textAlign: "center", paddingTop: "5em"}}>
         <CreateBox handleClick={handleCreatePostClick}/>
         {postData.posts.map((post, index) => {
-          switch (post.type) {
-            case PostType.DIARY:
-              return <DisplayDiaryBox
-                key={post._id}
-                post={post}
-                urls={postData.urls[index]}
-                liked={postData.liked[index]}
-                handleEditClick={handleEditClick} />
-            case PostType.RECOMMENDATION:
-              return <DisplayRecommendationBox
-                key={post._id}
-                post={post}
-                urls={postData.urls[index]}
-                liked={postData.liked[index]}
-                handleEditClick={handleEditClick} />
-            case PostType.GENERAL:
-              return <DisplayGeneralBox
-                key={post._id}
-                post={post}
-                urls={postData.urls[index]}
-                liked={postData.liked[index]}
-                handleEditClick={handleEditClick} />
-            case PostType.ASK_SUGGESTION:
-              return <DisplayAskForSuggestionsBox
-                key={post._id}
-                post={post}
-                urls={postData.urls[index]}
-                liked={postData.liked[index]}
-                handleEditClick={handleEditClick} />
+          if (post.type === PostType.DIARY) {
+            return <DisplayDiaryBox
+              key={post._id}
+              post={post}
+              urls={postData.urls[index]}
+              liked={postData.liked[index]}
+              handleEditClick={handleEditClick} />
+          } else if (post.type === PostType.RECOMMENDATION) {
+            return <DisplayRecommendationBox
+              key={post._id}
+              post={post}
+              urls={postData.urls[index]}
+              liked={postData.liked[index]}
+              handleEditClick={handleEditClick} />
+          } else if (post.type === PostType.ASK_SUGGESTION) {
+            return <DisplayAskForSuggestionsBox
+              key={post._id}
+              post={post}
+              urls={postData.urls[index]}
+              liked={postData.liked[index]}
+              handleEditClick={handleEditClick} />
+          } else {
+            return <DisplayGeneralBox
+              key={post._id}
+              post={post}
+              urls={postData.urls[index]}
+              liked={postData.liked[index]}
+              handleEditClick={handleEditClick} />
           }
         })}
       </div>

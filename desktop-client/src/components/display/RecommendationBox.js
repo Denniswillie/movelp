@@ -64,7 +64,7 @@ export default function RecommendationBox(props) {
     fetchData();
 
     return () => ac.abort();
-  }, []);
+  }, [props.post._id, props.post.movieIds]);
 
   function constructGalleryUrls(urls) {
     return urls.map(url => {

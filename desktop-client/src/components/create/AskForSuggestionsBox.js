@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
 export default function AskForSuggestionsBox(props) {
   const classes = useStyles();
   const form = useRef(null);
-  const [selectAll, setSelectAll] = useState(false);
+  const [selectAll] = useState(false);
   const ASK_SUGGESTION = 'asksuggestion';
 
   const {
@@ -50,7 +50,7 @@ export default function AskForSuggestionsBox(props) {
         handleChooseNotToDeleteFile={handleInputChange.handleChooseNotToDeleteFile}
       />
     ),
-    [selectAll]
+    [selectAll, handleInputChange.handleChooseToDeleteFile, handleInputChange.handleChooseNotToDeleteFile]
   );
 
   function uploadPhoto() {
@@ -84,11 +84,11 @@ export default function AskForSuggestionsBox(props) {
       for (var i = 0; i < deletedExistingFiles.length; i++) {
         formData.append('deletedFileIds[]', deletedExistingFiles[i]);
       }
-      for (var i = 0; i < createInput.uploadedFiles.length; i++) {
-        if (createInput.uploadedFiles[i].file) {
-          formData.append('fileInput[]', createInput.uploadedFiles[i].file);
+      for (var j = 0; j < createInput.uploadedFiles.length; j++) {
+        if (createInput.uploadedFiles[j].file) {
+          formData.append('fileInput[]', createInput.uploadedFiles[j].file);
         } else {
-          formData.append('fileInput[]', createInput.uploadedFiles[i].fileId);
+          formData.append('fileInput[]', createInput.uploadedFiles[j].fileId);
         }
       }
       fetch('/post/edit', {method: 'POST', body: formData})
@@ -101,8 +101,8 @@ export default function AskForSuggestionsBox(props) {
     } else {
       event.preventDefault();
       const formData = new FormData(form.current);
-      for (var i = 0; i < createInput.uploadedFiles.length; i++) {
-        formData.append('fileInput[]', createInput.uploadedFiles[i].file);
+      for (var k = 0; k < createInput.uploadedFiles.length; k++) {
+        formData.append('fileInput[]', createInput.uploadedFiles[k].file);
       }
       fetch('/post/create/asksuggestion', {method: 'POST', body: formData})
           .then(res => res.json())

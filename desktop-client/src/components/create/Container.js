@@ -60,7 +60,7 @@ export default function Container(props) {
     }
     fetchData();
     return () => ac.abort();
-  }, []);
+  });
 
   const handleInputChange = {
     handleDiaryTitleChange: (event) => {
@@ -162,13 +162,13 @@ export default function Container(props) {
 
   function getPostHeader(type) {
     if (type === PostType.GENERAL) {
-      return <p>General Post</p>
+      return "General Post"
     } else if (type === PostType.RECOMMENDATION) {
-      return <p>Recommendation Post</p>
+      return "Recommendation Post"
     } else if (type === PostType.DIARY) {
-      return <p>Diary Post</p>
+      return "Diary Post"
     } else if (type === PostType.ASK_SUGGESTION) {
-      return <p>Ask for movie suggestion</p>
+      return "Ask for Movie Recommendations"
     }
   }
 
