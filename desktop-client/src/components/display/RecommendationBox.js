@@ -13,6 +13,7 @@ import NavigateNextOutlinedIcon from '@material-ui/icons/NavigateNextOutlined';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
+import Comment from './Comment';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,7 +38,7 @@ export default function RecommendationBox(props) {
   const [movieTitle, setMovieTitle] = useState("MOVIE TITLE");
   const [data, setData] = useState({
     isLiked: props.liked,
-    isEditingComment: false,
+    editedCommentId: null,
     noOfLikes: props.post.noOfLikes,
     noOfComments: props.post.noOfComments
   })
@@ -88,6 +89,9 @@ export default function RecommendationBox(props) {
           .then(createdComment => {
             setComments(prevData => {
               return [...prevData, createdComment];
+            });
+            setData(prevData => {
+              return {...prevData, noOfComments: prevData.noOfComments + 1};
             })
           })
           .catch(err => console.log(err));
@@ -111,8 +115,30 @@ export default function RecommendationBox(props) {
     fetch('/post/toggleLike', {method: 'POST', body: formData});
   }
 
-  function handleEditComment(event) {
-    event.preventDefault();
+  function handleEditCommentClick(commentId) {
+    setData(prevData => {
+      return {...prevData, editedCommentId: commentId};
+    })
+  }
+
+  function handleEditCommentUnclick() {
+    setData(prevData => {
+      return {...prevData, editedCommentId: null};
+    })
+  }
+
+  function handleDeleteComment(commentId) {
+    setComments(prevData => {
+      return prevData.filter(data => {
+        return data._id !== commentId;
+      });
+    });
+    setData(prevData => {
+      return {...prevData, noOfComments: prevData.noOfComments - 1};
+    })
+    const formData = new FormData();
+    formData.append('commentId', commentId);
+    fetch('/comment/delete', {method: 'POST', body: formData});
   }
 
   return <div style={{
@@ -186,16 +212,15 @@ export default function RecommendationBox(props) {
   </div>
   <div style={{borderTop: "1px solid #9ba89e", padding: "10px"}}>
     {comments.map(comment => {
-      return <div style={{width: "100%", marginBottom: "1em", textAlign: "left", display: "flex"}}>
-        <div className={classes.root}>
-          <Avatar src={process.env.PUBLIC_URL + '/images/loginImage.png'} />
-        </div>
-        <div style={{backgroundColor: "#F0F2F5", paddingLeft: "10px", paddingRight: "10px", borderRadius: "15px"}}>
-          <p style={{bottom: "0", fontFamily: "roboto", fontSize: "0.9em", fontWeight: "700", marginBottom: "0", width: "100%"}}>{comment.creatorName}</p>
-          <p style={{marginTop: "0", fontFamily: "roboto", fontSize: "0.7em"}}>41m</p>
-          <p style={{bottom: "0", fontFamily: "roboto", fontSize: "0.9em", marginTop: "0"}}>{comment.text}</p>
-        </div>
-      </div>
+      return <Comment
+        key={comment._id}
+        text={comment.text}
+        creatorName={comment.creatorName}
+        _id={comment._id}
+        editedCommentId={data.editedCommentId}
+        handleEditCommentClick={handleEditCommentClick}
+        handleEditCommentUnclick={handleEditCommentUnclick}
+        handleDeleteComment={handleDeleteComment}/>
     })}
   <form ref={form} className={classes.root} noValidate autoComplete="off" style={{width: "100%"}} onSubmit={handleCommentSubmit}>
     <Avatar src={process.env.PUBLIC_URL + '/images/loginImage.png'} />

@@ -77,6 +77,9 @@ export default function DiaryBox(props) {
           .then(createdComment => {
             setComments(prevData => {
               return [...prevData, createdComment];
+            });
+            setData(prevData => {
+              return {...prevData, noOfComments: prevData.noOfComments + 1};
             })
           })
           .catch(err => console.log(err));
@@ -117,6 +120,9 @@ export default function DiaryBox(props) {
       return prevData.filter(data => {
         return data._id !== commentId;
       });
+    });
+    setData(prevData => {
+      return {...prevData, noOfComments: prevData.noOfComments - 1};
     })
     const formData = new FormData();
     formData.append('commentId', commentId);
@@ -142,7 +148,10 @@ export default function DiaryBox(props) {
         <div className={classes.root}>
           <Avatar src={process.env.PUBLIC_URL + '/images/loginImage.png'} />
         </div>
-        <p style={{bottom: "0", fontFamily: "roboto", fontWeight: "700"}}>{props.post.creatorName}</p>
+        <div>
+          <p style={{bottom: "0", fontFamily: "roboto", fontWeight: "700", marginBottom: "0"}}>{props.post.creatorName}</p>
+          <p style={{bottom: "0", fontFamily: "roboto", marginTop: "0", fontSize: "0.7em"}}>41m</p>
+        </div>
       </div>
     </div>
     <div style={{paddingLeft: "1em", paddingRight: "1em", textAlign: "justify", fontFamily: "roboto", fontWeight: "700", wordWrap: "break-word"}}>

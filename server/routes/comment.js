@@ -17,8 +17,6 @@ router.post('/create', upload.none(), async (req, res) => {
   const noOfLikes = 0;
   const isEdited = false;
 
-  console.log(creatorName);
-
   const comment =
       new Comment.Builder()
       .setPostId(postId)

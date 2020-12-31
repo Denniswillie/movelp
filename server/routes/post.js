@@ -77,10 +77,6 @@ router.get('/get', async (req, res) => {
 })
 
 router.post('/edit', uploadFields, async (req, res) => {
-
-  console.log(req.body);
-  console.log(req.files);
-
   const postId = req.body.postId;
   const type = req.body.postType;
   const existingFileIds = req.body.fileInput ? req.body.fileInput : [];
@@ -131,7 +127,6 @@ router.post('/edit', uploadFields, async (req, res) => {
     GoogleStorageManager.STORAGE.BUCKET.POST
   );
   const liked = await MongoDBPostManager.userHasLiked(req.user._id, editedPost._id);
-  res.send([editedPost, urls, liked]);
   res.send({
     post: editedPost,
     urls: urls,

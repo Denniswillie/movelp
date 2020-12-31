@@ -128,9 +128,8 @@ class MongoDBPostManager {
       });
   }
 
-  static async updateNoOfLikes(postId, isIncreased) {
+  static updateNoOfLikes(postId, isIncreased) {
     if (isIncreased) {
-      console.log("increase noOfLikes");
       return PostModel.findByIdAndUpdate(postId, {$inc: {noOfLikes: 1}}, {new: true})
         .then(docs => {
           return docs;
@@ -139,7 +138,6 @@ class MongoDBPostManager {
           console.log(err);
         })
     } else {
-      console.log("decrease noOfLikes");
       return PostModel.findByIdAndUpdate(postId, {$inc: {noOfLikes: -1}}, {new: true})
         .then(docs => {
           return docs;
@@ -147,6 +145,26 @@ class MongoDBPostManager {
         .catch(err => {
           console.log(err);
         })
+    }
+  }
+
+  static updateNoOfComments(postId, isIncreased) {
+    if (isIncreased) {
+      return PostModel.findByIdAndUpdate(postId, {$inc: {noOfComments: 1}}, {new: true})
+        .then(docs => {
+          return docs;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    } else {
+      return PostModel.findByIdAndUpdate(postId, {$inc: {noOfComments: -1}}, {new: true})
+        .then(docs => {
+          return docs;
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
   }
 }

@@ -11,11 +11,13 @@ const mongoose = require("mongoose");
 const ObjectId = require("mongodb").ObjectID;
 const CommentModel = require('../../models/commentModel');
 const CommentLikeModel = require('../../models/commentLikeModel');
+const MongoDBPostManager = require('./MongoDBPostManager');
 
 class MongoDBCommentManager {
   static create(comment) {
     return CommentModel.create(this.constructSchemaFields(comment))
-      .then(docs => {
+      .then(async (docs) => {
+        await MongoDBPostManager.updateNoOfComments(docs.postId, true);
         return docs;
       })
       .catch(console.log);
@@ -51,7 +53,8 @@ class MongoDBCommentManager {
 
   static delete(commentId) {
     return CommentModel.findByIdAndDelete(commentId)
-      .then(docs => {
+      .then(async (docs) => {
+        await MongoDBPostManager.updateNoOfComments(docs.postId, false);
         return docs;
       })
       .catch(console.log);

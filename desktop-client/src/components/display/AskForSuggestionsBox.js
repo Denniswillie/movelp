@@ -4,6 +4,7 @@ import Avatar from '@material-ui/core/Avatar';
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
 import Button from '@material-ui/core/Button';
+import MovieIcon from '@material-ui/icons/Movie';
 import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
 import CommentIcon from '@material-ui/icons/Comment';
 import ThumbUpAltOutlinedIcon from '@material-ui/icons/ThumbUpAltOutlined';
@@ -11,6 +12,7 @@ import ChatBubbleOutlineOutlinedIcon from '@material-ui/icons/ChatBubbleOutlineO
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
+import Comment from './Comment';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,13 +36,14 @@ export default function AskForSuggestionsBox(props) {
   const [comments, setComments] = useState([]);
   const [data, setData] = useState({
     isLiked: props.liked,
-    isEditingComment: false,
+    editedCommentId: null,
     noOfLikes: props.post.noOfLikes,
     noOfComments: props.post.noOfComments
   })
 
   useEffect(() => {
     const ac = new AbortController();
+
     const formData = new FormData();
     formData.append('postId', props.post._id);
     fetch('/comment/get', {method: 'POST', body: formData})
@@ -48,6 +51,7 @@ export default function AskForSuggestionsBox(props) {
         .catch(err => console.log(err))
         .then(res => setComments(res))
         .catch(err => console.log(err));
+
     return () => ac.abort();
   }, [props.post._id]);
 
@@ -73,6 +77,9 @@ export default function AskForSuggestionsBox(props) {
           .then(createdComment => {
             setComments(prevData => {
               return [...prevData, createdComment];
+            });
+            setData(prevData => {
+              return {...prevData, noOfComments: prevData.noOfComments + 1};
             })
           })
           .catch(err => console.log(err));
@@ -96,8 +103,30 @@ export default function AskForSuggestionsBox(props) {
     fetch('/post/toggleLike', {method: 'POST', body: formData});
   }
 
-  function handleEditComment(event) {
-    event.preventDefault();
+  function handleEditCommentClick(commentId) {
+    setData(prevData => {
+      return {...prevData, editedCommentId: commentId};
+    })
+  }
+
+  function handleEditCommentUnclick() {
+    setData(prevData => {
+      return {...prevData, editedCommentId: null};
+    })
+  }
+
+  function handleDeleteComment(commentId) {
+    setComments(prevData => {
+      return prevData.filter(data => {
+        return data._id !== commentId;
+      });
+    });
+    setData(prevData => {
+      return {...prevData, noOfComments: prevData.noOfComments - 1};
+    })
+    const formData = new FormData();
+    formData.append('commentId', commentId);
+    fetch('/comment/delete', {method: 'POST', body: formData});
   }
 
   return <div style={{
@@ -116,6 +145,9 @@ export default function AskForSuggestionsBox(props) {
         </div>
         <p style={{bottom: "0", fontFamily: "roboto", fontWeight: "700"}}>{props.post.creatorName}</p>
       </div>
+    </div>
+    <div style={{paddingLeft: "1em", paddingRight: "1em", textAlign: "justify", fontFamily: "roboto", fontWeight: "700", wordWrap: "break-word"}}>
+      {props.post.title}
     </div>
     <div style={{padding: "1em", textAlign: "justify", fontFamily: "roboto", wordWrap: "break-word"}}>
       {props.post.text}
@@ -158,16 +190,15 @@ export default function AskForSuggestionsBox(props) {
     </div>
     <div style={{borderTop: "1px solid #9ba89e", padding: "10px"}}>
       {comments.map(comment => {
-        return <div style={{width: "100%", marginBottom: "1em", textAlign: "left", display: "flex"}}>
-          <div className={classes.root}>
-            <Avatar src={process.env.PUBLIC_URL + '/images/loginImage.png'} />
-          </div>
-          <div style={{backgroundColor: "#F0F2F5", paddingLeft: "10px", paddingRight: "10px", borderRadius: "15px"}}>
-            <p style={{bottom: "0", fontFamily: "roboto", fontSize: "0.9em", fontWeight: "700", marginBottom: "0", width: "100%"}}>{comment.creatorName}</p>
-            <p style={{marginTop: "0", fontFamily: "roboto", fontSize: "0.7em"}}>41m</p>
-            <p style={{bottom: "0", fontFamily: "roboto", fontSize: "0.9em", marginTop: "0"}}>{comment.text}</p>
-          </div>
-        </div>
+        return <Comment
+          key={comment._id}
+          text={comment.text}
+          creatorName={comment.creatorName}
+          _id={comment._id}
+          editedCommentId={data.editedCommentId}
+          handleEditCommentClick={handleEditCommentClick}
+          handleEditCommentUnclick={handleEditCommentUnclick}
+          handleDeleteComment={handleDeleteComment}/>
       })}
     <form ref={form} className={classes.root} noValidate autoComplete="off" style={{width: "100%"}} onSubmit={handleCommentSubmit}>
       <Avatar src={process.env.PUBLIC_URL + '/images/loginImage.png'} />
