@@ -99,4 +99,18 @@ module.exports = function(app) {
       changeOrigin: true,
     })
   );
+  app.use(
+    '/comment/edit',
+    createProxyMiddleware({
+      target: 'http://localhost:5000',
+      changeOrigin: true,
+    })
+  );
+  app.use(
+    '/comment/delete',
+    createProxyMiddleware({
+      target: 'http://localhost:5000',
+      changeOrigin: true,
+    })
+  );
 };

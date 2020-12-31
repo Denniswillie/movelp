@@ -52,4 +52,10 @@ router.post('/edit', upload.none(), async (req, res) => {
   res.end();
 });
 
+router.post('/delete', upload.none(), async(req, res) => {
+  const commentId = req.body.commentId;
+  await MongoDBCommentManager.delete(commentId);
+  res.status(200).send(true);
+});
+
 module.exports = router;

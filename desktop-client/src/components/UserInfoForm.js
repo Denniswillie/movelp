@@ -37,7 +37,7 @@ export default function UserInfoForm() {
   function handleSubmit(event) {
     event.preventDefault();
     setNicknameExistsAlert(false);
-    if (nickname.length == 0) {
+    if (nickname.length === 0) {
       return;
     }
     var re = /^\w+$/;

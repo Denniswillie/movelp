@@ -4,7 +4,6 @@ import Avatar from '@material-ui/core/Avatar';
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
 import Button from '@material-ui/core/Button';
-import MovieIcon from '@material-ui/icons/Movie';
 import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
 import CommentIcon from '@material-ui/icons/Comment';
 import ThumbUpAltOutlinedIcon from '@material-ui/icons/ThumbUpAltOutlined';
@@ -14,9 +13,6 @@ import NavigateNextOutlinedIcon from '@material-ui/icons/NavigateNextOutlined';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
-import CancelIcon from '@material-ui/icons/Cancel';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,24 +35,33 @@ export default function RecommendationBox(props) {
   const [commentInput, setCommentInput] = useState("");
   const [comments, setComments] = useState([]);
   const [movieTitle, setMovieTitle] = useState("MOVIE TITLE");
+  const [data, setData] = useState({
+    isLiked: props.liked,
+    isEditingComment: false,
+    noOfLikes: props.post.noOfLikes,
+    noOfComments: props.post.noOfComments
+  })
 
-  useEffect(async () => {
+  useEffect(() => {
     const ac = new AbortController();
 
-    const formData = new FormData();
-    formData.append('postId', props.post._id);
-    const movieDataRaw = await fetch("https://api.themoviedb.org/3/movie/" + props.post.movieIds[0] + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
-    if (movieDataRaw !== false) {
-      const movieData = await movieDataRaw.json();
-      const title = movieData.title ? movieData.title : movieData.name;
-      await setMovieTitle(title);
-    }
+    async function fetchData() {
+      const formData = new FormData();
+      formData.append('postId', props.post._id);
+      const movieDataRaw = await fetch("https://api.themoviedb.org/3/movie/" + props.post.movieIds[0] + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
+      if (movieDataRaw !== false) {
+        const movieData = await movieDataRaw.json();
+        const title = movieData.title ? movieData.title : movieData.name;
+        await setMovieTitle(title);
+      }
 
-    fetch('/comment/get', {method: 'POST', body: formData})
-        .then(res => res.json())
-        .catch(err => console.log(err))
-        .then(res => setComments(res))
-        .catch(err => console.log(err));
+      fetch('/comment/get', {method: 'POST', body: formData})
+          .then(res => res.json())
+          .catch(err => console.log(err))
+          .then(res => setComments(res))
+          .catch(err => console.log(err));
+    }
+    fetchData();
 
     return () => ac.abort();
   }, []);
@@ -94,6 +99,13 @@ export default function RecommendationBox(props) {
   }
 
   function handleToggleLike() {
+    setData(prevData => {
+      return {
+        ...prevData,
+        isLiked: !prevData.isLiked,
+        noOfLikes: prevData.isLiked ? prevData.noOfLikes - 1 : prevData.noOfLikes + 1
+      };
+    });
     const formData = new FormData();
     formData.append('postId', props.post._id);
     fetch('/post/toggleLike', {method: 'POST', body: formData});
@@ -144,13 +156,13 @@ export default function RecommendationBox(props) {
       padding: "10px",
     }}>
     <IconButton>
-      {props.liked ? <ThumbUpAltIcon /> : <ThumbUpAltOutlinedIcon />}
+      {data.isLiked ? <ThumbUpAltIcon /> : <ThumbUpAltOutlinedIcon />}
     </IconButton>
-    <span style={{fontFamily: "roboto", marginLeft: "4px"}}>{props.post.noOfLikes}</span>
+    <span style={{fontFamily: "roboto", marginLeft: "4px"}}>{data.noOfLikes}</span>
     <IconButton style={{marginLeft: "20px"}}>
     <CommentIcon />
     </IconButton>
-    <span style={{fontFamily: "roboto", marginLeft: "4px"}}>{props.post.noOfComments}</span>
+    <span style={{fontFamily: "roboto", marginLeft: "4px"}}>{data.noOfComments}</span>
   </div>
   <div style={{padding: "5px"}}>
   <div style={{borderTop: "1px solid #9ba89e", paddingTop: "5px", paddingBottom: "5px"}}>

@@ -9,13 +9,10 @@ import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
 import CommentIcon from '@material-ui/icons/Comment';
 import ThumbUpAltOutlinedIcon from '@material-ui/icons/ThumbUpAltOutlined';
 import ChatBubbleOutlineOutlinedIcon from '@material-ui/icons/ChatBubbleOutlineOutlined';
-import StarOutlinedIcon from '@material-ui/icons/StarOutlined';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
-import CancelIcon from '@material-ui/icons/Cancel';
+import Comment from './Comment';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,8 +34,14 @@ export default function DiaryBox(props) {
   const form = useRef(null);
   const [commentInput, setCommentInput] = useState("");
   const [comments, setComments] = useState([]);
+  const [data, setData] = useState({
+    isLiked: props.liked,
+    editedCommentId: null,
+    noOfLikes: props.post.noOfLikes,
+    noOfComments: props.post.noOfComments
+  })
 
-  useEffect(async () => {
+  useEffect(() => {
     const ac = new AbortController();
 
     const formData = new FormData();
@@ -85,13 +88,39 @@ export default function DiaryBox(props) {
   }
 
   function handleToggleLike() {
+    setData(prevData => {
+      return {
+        ...prevData,
+        isLiked: !prevData.isLiked,
+        noOfLikes: prevData.isLiked ? prevData.noOfLikes - 1 : prevData.noOfLikes + 1
+      };
+    });
     const formData = new FormData();
     formData.append('postId', props.post._id);
     fetch('/post/toggleLike', {method: 'POST', body: formData});
   }
 
-  function handleEditComment(event) {
-    event.preventDefault();
+  function handleEditCommentClick(commentId) {
+    setData(prevData => {
+      return {...prevData, editedCommentId: commentId};
+    })
+  }
+
+  function handleEditCommentUnclick() {
+    setData(prevData => {
+      return {...prevData, editedCommentId: null};
+    })
+  }
+
+  function handleDeleteComment(commentId) {
+    setComments(prevData => {
+      return prevData.filter(data => {
+        return data._id !== commentId;
+      });
+    })
+    const formData = new FormData();
+    formData.append('commentId', commentId);
+    fetch('/comment/delete', {method: 'POST', body: formData});
   }
 
   return <div style={{
@@ -130,13 +159,13 @@ export default function DiaryBox(props) {
       padding: "10px",
     }}>
       <IconButton>
-        {props.liked ? <ThumbUpAltIcon /> : <ThumbUpAltOutlinedIcon />}
+        {data.isLiked ? <ThumbUpAltIcon /> : <ThumbUpAltOutlinedIcon />}
       </IconButton>
-      <span style={{fontFamily: "roboto", marginLeft: "4px"}}>{props.post.noOfLikes}</span>
+      <span style={{fontFamily: "roboto", marginLeft: "4px"}}>{data.noOfLikes}</span>
       <IconButton style={{marginLeft: "20px"}}>
       <CommentIcon />
       </IconButton>
-      <span style={{fontFamily: "roboto", marginLeft: "4px"}}>{props.post.noOfComments}</span>
+      <span style={{fontFamily: "roboto", marginLeft: "4px"}}>{data.noOfComments}</span>
     </div>
     <div style={{padding: "5px"}}>
     <div style={{borderTop: "1px solid #9ba89e", paddingTop: "5px", paddingBottom: "5px"}}>
@@ -160,16 +189,15 @@ export default function DiaryBox(props) {
     </div>
     <div style={{borderTop: "1px solid #9ba89e", padding: "10px"}}>
       {comments.map(comment => {
-        return <div style={{width: "100%", marginBottom: "1em", textAlign: "left", display: "flex"}}>
-          <div className={classes.root}>
-            <Avatar src={process.env.PUBLIC_URL + '/images/loginImage.png'} />
-          </div>
-          <div style={{backgroundColor: "#F0F2F5", paddingLeft: "10px", paddingRight: "10px", borderRadius: "15px"}}>
-            <p style={{bottom: "0", fontFamily: "roboto", fontSize: "0.9em", fontWeight: "700", marginBottom: "0", width: "100%"}}>{comment.creatorName}</p>
-            <p style={{marginTop: "0", fontFamily: "roboto", fontSize: "0.7em"}}>41m</p>
-            <p style={{bottom: "0", fontFamily: "roboto", fontSize: "0.9em", marginTop: "0"}}>{comment.text}</p>
-          </div>
-        </div>
+        return <Comment
+          key={comment._id}
+          text={comment.text}
+          creatorName={comment.creatorName}
+          _id={comment._id}
+          editedCommentId={data.editedCommentId}
+          handleEditCommentClick={handleEditCommentClick}
+          handleEditCommentUnclick={handleEditCommentUnclick}
+          handleDeleteComment={handleDeleteComment}/>
       })}
     <form ref={form} className={classes.root} noValidate autoComplete="off" style={{width: "100%"}} onSubmit={handleCommentSubmit}>
       <Avatar src={process.env.PUBLIC_URL + '/images/loginImage.png'} />

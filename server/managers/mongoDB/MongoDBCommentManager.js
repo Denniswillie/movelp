@@ -34,7 +34,7 @@ class MongoDBCommentManager {
   }
 
   static edit(commentId, commentBuilder) {
-    return CommentModel.findByIdAndUpdate(comment._id, commentBuilder, {new: true})
+    return CommentModel.findByIdAndUpdate(commentId, commentBuilder, {new: true})
       .then(docs => {
         return docs;
       })

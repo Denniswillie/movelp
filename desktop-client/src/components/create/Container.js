@@ -28,34 +28,37 @@ export default function Container(props) {
 
   const PostType = useContext(PostTypeContext);
 
-  useEffect(async () => {
+  useEffect(() => {
     const ac = new AbortController();
-    if (props.createState.isEditing) {
-      const movieIds = props.createState.data.post.movieIds;
-      const promises = [];
-      for (var i = 0; i < movieIds.length; i++) {
-        const movieDataRaw = await fetch("https://api.themoviedb.org/3/movie/" + movieIds[i] + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
-        if (movieDataRaw === false) {
-          continue;
+    async function fetchData() {
+      if (props.createState.isEditing) {
+        const movieIds = props.createState.data.post.movieIds;
+        const promises = [];
+        for (var i = 0; i < movieIds.length; i++) {
+          const movieDataRaw = await fetch("https://api.themoviedb.org/3/movie/" + movieIds[i] + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
+          if (movieDataRaw === false) {
+            continue;
+          }
+          const movieData = await movieDataRaw.json();
+          const title = movieData.title ? movieData.title : movieData.name;
+          promises.push({id: movieIds[i], title: title});
         }
-        const movieData = await movieDataRaw.json();
-        const title = movieData.title ? movieData.title : movieData.name;
-        promises.push({id: movieIds[i], title: title});
+        const resolved = await Promise.all(promises);
+        setCreateInput(prevData => {
+          return {
+            ...prevData,
+            diaryTitle: props.createState.data.post.title,
+            rating: props.createState.data.post.rating,
+            text: props.createState.data.post.text,
+            uploadedFiles: props.createState.data.post.fileIds.map((fileId, index) => {
+              return {src: props.createState.data.urls[index], width: 1, height: 1, fileId: fileId};
+            }),
+            chosenMovies: resolved
+          }
+        })
       }
-      const resolved = await Promise.all(promises);
-      setCreateInput(prevData => {
-        return {
-          ...prevData,
-          diaryTitle: props.createState.data.post.title,
-          rating: props.createState.data.post.rating,
-          text: props.createState.data.post.text,
-          uploadedFiles: props.createState.data.post.fileIds.map((fileId, index) => {
-            return {src: props.createState.data.urls[index], width: 1, height: 1, fileId: fileId};
-          }),
-          chosenMovies: resolved
-        }
-      })
     }
+    fetchData();
     return () => ac.abort();
   }, []);
 

@@ -49,7 +49,7 @@ export default function Posts() {
     setPostData(prevData => {
       var previousPostDataFound = false;
       for (var i = 0; i < prevData.posts.length; i++) {
-        if (prevData.posts[i]._id.trim() == editedPostData.post._id.trim()) {
+        if (prevData.posts[i]._id.trim() === editedPostData.post._id.trim()) {
           prevData.posts[i] = editedPostData.post;
           prevData.urls[i] = editedPostData.urls;
           prevData.liked[i] = editedPostData.liked;
@@ -74,7 +74,7 @@ export default function Posts() {
     setPostData(prevData => {
       const temp = {...prevData};
       for (var i = 0; i < temp.posts.length; i++) {
-        if (temp.posts[i]._id.trim() == postId.trim()) {
+        if (temp.posts[i]._id.trim() === postId.trim()) {
           temp.posts.splice(i, 1);
           temp.urls.splice(i, 1);
           temp.liked.splice(i, 1);
