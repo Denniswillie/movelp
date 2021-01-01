@@ -55,11 +55,14 @@ router.post('/create/:type', uploadFields, async (req, res) => {
     createdPost,
     GoogleStorageManager.STORAGE.BUCKET.POST
   );
+  const creatorProfileImageUrl = await GoogleStorageManager.downloadUserProfileImage(req.user._id, GoogleStorageManager.STORAGE.BUCKET.USER_PROFILE);
   const liked = false;
   res.send({
     post: createdPost,
     urls: urls,
-    liked: liked
+    liked: liked,
+    creatorProfileImageUrl: creatorProfileImageUrl,
+    userId: req.user._id
   });
 })
 
@@ -69,10 +72,14 @@ router.get('/get', async (req, res) => {
   const urls = await GoogleStorageManager.downloadFilesForMultiplePosts(
       docs, GoogleStorageManager.STORAGE.BUCKET.POST
   );
+  const creatorProfileImageUrls = await GoogleStorageManager.downloadUserProfileImages(docs);
+  console.log(creatorProfileImageUrls);
   res.send({
     posts: docs,
     urls: urls,
-    liked: liked
+    liked: liked,
+    creatorProfileImageUrls: creatorProfileImageUrls,
+    userId: userId
   })
 })
 
@@ -127,10 +134,14 @@ router.post('/edit', uploadFields, async (req, res) => {
     GoogleStorageManager.STORAGE.BUCKET.POST
   );
   const liked = await MongoDBPostManager.userHasLiked(req.user._id, editedPost._id);
+  const creatorProfileImageUrl = await GoogleStorageManager.downloadUserProfileImage(req.user._id, GoogleStorageManager.STORAGE.BUCKET.USER_PROFILE);
+
   res.send({
     post: editedPost,
     urls: urls,
-    liked: liked
+    liked: liked,
+    creatorProfileImageUrl: creatorProfileImageUrl,
+    userId: req.user._id
   })
 });
 

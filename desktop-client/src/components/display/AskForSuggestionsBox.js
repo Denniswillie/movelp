@@ -141,7 +141,7 @@ export default function AskForSuggestionsBox(props) {
     <div>
       <div style={{width: "100%", margin: "auto", textAlign: "left", padding: "5px", display: "flex"}}>
         <div className={classes.root}>
-          <Avatar src={process.env.PUBLIC_URL + '/images/loginImage.png'} />
+          <Avatar src={props.creatorProfileImageUrl ? props.creatorProfileImageUrl : process.env.PUBLIC_URL + '/images/loginImage.png'} />
         </div>
         <p style={{bottom: "0", fontFamily: "roboto", fontWeight: "700"}}>{props.post.creatorName}</p>
       </div>

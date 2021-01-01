@@ -13,7 +13,9 @@ export default function Posts() {
   const [postData, setPostData] = useState({
     posts: [],
     urls: [],
-    liked: []
+    liked: [],
+    creatorProfileImageUrls: [],
+    userId: null
   });
 
   useEffect(() => {
@@ -39,7 +41,9 @@ export default function Posts() {
       return {
         posts: [addedPostData.post, ...prevData.posts],
         urls: [addedPostData.urls, ...prevData.urls],
-        liked: [addedPostData.liked, ...prevData.liked]
+        liked: [addedPostData.liked, ...prevData.liked],
+        creatorProfileImageUrls: [addedPostData.creatorProfileImageUrl, ...prevData.creatorProfileImageUrls],
+        userId: addedPostData.userId
       }
     });
     setCreateState({isEditing: false, type: null, data: null});
@@ -53,6 +57,8 @@ export default function Posts() {
           prevData.posts[i] = editedPostData.post;
           prevData.urls[i] = editedPostData.urls;
           prevData.liked[i] = editedPostData.liked;
+          prevData.creatorProfileImageUrls[i] = editedPostData.creatorProfileImageUrl;
+          prevData.userId = editedPostData.userId;
           previousPostDataFound = true;
           break;
         }
@@ -61,7 +67,8 @@ export default function Posts() {
         return {
           posts: [editedPostData.post, ...prevData.posts],
           urls: [editedPostData.urls, ...prevData.urls],
-          liked: [editedPostData.liked, ...prevData.liked]
+          liked: [editedPostData.liked, ...prevData.liked],
+          creatorProfileImageUrls: [editedPostData.creatorProfileImageUrl, ...prevData.creatorProfileImageUrls]
         }
       } else {
         return prevData;
@@ -78,6 +85,7 @@ export default function Posts() {
           temp.posts.splice(i, 1);
           temp.urls.splice(i, 1);
           temp.liked.splice(i, 1);
+          temp.creatorProfileImageUrls.splice(i, 1);
           return temp;
         }
       }
@@ -144,30 +152,38 @@ export default function Posts() {
             return <DisplayDiaryBox
               key={post._id}
               post={post}
+              creatorProfileImageUrl={postData.creatorProfileImageUrls[index]}
               urls={postData.urls[index]}
               liked={postData.liked[index]}
-              handleEditClick={handleEditClick} />
+              handleEditClick={handleEditClick}
+              userId={postData.userId}/>
           } else if (post.type === PostType.RECOMMENDATION) {
             return <DisplayRecommendationBox
               key={post._id}
               post={post}
+              creatorProfileImageUrl={postData.creatorProfileImageUrls[index]}
               urls={postData.urls[index]}
               liked={postData.liked[index]}
-              handleEditClick={handleEditClick} />
+              handleEditClick={handleEditClick}
+              userId={postData.userId} />
           } else if (post.type === PostType.ASK_SUGGESTION) {
             return <DisplayAskForSuggestionsBox
               key={post._id}
               post={post}
+              creatorProfileImageUrl={postData.creatorProfileImageUrls[index]}
               urls={postData.urls[index]}
               liked={postData.liked[index]}
-              handleEditClick={handleEditClick} />
+              handleEditClick={handleEditClick}
+              userId={postData.userId} />
           } else {
             return <DisplayGeneralBox
               key={post._id}
               post={post}
+              creatorProfileImageUrl={postData.creatorProfileImageUrls[index]}
               urls={postData.urls[index]}
               liked={postData.liked[index]}
-              handleEditClick={handleEditClick} />
+              handleEditClick={handleEditClick}
+              userId={postData.userId}/>
           }
         })}
       </div>

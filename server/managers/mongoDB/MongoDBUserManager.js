@@ -15,17 +15,17 @@ const UserModel = require('../../models/userModel');
 const FollowModel = require('../../models/followModel');
 
 class MongoDBUserManager {
-  static async saveNickname(userId, nickname) {
-    return UserModel.findByIdAndUpdate(userId, {nickname: nickname}, {new: true})
-        .then(docs => {
-          return docs;
-        })
-        .catch(err => {
-          console.log(err);
-        })
+  static async getProfile(userId) {
+    return UserModel.findById(userId)
+      .then(docs => {
+        return docs;
+      })
+      .catch(err => {
+        console.log(err);
+      })
   }
 
-  static async nicknameExists(nickname) {
+  static nicknameExists(nickname) {
     return UserModel.findOne({nickname: nickname})
       .then(docs => {
         if (docs) {
@@ -36,30 +36,32 @@ class MongoDBUserManager {
       .catch(err => console.log(err));
   }
 
-  static async createOrEditProfile(user) {
-    UserModel.findByIdAndUpdate(user._id, {
-      nickname: user.nickname,
-      genre: user.genre,
-      numOfFollowers: user.numOfFollowers,
-      numOfFollowing: user.numOfFollowing,
-      privacyType: user.privacyType
-    })
+  static createOrEditProfile(user, userId) {
+    return UserModel.findByIdAndUpdate(userId, this.constructSchemaFields(user), {new: true})
     .then(docs => {
       return docs;
     })
     .catch(err => console.log(err));
   }
 
-  static async delete(userId) {
-    UserModel.findByIdAndDelete(userId)
+  static constructSchemaFields(user) {
+    return {
+      nickname:user.nickname,
+      numOfFollowers: user.numOfFollowers,
+      numOfFollowing: user.numOfFollowing
+    }
+  }
+
+  static delete(userId) {
+    return UserModel.findByIdAndDelete(userId)
       .then(docs => {
         return docs;
       })
       .catch(err => console.log(err));
   }
 
-  static async createOrToggleFollow(followerId, followedId) {
-    FollowModel.findOneAndUpdate({followerId: followerId, followedId: followedId}, {
+  static createOrToggleFollow(followerId, followedId) {
+    return FollowModel.findOneAndUpdate({followerId: followerId, followedId: followedId}, {
       $bit: {followed: {xor: 1}}
     })
     .then(docs => {

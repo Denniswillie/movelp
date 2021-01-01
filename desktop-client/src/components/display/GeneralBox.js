@@ -146,7 +146,7 @@ export default function GeneralBox(props) {
           className={classes.button}
           startIcon={<MovieIcon />}>Related movies</Button>
         <div className={classes.root}>
-          <Avatar src={process.env.PUBLIC_URL + '/images/loginImage.png'} />
+          <Avatar src={props.creatorProfileImageUrl ? props.creatorProfileImageUrl : process.env.PUBLIC_URL + '/images/loginImage.png'} />
         </div>
         <p style={{bottom: "0", fontFamily: "roboto", fontWeight: "700"}}>{props.post.creatorName}</p>
       </div>

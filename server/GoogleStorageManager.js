@@ -36,6 +36,24 @@ class GoogleStorageManager {
     }
   }
 
+  static createUserImageProfileDestination(userId) {
+    return userId + " user";
+  }
+
+  static async uploadUserImageProfileToBucket(bucket, file, userId) {
+    const options = {
+      destination: this.createUserImageProfileDestination(userId),
+      resumable: true,
+      validation: 'crc32c'
+    };
+
+    return bucket.upload(file.path, options)
+      .then(doc => {
+        return doc;
+      })
+      .catch(err => console.log(err));
+  }
+
   static async uploadMultipleToBucket(bucket, requestFiles) {
     if (requestFiles.length <= 0) {
       console.log('No files uploaded');
@@ -115,6 +133,32 @@ class GoogleStorageManager {
 
   static async deleteFile(fileId, bucket) {
     await bucket.file(fileId).delete();
+  }
+
+  static async downloadUserProfileImages(posts) {
+    console.log(posts);
+    const promises = [];
+    for (var i = 0; i < posts.length; i++) {
+      const url = await this.downloadUserProfileImage(posts[i].creatorId, this.STORAGE.BUCKET.USER_PROFILE);
+      if (url) {
+        promises.push(url);
+      } else {
+        promises.push(null);
+      }
+    }
+    const creatorProfileImageUrls = await Promise.all(promises);
+    return creatorProfileImageUrls;
+  }
+
+  static async downloadUserProfileImage(userId, bucket) {
+    const file = await bucket.file(this.createUserImageProfileDestination(userId));
+    const fileExists = await file.exists();
+    if (fileExists[0]) {
+      const signedUrl = await file.getSignedUrl(this.STORAGE.DOWNLOAD_OPTIONS);
+      return signedUrl[0];
+    } else {
+      return;
+    }
   }
 }
 

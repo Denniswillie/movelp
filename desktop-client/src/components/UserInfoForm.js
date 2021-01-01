@@ -2,6 +2,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import {useState} from 'react';
 import Button from '@material-ui/core/Button';
+import Avatar from 'react-avatar-edit';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,6 +21,51 @@ export default function UserInfoForm() {
   const [nickname, setNickname] = useState("");
   const [regexAlert, setRegexAlert] = useState(false);
   const [nicknameExistsAlert, setNicknameExistsAlert] = useState(false);
+  const [imageUploadAlert, setImageUploadAlert] = useState(false);
+  const [avatarData, setAvatarData] = useState({
+    preview: null,
+    src: null,
+    file: null,
+    currentExtension: null
+  });
+
+  function onClose() {
+    setAvatarData({preview: null, src: null, file: null});
+  }
+
+  async function onCrop(preview) {
+    setAvatarData(prevData => {
+      return {...prevData, preview};
+    })
+    const currentExtension = avatarData.currentExtension;
+    const file = await urltoFile(preview, 'userImage.' + currentExtension, 'image/' + currentExtension)
+    setAvatarData(prevData => {
+      return {...prevData, file: file};
+    })
+  }
+
+  function onBeforeFileLoad(event) {
+    const re = /\.(gif|jpe?g|tiff?|png|webp|bmp)$/i;
+    const file = event.target.files[0];
+    if (file.size > 71680) {
+      setImageUploadAlert(true);
+      event.target.value = "";
+    } else if (!re.test(file.name)) {
+      setImageUploadAlert(true);
+    } else {
+      const separator = /(?:\.([^.]+))?$/;
+      setAvatarData(prevData => {
+        return {...prevData, currentExtension: separator.exec(file.name)[1]};
+      })
+    }
+  }
+
+  function urltoFile(url, filename, mimeType){
+    return (fetch(url)
+        .then(function(res){return res.arrayBuffer();})
+        .then(function(buf){return new File([buf], filename,{type:mimeType});})
+    );
+  }
 
   function handleNicknameChange(event) {
     setNickname(prevData => {
@@ -37,6 +83,7 @@ export default function UserInfoForm() {
   function handleSubmit(event) {
     event.preventDefault();
     setNicknameExistsAlert(false);
+    setImageUploadAlert(false);
     if (nickname.length === 0) {
       return;
     }
@@ -46,7 +93,10 @@ export default function UserInfoForm() {
     } else {
       const formData = new FormData();
       formData.append('nickname', nickname);
-      fetch('/user/nickname', {method: 'POST', body: formData})
+      if (avatarData.file) {
+        formData.append('userProfileImage', avatarData.file);
+      }
+      fetch('/user/createProfile', {method: 'POST', body: formData})
           .then(res => res.json())
           .catch(err => console.log(err))
           .then(nicknameExists => {
@@ -60,9 +110,10 @@ export default function UserInfoForm() {
     }
   }
 
-  return <div style={{margin: "auto", textAlign: "center", marginTop: "12em"}}>
+  return <div style={{margin: "auto", textAlign: "center", marginTop: "2em"}}>
     <div style={{
         width: "500px",
+        height: "590px",
         marginLeft: "auto",
         marginRight: "auto",
         backgroundColor: "white",
@@ -88,8 +139,23 @@ export default function UserInfoForm() {
             style={{width: "90%"}}/>
           {regexAlert && <p style={{color: 'red', margin: 'auto', fontFamily: 'roboto'}}>Nicknames can only use letters, numbers, and underscores.</p>}
           {nicknameExistsAlert && <p style={{color: 'red', margin: 'auto', fontFamily: 'roboto'}}>This nickname isn't available. Please try another.</p>}
+
+          <p style={{fontFamily: 'roboto', margin: "auto", marginTop: "2em"}}>UPLOAD A PROFILE PICTURE</p>
+          {imageUploadAlert && <p style={{color: 'red', margin: 'auto', fontFamily: 'roboto'}}>Uploaded image doesn't match requirements.</p>}
+          <div style={{marginLeft: "auto", marginRight: "auto", width: "60%"}}>
+            <Avatar
+              minCropRadius={80}
+              width={300}
+              height={250}
+              onCrop={onCrop}
+              onClose={onClose}
+              onBeforeFileLoad={onBeforeFileLoad}
+              src={avatarData.src}
+            />
+          </div>
+          {avatarData.preview && <div style={{margin: "auto"}}><img src={avatarData.preview} alt="Preview" /></div>}
           <Button
-            style={{backgroundColor: "black", color: "white", marginTop: "3em"}}
+            style={{backgroundColor: "black", color: "white", marginTop: "1em"}}
             variant="contained"
             className={classes.button}
             onClick={submit}>submit</Button>

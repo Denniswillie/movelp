@@ -93,7 +93,7 @@ module.exports = function(app) {
     })
   );
   app.use(
-    '/user/nickname',
+    '/user/createProfile',
     createProxyMiddleware({
       target: 'http://localhost:5000',
       changeOrigin: true,
