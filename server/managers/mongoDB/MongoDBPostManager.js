@@ -62,6 +62,38 @@ class MongoDBPostManager {
     }
   }
 
+  static async getPostsByUser(creatorId, userId) {
+    const docs = await PostModel.find({creatorId: creatorId}).sort({timeOfCreation: -1}).exec();
+
+    const promises = [];
+    for (var i = 0; i < docs.length; i++) {
+      const result = await PostLikeModel.findOne({userId: userId, postId: docs[i]._id});
+      if (result && result.liked == 1) {
+        promises.push(true);
+      } else {
+        promises.push(false);
+      }
+    }
+    const liked = await Promise.all(promises);
+    return [docs, liked];
+  }
+
+  static async getMoviesSpecificPosts(movieId, userId) {
+    const docs = await PostModel.find({movieIds: movieId}).sort({timeOfCreation: -1}).exec();
+
+    const promises = [];
+    for (var i = 0; i < docs.length; i++) {
+      const result = await PostLikeModel.findOne({userId: userId, postId: docs[i]._id});
+      if (result && result.liked == 1) {
+        promises.push(true);
+      } else {
+        promises.push(false);
+      }
+    }
+    const liked = await Promise.all(promises);
+    return [docs, liked];
+  }
+
   static async getAll(userId) {
     const docs = await PostModel.find({}).sort({timeOfCreation: -1}).exec();
 

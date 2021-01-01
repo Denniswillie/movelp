@@ -1,26 +1,42 @@
-import { useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import Navbar from './Navbar';
+import UserInfoBox from './UserInfoBox';
 
 export default function Profile() {
   useEffect(() => {
-    const ac = new AbortController();
-    fetch("/auth/isLoggedIn", {method: "GET"})
-    .then(res => {
-      console.log(res);
-      res.json();
-    })
-    .catch(err => console.log)
-    .then(user => {
-      console.log(user);
-    })
-    .catch(err => console.log);
-    return () => ac.abort();
+    function authenticateUser() {
+      fetch('/auth/isLoggedIn', {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        }
+      })
+      .then(res => res.json())
+      .catch(err => console.log(err))
+      .then(user => {
+        if (user === undefined) {
+          window.open("/auth/google", "_self");
+        }
+      })
+      .catch(err => console.log(err));
+    }
+
+    function getPosts() {
+      
+    }
+
+    async function execute() {
+      await authenticateUser();
+      await getPosts();
+    }
+
+    execute();
   }, []);
 
   return <div>
     <Navbar />
     <div id="feed" style={{position: "relative", padding: "1em", textAlign: "center", paddingTop: "5em"}}>
-
+      <UserInfoBox />
     </div>
   </div>
 }

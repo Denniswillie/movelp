@@ -8,14 +8,13 @@ import DisplayRecommendationBox from './display/RecommendationBox';
 import DisplayAskForSuggestionsBox from './display/AskForSuggestionsBox';
 import PostTypeContext from './PostTypeContext';
 
-export default function Posts() {
+export default function Posts(props) {
   const PostType = useContext(PostTypeContext);
   const [postData, setPostData] = useState({
     posts: [],
     urls: [],
     liked: [],
-    creatorProfileImageUrls: [],
-    userId: null
+    creatorProfileImageUrls: []
   });
 
   useEffect(() => {
@@ -42,8 +41,7 @@ export default function Posts() {
         posts: [addedPostData.post, ...prevData.posts],
         urls: [addedPostData.urls, ...prevData.urls],
         liked: [addedPostData.liked, ...prevData.liked],
-        creatorProfileImageUrls: [addedPostData.creatorProfileImageUrl, ...prevData.creatorProfileImageUrls],
-        userId: addedPostData.userId
+        creatorProfileImageUrls: [addedPostData.creatorProfileImageUrl, ...prevData.creatorProfileImageUrls]
       }
     });
     setCreateState({isEditing: false, type: null, data: null});
@@ -58,7 +56,6 @@ export default function Posts() {
           prevData.urls[i] = editedPostData.urls;
           prevData.liked[i] = editedPostData.liked;
           prevData.creatorProfileImageUrls[i] = editedPostData.creatorProfileImageUrl;
-          prevData.userId = editedPostData.userId;
           previousPostDataFound = true;
           break;
         }
@@ -156,7 +153,7 @@ export default function Posts() {
               urls={postData.urls[index]}
               liked={postData.liked[index]}
               handleEditClick={handleEditClick}
-              userId={postData.userId}/>
+              userId={props.user._id}/>
           } else if (post.type === PostType.RECOMMENDATION) {
             return <DisplayRecommendationBox
               key={post._id}
@@ -165,7 +162,7 @@ export default function Posts() {
               urls={postData.urls[index]}
               liked={postData.liked[index]}
               handleEditClick={handleEditClick}
-              userId={postData.userId} />
+              userId={props.user._id}/>
           } else if (post.type === PostType.ASK_SUGGESTION) {
             return <DisplayAskForSuggestionsBox
               key={post._id}
@@ -174,7 +171,7 @@ export default function Posts() {
               urls={postData.urls[index]}
               liked={postData.liked[index]}
               handleEditClick={handleEditClick}
-              userId={postData.userId} />
+              userId={props.user._id}/>
           } else {
             return <DisplayGeneralBox
               key={post._id}
@@ -183,7 +180,7 @@ export default function Posts() {
               urls={postData.urls[index]}
               liked={postData.liked[index]}
               handleEditClick={handleEditClick}
-              userId={postData.userId}/>
+              userId={props.user._id}/>
           }
         })}
       </div>

@@ -82,6 +82,15 @@ router.get('/get', async (req, res) => {
   })
 })
 
+router.post('/getPostsByUser', upload.none(), (req, res) => {
+  const userId = req.body.userId;
+  const creatorId = req.body.creatorId;
+});
+
+router.post('/getMoviesSpecificPosts', upload.none(), (req, res) => {
+
+})
+
 router.post('/edit', uploadFields, async (req, res) => {
   const postId = req.body.postId;
   const type = req.body.postType;
