@@ -42,7 +42,8 @@ export default function GeneralBox(props) {
     handlePostAction,
     post,
     isEditing,
-    handleInputChange
+    handleInputChange,
+    photoGalleryStylings
   } = props.renderProps;
 
   const imageRenderer = useCallback(
@@ -167,16 +168,18 @@ export default function GeneralBox(props) {
     {createInput.uploadedFiles.length > 0 && <div style={{
       padding: "10px",
     }}>
-    <Gallery photos={createInput.uploadedFiles} renderImage={imageRenderer} />
+    <div style={createInput.uploadedFiles.length <= 1 ? photoGalleryStylings[0] : photoGalleryStylings[1]}>
+      <Gallery photos={createInput.uploadedFiles} renderImage={imageRenderer} />
+    </div>
     <IconButton onClick={handleInputChange.handleDeleteChosenFiles}>
     <DeleteOutlinedIcon />
     </IconButton>
     </div>}
 
-      <Button style={{width: "40%"}} onClick={uploadPhoto}>
-        <InsertPhoto />
-        <p style={{fontFamily: 'Roboto', marginLeft: "6px"}}>Upload Photo</p>
-      </Button>
+    {createInput.uploadedFiles.length < 4 ? <Button style={{width: "40%"}} onClick={uploadPhoto}>
+      <InsertPhoto />
+      <p style={{fontFamily: 'Roboto', marginLeft: "6px"}}>Upload Photo</p>
+    </Button> : <p style={{fontFamily: "roboto"}}>You can only choose up to 4 files.</p>}
     </div>
     <Button
       style={{backgroundColor: "black", color: "white"}}

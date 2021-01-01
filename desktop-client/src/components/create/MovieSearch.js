@@ -54,7 +54,7 @@ export default function MovieSearch(props) {
         }
       }
       if (!alreadyChosen) {
-        result.push(<Card className={classes.root} key={movie.id} style={{width: "33.3333%", marginBottom: "2em", float: "right"}} onClick={() => {
+        result.push(<Card className={classes.root} key={movie.id} style={{width: "30%", marginTop: "1em", float: "right", marginRight: "13px"}} onClick={() => {
           props.handleMovieClick(movie.id, title);
         }}>
           <CardActionArea>
@@ -65,7 +65,7 @@ export default function MovieSearch(props) {
               image={imagePath}
               title={title}
             />
-            <CardContent style={{paddingTop: "0.5em", paddingBottom: "0.5em"}}>
+            <CardContent style={{paddingTop: "0.5em", paddingBottom: "0.5em", height: "2em"}}>
               <p style={{fontFamily: "roboto", marginTop: "0", marginBottom: "0"}}>{title.toUpperCase()}</p>
             </CardContent>
           </CardActionArea>

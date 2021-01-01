@@ -26,6 +26,14 @@ export default function Container(props) {
     movieTitleInputValue: ""
   })
 
+  const photoGalleryStylings = [{
+      width: "50%",
+      marginLeft: "auto",
+      marginRight: "auto"
+    },
+    {
+    }]
+
   const PostType = useContext(PostTypeContext);
 
   useEffect(() => {
@@ -80,12 +88,19 @@ export default function Container(props) {
     },
     handleUploadedFilesChange: (event) => {
       const file = event.target.files[0];
-      setCreateInput(prevData => {
-        return {
-          ...prevData,
-          uploadedFiles: [...prevData.uploadedFiles, {src: URL.createObjectURL(file), file: file, width: 1, height: 1}]
-        };
-      })
+      if (file) {
+        const re = /\.(gif|jpe?g|tiff?|png|webp|bmp)$/i;
+        if (re.test(file.name)) {
+          setCreateInput(prevData => {
+            return {
+              ...prevData,
+              uploadedFiles: [...prevData.uploadedFiles, {src: URL.createObjectURL(file), file: file, width: 1, height: 1}]
+            };
+          })
+        } else {
+          alert('only upload image files.')
+        }
+      }
     },
     handleMovieClick: (movieId, movieTitle) => {
       setCreateInput(prevData => {
@@ -179,7 +194,8 @@ export default function Container(props) {
       handlePostAction: props.handlePostAction,
       post: param.data ? param.data.post : null,
       isEditing: param.isEditing,
-      handleInputChange: handleInputChange
+      handleInputChange: handleInputChange,
+      photoGalleryStylings: photoGalleryStylings
     }
   }
 
