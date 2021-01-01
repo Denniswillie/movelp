@@ -200,12 +200,12 @@ export default function RecommendationBox(props) {
       <ChatBubbleOutlineOutlinedIcon />
       <p style={{fontFamily: 'Roboto', marginLeft: "6px"}}>Comment</p>
     </Button>
-    <Button style={{width: "30%"}} onClick={() => {
+    {props.post.creatorId === props.userId && <Button style={{width: "30%"}} onClick={() => {
       props.handleEditClick({
         post: props.post,
         urls: props.urls
       })
-    }}>
+    }}>}
       <EditOutlinedIcon />
       <p style={{fontFamily: 'Roboto', marginLeft: "6px"}}>Edit</p>
     </Button>
