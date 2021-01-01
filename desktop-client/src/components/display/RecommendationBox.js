@@ -217,6 +217,7 @@ export default function RecommendationBox(props) {
         text={comment.text}
         creatorName={comment.creatorName}
         _id={comment._id}
+        isCreatedByUser={props.userId === comment.creatorId}
         editedCommentId={data.editedCommentId}
         handleEditCommentClick={handleEditCommentClick}
         handleEditCommentUnclick={handleEditCommentUnclick}

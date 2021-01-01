@@ -26,7 +26,9 @@ export default function Comment(props) {
   const editForm = useRef(null);
 
   function displayButtons() {
-    setButtonsVisibility(VISIBLE);
+    if (props.isCreatedByUser) {
+      setButtonsVisibility(VISIBLE);
+    }
   }
 
   function hideButtons() {
