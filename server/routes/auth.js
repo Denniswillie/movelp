@@ -17,6 +17,7 @@ router.get("/google/movelp",
 );
 
 router.get("/isLoggedIn", function(req, res) {
+  console.log(req.user);
   res.send(req.user);
 });
 

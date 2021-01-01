@@ -73,7 +73,6 @@ router.get('/get', async (req, res) => {
       docs, GoogleStorageManager.STORAGE.BUCKET.POST
   );
   const creatorProfileImageUrls = await GoogleStorageManager.downloadUserProfileImages(docs);
-  console.log(creatorProfileImageUrls);
   res.send({
     posts: docs,
     urls: urls,

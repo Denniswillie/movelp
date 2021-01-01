@@ -136,7 +136,6 @@ class GoogleStorageManager {
   }
 
   static async downloadUserProfileImages(posts) {
-    console.log(posts);
     const promises = [];
     for (var i = 0; i < posts.length; i++) {
       const url = await this.downloadUserProfileImage(posts[i].creatorId, this.STORAGE.BUCKET.USER_PROFILE);

@@ -58,6 +58,15 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Navbar() {
   const classes = useStyles();
+
+  function redirectToProfile() {
+    window.open("/profile", "_self");
+  }
+
+  function redirectToHome() {
+    window.open("/", "_self");
+  }
+
   return <div className={classes.root} style={{position: "fixed", width: "100%", zIndex: "1000000000000000000000000000000000000000000000"}}>
     <AppBar position="static" style={{backgroundColor: "white"}}>
       <Toolbar style={{width: "80%", margin: "auto"}}>
@@ -78,7 +87,8 @@ export default function Navbar() {
             inputProps={{ 'roboto': 'search' }}
           />
         </div>
-        <Button style={{marginLeft: "1em"}}>Profile</Button>
+        <Button onClick={redirectToHome} style={{marginLeft: "1em"}}>Home</Button>
+        <Button onClick={redirectToProfile} style={{marginLeft: "1em"}}>Profile</Button>
         <Button href="/auth/logout" style={{marginLeft: "1em"}}>
           Logout
         </Button>

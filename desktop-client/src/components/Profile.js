@@ -1,29 +1,26 @@
 import { useRef, useEffect } from 'react';
+import Navbar from './Navbar';
 
 export default function Profile() {
-  const user = useRef(null);
   useEffect(() => {
-    fetch("/auth/isLoggedIn", {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      }
-    })
+    const ac = new AbortController();
+    fetch("/auth/isLoggedIn", {method: "GET"})
     .then(res => {
-      if (res.status === 200) {
-        return res.json();
-      } else {
-        window.open("/auth/login", "_self");
-      }
+      console.log(res);
+      res.json();
     })
     .catch(err => console.log)
-    .then(res => {
-      user.current = res.user;
+    .then(user => {
+      console.log(user);
     })
     .catch(err => console.log);
+    return () => ac.abort();
   }, []);
+
   return <div>
-    <h1>This is profile page.</h1>
+    <Navbar />
+    <div id="feed" style={{position: "relative", padding: "1em", textAlign: "center", paddingTop: "5em"}}>
+
+    </div>
   </div>
 }

@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     '& > *': {
-      margin: theme.spacing(1),
+      margin: theme.spacing(2),
     },
   },
   button: {
@@ -185,10 +185,10 @@ export default function GeneralBox(props) {
           post: props.post,
           urls: props.urls
         })
-      }}>}
+      }}>
         <EditOutlinedIcon />
         <p style={{fontFamily: 'Roboto', marginLeft: "6px"}}>Edit</p>
-      </Button>
+      </Button>}
     </div>
     <div style={{borderTop: "1px solid #9ba89e", padding: "10px"}}>
       {comments.map(comment => {
