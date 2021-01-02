@@ -85,6 +85,9 @@ router.get('/get', async (req, res) => {
 router.post('/getPostsByUser', upload.none(), (req, res) => {
   const userId = req.body.userId;
   const creatorId = req.body.creatorId;
+  console.log(userId);
+  console.log(creatorId);
+  res.end();
 });
 
 router.post('/getMoviesSpecificPosts', upload.none(), (req, res) => {
