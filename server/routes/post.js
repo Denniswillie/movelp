@@ -61,12 +61,11 @@ router.post('/create/:type', uploadFields, async (req, res) => {
     post: createdPost,
     urls: urls,
     liked: liked,
-    creatorProfileImageUrl: creatorProfileImageUrl,
-    userId: req.user._id
+    creatorProfileImageUrl: creatorProfileImageUrl
   });
 })
 
-router.get('/get', async (req, res) => {
+router.post('/get', upload.none(), async (req, res) => {
   const userId = req.user._id;
   const [docs, liked] = await MongoDBPostManager.getAll(userId);
   const urls = await GoogleStorageManager.downloadFilesForMultiplePosts(
@@ -77,21 +76,42 @@ router.get('/get', async (req, res) => {
     posts: docs,
     urls: urls,
     liked: liked,
-    creatorProfileImageUrls: creatorProfileImageUrls,
-    userId: userId
+    creatorProfileImageUrls: creatorProfileImageUrls
   })
 })
 
-router.post('/getPostsByUser', upload.none(), (req, res) => {
-  const userId = req.body.userId;
+router.post('/getPostsByUser', upload.none(), async (req, res) => {
+  const userId = req.user._id;
   const creatorId = req.body.creatorId;
-  console.log(userId);
-  console.log(creatorId);
-  res.end();
+
+  const [docs, liked] = await MongoDBPostManager.getPostsByUser(creatorId, userId);
+  const urls = await GoogleStorageManager.downloadFilesForMultiplePosts(
+      docs, GoogleStorageManager.STORAGE.BUCKET.POST
+  );
+  const creatorProfileImageUrls = await GoogleStorageManager.downloadUserProfileImages(docs);
+  res.send({
+    posts: docs,
+    urls: urls,
+    liked: liked,
+    creatorProfileImageUrls: creatorProfileImageUrls
+  })
 });
 
-router.post('/getMoviesSpecificPosts', upload.none(), (req, res) => {
+router.post('/getMoviesSpecificPosts', upload.none(), async (req, res) => {
+  const userId = req.user._id;
+  const movieId = req.body.movieId;
 
+  const [docs, liked] = await MongoDBPostManager.getMoviesSpecificPosts(movieId, userId);
+  const urls = await GoogleStorageManager.downloadFilesForMultiplePosts(
+      docs, GoogleStorageManager.STORAGE.BUCKET.POST
+  );
+  const creatorProfileImageUrls = await GoogleStorageManager.downloadUserProfileImages(docs);
+  res.send({
+    posts: docs,
+    urls: urls,
+    liked: liked,
+    creatorProfileImageUrls: creatorProfileImageUrls
+  })
 })
 
 router.post('/edit', uploadFields, async (req, res) => {
@@ -151,8 +171,7 @@ router.post('/edit', uploadFields, async (req, res) => {
     post: editedPost,
     urls: urls,
     liked: liked,
-    creatorProfileImageUrl: creatorProfileImageUrl,
-    userId: req.user._id
+    creatorProfileImageUrl: creatorProfileImageUrl
   })
 });
 

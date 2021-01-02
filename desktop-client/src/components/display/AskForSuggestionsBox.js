@@ -4,7 +4,6 @@ import Avatar from '@material-ui/core/Avatar';
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
 import Button from '@material-ui/core/Button';
-import MovieIcon from '@material-ui/icons/Movie';
 import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
 import CommentIcon from '@material-ui/icons/Comment';
 import ThumbUpAltOutlinedIcon from '@material-ui/icons/ThumbUpAltOutlined';

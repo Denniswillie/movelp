@@ -1,5 +1,4 @@
 import {useState, useEffect, useContext} from 'react';
-import Navbar from './Navbar';
 import CreateBox from './create/CreateBox';
 import Container from './create/Container';
 import DisplayDiaryBox from './display/DiaryBox';
@@ -7,9 +6,12 @@ import DisplayGeneralBox from './display/GeneralBox';
 import DisplayRecommendationBox from './display/RecommendationBox';
 import DisplayAskForSuggestionsBox from './display/AskForSuggestionsBox';
 import PostTypeContext from './PostTypeContext';
+import PostsFetchTypeContext from './PostsFetchTypeContext';
 
 export default function Posts(props) {
   const PostType = useContext(PostTypeContext);
+  const PostsFetchType = useContext(PostsFetchTypeContext);
+
   const [postData, setPostData] = useState({
     posts: [],
     urls: [],
@@ -18,16 +20,22 @@ export default function Posts(props) {
   });
 
   useEffect(() => {
-    fetch('/post/get', {method: 'GET', headers: {
-      'Content-Type': 'application/json'
-    }})
+    const formData = new FormData();
+    if (props.postRoute === PostsFetchType.CREATOR) {
+      formData.append('creatorId', props.creatorId);
+    } else if (props.postRoute === PostsFetchType.MOVIE) {
+      formData.append('movieId', props.movieId);
+    }
+    console.log(props.postRoute);
+    console.log(props.creatorId);
+    fetch('/post/' + props.postRoute, {method: 'POST', body: formData})
       .then(res => res.json())
       .catch(err => console.log(err))
       .then(res => {
         setPostData(res);
       })
       .catch(err => console.log(err));
-  }, []);
+  }, [props.postRoute, PostsFetchType.CREATOR, PostsFetchType.MOVIE, props.creatorId, props.movieId]);
 
   const [createState, setCreateState] = useState({
     isEditing: false,
@@ -45,6 +53,9 @@ export default function Posts(props) {
       }
     });
     setCreateState({isEditing: false, type: null, data: null});
+    if (props.addOrDeletePost) {
+      props.addOrDeletePost(true);
+    }
   }
 
   function handleEditPost(editedPostData) {
@@ -89,6 +100,9 @@ export default function Posts(props) {
       return temp;
     })
     setCreateState({isEditing: false, type: null, data: null});
+    if (props.addOrDeletePost) {
+      props.addOrDeletePost(false);
+    }
   }
 
   const handlePostAction = {
@@ -141,8 +155,7 @@ export default function Posts(props) {
 
   return (
     <div>
-      <Navbar />
-      <div id="feed" style={{position: "relative", padding: "1em", textAlign: "center", paddingTop: "5em"}}>
+      <div>
         <CreateBox handleClick={handleCreatePostClick}/>
         {postData.posts.map((post, index) => {
           if (post.type === PostType.DIARY) {

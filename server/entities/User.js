@@ -16,6 +16,8 @@ class User {
     NICKNAME: 'nickname',
     NUM_OF_FOLLOWERS: 'numOfFollowers',
     NUM_OF_FOLLOWING: 'numOfFollowing',
+    GENRE: 'genre',
+    NUM_OF_POSTS: 'numOfPosts'
   }
 
   constructor(build) {
@@ -23,6 +25,8 @@ class User {
       const nickname = build.nickname;
       const numOfFollowers = build.numOfFollowers;
       const numOfFollowing = build.numOfFollowing;
+      const genre = build.genre;
+      const numOfPosts = build.numOfPosts;
 
       Object.defineProperties(this, {
         nickname: {
@@ -35,6 +39,14 @@ class User {
         },
         numOfFollowing: {
           value: numOfFollowing,
+          writable: false
+        },
+        genre: {
+          value: genre,
+          writable: false
+        },
+        numOfPosts: {
+          value: numOfPosts,
           writable: false
         },
       });
@@ -55,6 +67,14 @@ class User {
       }
       setNumOfFollowing(numOfFollowing) {
         this.numOfFollowing = numOfFollowing;
+        return this;
+      }
+      setGenre(genre) {
+        this.genre = genre;
+        return this;
+      }
+      setNumOfPosts(numOfPosts) {
+        this.numOfPosts = numOfPosts;
         return this;
       }
       build() {

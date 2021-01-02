@@ -48,7 +48,9 @@ class MongoDBUserManager {
     return {
       nickname:user.nickname,
       numOfFollowers: user.numOfFollowers,
-      numOfFollowing: user.numOfFollowing
+      numOfFollowing: user.numOfFollowing,
+      genre: user.genre,
+      numOfPosts: user.numOfPosts
     }
   }
 
@@ -131,6 +133,14 @@ class MongoDBUserManager {
       }
       return docs;
     });
+  }
+
+  static async updateNumOfPosts(userId, isIncreased) {
+    if (isIncreased) {
+      await UserModel.findByIdAndUpdate(userId, {$inc: {numOfPosts: 1}}, {new: true});
+    } else {
+      await UserModel.findByIdAndUpdate(userId, {$inc: {numOfPosts: -1}}, {new: true});
+    }
   }
 }
 

@@ -1,42 +1,104 @@
-import React, { useRef, useEffect } from 'react';
-import Navbar from './Navbar';
+import React, { useState, useEffect, useContext } from 'react';
 import UserInfoBox from './UserInfoBox';
+import Posts from './Posts';
+import PostsFetchTypeContext from './PostsFetchTypeContext';
+import UserInfoForm from './UserInfoForm';
 
-export default function Profile() {
+export default function Profile(props) {
+  const USER_NOT_SET = "userNotSet";
+  const [user, setUser] = useState(USER_NOT_SET);
+  const PostsFetchType = useContext(PostsFetchTypeContext);
+  const {handleChangeDisplayNavbar} = props;
+  const [userInfoFormDisplayed, setUserInfoFormDisplayed] = useState(false);
+  const [unableDeleteAccount, setUnableDeleteAccount] = useState(false);
+
+  function setEditedUserProfile(editedUser) {
+    setUser(editedUser);
+  }
+
+  function displayUserInfoForm() {
+    setUserInfoFormDisplayed(true);
+  }
+
+  function undisplayUserInfoForm() {
+    setUserInfoFormDisplayed(false);
+  }
+
+  function deleteAccount() {
+    fetch('/user/delete', {
+      method: "POST"
+    })
+    .then(res => res.json())
+    .catch(err => console.log(err))
+    .then(isDeleted => {
+      if (isDeleted) {
+        window.open("/auth/logout");
+      } else {
+        setUnableDeleteAccount(true);
+      }
+    })
+  }
+
+  function editProfile() {
+
+  }
+
+  function addOrDeletePost(addedPost) {
+    var adder;
+    if (addedPost) {
+      adder = 1;
+    } else {
+      adder = -1;
+    }
+    setUser(prevData => {
+      return {...prevData, numOfPosts: prevData.numOfPosts + adder};
+    })
+  }
+
   useEffect(() => {
-    function authenticateUser() {
-      fetch('/auth/isLoggedIn', {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
+    const ac = new AbortController();
+    const signal = ac.signal;
+    fetch('/auth/isLoggedIn', {
+      signal: signal,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      }
+    })
+    .then(res => res.json())
+    .catch(err => console.log(err))
+    .then(res => {
+      if (res === undefined) {
+        window.open("/auth/google", "_self");
+      } else {
+        if (res.user.nickname === undefined) {
+          window.open("/", "_self");
         }
-      })
-      .then(res => res.json())
-      .catch(err => console.log(err))
-      .then(user => {
-        if (user === undefined) {
-          window.open("/auth/google", "_self");
-        }
-      })
-      .catch(err => console.log(err));
-    }
+        handleChangeDisplayNavbar(true);
+        setUser({...res.user, profileImageUrl: res.profileImageUrl});
 
-    function getPosts() {
-      
-    }
+      }
+    })
+    .catch(err => console.log(err));
 
-    async function execute() {
-      await authenticateUser();
-      await getPosts();
-    }
+    return () => ac.abort();
+  }, [handleChangeDisplayNavbar]);
 
-    execute();
-  }, []);
-
-  return <div>
-    <Navbar />
-    <div id="feed" style={{position: "relative", padding: "1em", textAlign: "center", paddingTop: "5em"}}>
-      <UserInfoBox />
+  return <div id="feed" style={{position: "relative", padding: "1em", textAlign: "center", paddingTop: "5em"}}>
+      {user !== USER_NOT_SET && <div>
+        <UserInfoBox
+          user={user}
+          creatorId={props.match.params.creatorId}
+          displayUserInfoForm={displayUserInfoForm}/>
+        <Posts user={user} addOrDeletePost={addOrDeletePost} postRoute={PostsFetchType.CREATOR} creatorId={props.match.params.creatorId}/>
+        {userInfoFormDisplayed && <UserInfoForm
+          user={user}
+          userInfoFormDisplayed={userInfoFormDisplayed}
+          style={{position: "absolute"}}
+          deleteAccount={deleteAccount}
+          editProfile={editProfile}
+          unableDeleteAccount={unableDeleteAccount}
+          undisplayUserInfoForm={undisplayUserInfoForm}/>}
+      </div>}
     </div>
-  </div>
 }

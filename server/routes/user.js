@@ -10,6 +10,7 @@ const CLIENT_URL = inProduction ? process.env.DOMAIN_NAME : "http://localhost:30
 router.post('/createProfile', uploadCreateUserProfile.single('userProfileImage'), async (req, res) => {
   const nickname = req.body.nickname;
   const file = req.file;
+  const genre = req.body.genre;
 
   const nicknameExists = await MongoDBUserManager.nicknameExists(nickname);
   if (nicknameExists) {
@@ -20,11 +21,13 @@ router.post('/createProfile', uploadCreateUserProfile.single('userProfileImage')
         .setNickname(nickname)
         .setNumOfFollowers(0)
         .setNumOfFollowing(0)
+        .setGenre(genre)
+        .setNumOfPosts(0)
         .build();
 
     await MongoDBUserManager.createOrEditProfile(createdUserProfile, req.user._id);
     if (file) {
-      await GoogleStorageManager.uploadSingleToBucket(GoogleStorageManager.STORAGE.BUCKET.USER_PROFILE, file, req.user._id);
+      await GoogleStorageManager.uploadUserImageProfileToBucket(GoogleStorageManager.STORAGE.BUCKET.USER_PROFILE, file, req.user._id);
     }
     res.send(false);
   }
@@ -38,8 +41,13 @@ router.post('/follow', (req, res) => {
 
 })
 
-router.post('/delete', (req, res) => {
-
+router.post('/delete', async (req, res) => {
+  const deletedUser = await MongoDBUserManager.delete(req.user._id);
+  if (deletedUser) {
+    res.send(true);
+  } else {
+    res.send(false);
+  }
 })
 
 module.exports = router;

@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function UserInfoBox() {
+export default function UserInfoBox(props) {
   const classes = useStyles();
 
   return <div style={{
@@ -27,26 +27,24 @@ export default function UserInfoBox() {
       paddingLeft: "1em",
       paddingTop: "1em",
       paddingBottom: "1em"}}>
-      <div style={{width: "100%", margin: "auto", textAlign: "left", padding: "5px", display: "flex"}}>
-        <Avatar alt="Remy Sharp" src={process.env.PUBLIC_URL + '/images/clapperboard.jpg'} className={classes.large} />
+      <div style={{width: "100%", margin: "auto", textAlign: "left", padding: "5px", display: "flex", position: "relative"}}>
+        <Avatar
+          style={{borderStyle: "solid", borderColor: "#F0F2F5", borderWidth: "2px"}}
+          alt={props.user.nickname}
+          src={props.user.profileImageUrl ? props.user.profileImageUrl : process.env.PUBLIC_URL + '/images/loginImage.png'}
+          className={classes.large} />
         <div style={{marginLeft: "2em", marginTop: "1em"}}>
-          <h1 style={{fontFamily: "roboto", fontWeight: "normal", marginBottom: "0.2em"}}>{"Dennis Ganteng".toUpperCase()}</h1>
+          <h1 style={{fontFamily: "roboto", fontWeight: "normal", marginBottom: "0.2em"}}>{props.user.nickname.toUpperCase()}</h1>
           <div style={{marginTop: "0", textAlign: "left", padding: "5px", display: "flex"}}>
-            <p style={{marginTop: "0", fontFamily: "roboto"}}><b>6</b> posts</p>
-            <p style={{marginTop: "0", fontFamily: "roboto", marginLeft: "1em"}}><b>6</b> Followers</p>
-            <p style={{marginTop: "0", fontFamily: "roboto", marginLeft: "1em"}}><b>6</b> Following</p>
+            <p style={{marginTop: "0", fontFamily: "roboto"}}><b>{props.user.numOfPosts}</b> posts</p>
           </div>
         </div>
-        <div style={{marginTop: "1em", marginLeft: "30em", position: "absolute"}}>
-          <div style={{display: "flex"}}>
+        <div style={{top: "0", right: "15px", position: "absolute"}}>
             <Button
+              onClick={props.displayUserInfoForm}
               style={{backgroundColor: "black", color: "white"}}
               variant="contained"
               className={classes.button}>Edit Profile</Button>
-            <IconButton style={{marginLeft: "1em"}}>
-              <SettingsIcon />
-            </IconButton>
-          </div>
         </div>
       </div>
   </div>

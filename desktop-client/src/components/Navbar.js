@@ -56,11 +56,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Navbar() {
+export default function Navbar(props) {
   const classes = useStyles();
 
   function redirectToProfile() {
-    window.open("/profile", "_self");
+    props.handleChangeCreatorId(props.userId);
+    window.open("/profile/" + props.userId, "_self");
   }
 
   function redirectToHome() {

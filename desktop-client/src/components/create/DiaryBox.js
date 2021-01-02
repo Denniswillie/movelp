@@ -80,7 +80,7 @@ export default function DiaryBox(props) {
         .catch(err => console.log(err))
         .then(res => {
           if (res) {
-            handleInputChange.handleDeletePost(post._id);
+            handlePostAction.handleDeletePost(post._id);
           }
         })
   }

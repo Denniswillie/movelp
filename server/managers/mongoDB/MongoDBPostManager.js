@@ -21,11 +21,13 @@ const ObjectId = require("mongodb").ObjectID;
 const Post = require('../../entities/Post');
 const PostModel = require('../../models/postModel');
 const PostLikeModel = require('../../models/postLikeModel');
+const MongoDBUserManager = require('./MongoDBUserManager');
 
 class MongoDBPostManager {
   static create(post) {
     return PostModel.create(this.constructSchemaFields(post))
-      .then(docs => {
+      .then(async (docs) => {
+        await MongoDBUserManager.updateNumOfPosts(docs.creatorId, true);
         return docs;
       })
       .catch(err => {
@@ -114,7 +116,8 @@ class MongoDBPostManager {
 
   static async delete(postId) {
     await PostModel.findByIdAndDelete(postId)
-      .then(docs => {
+      .then(async (docs) => {
+        await MongoDBUserManager.updateNumOfPosts(docs.creatorId, false);
         return docs;
       })
       .catch(err => {

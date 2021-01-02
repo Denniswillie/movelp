@@ -1,8 +1,10 @@
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import Button from '@material-ui/core/Button';
 import Avatar from 'react-avatar-edit';
+import Clear from '@material-ui/icons/Clear';
+import IconButton from '@material-ui/core/IconButton';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -16,9 +18,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function UserInfoForm() {
+export default function UserInfoForm(props) {
   const classes = useStyles();
   const [nickname, setNickname] = useState("");
+  const [genre, setGenre] = useState("");
   const [regexAlert, setRegexAlert] = useState(false);
   const [nicknameExistsAlert, setNicknameExistsAlert] = useState(false);
   const [imageUploadAlert, setImageUploadAlert] = useState(false);
@@ -28,6 +31,12 @@ export default function UserInfoForm() {
     file: null,
     currentExtension: null
   });
+
+  useEffect(() => {
+    if (props.userInfoFormDisplayed) {
+      setNickname(props.user.nickname);
+    }
+  })
 
   function onClose() {
     setAvatarData({preview: null, src: null, file: null});
@@ -67,6 +76,15 @@ export default function UserInfoForm() {
     );
   }
 
+  function handleGenreChange(event) {
+    setGenre(prevData => {
+      if (event.target.value.length > 15) {
+        return event.target.value(0, 15);
+      }
+      return event.target.value;
+    })
+  }
+
   function handleNicknameChange(event) {
     setNickname(prevData => {
       if (event.target.value.length > 30) {
@@ -82,9 +100,12 @@ export default function UserInfoForm() {
 
   function handleSubmit(event) {
     event.preventDefault();
+    if (props.userInfoFormDisplayed && nickname === props.user.nickname) {
+      props.undisplayUserInfoForm();
+    }
     setNicknameExistsAlert(false);
     setImageUploadAlert(false);
-    if (nickname.length === 0) {
+    if (nickname.length === 0 || genre.length === 0) {
       return;
     }
     var re = /^\w+$/;
@@ -93,31 +114,36 @@ export default function UserInfoForm() {
     } else {
       const formData = new FormData();
       formData.append('nickname', nickname);
+      formData.append('genre', genre);
       if (avatarData.file) {
         formData.append('userProfileImage', avatarData.file);
       }
-      fetch('/user/createProfile', {method: 'POST', body: formData})
-          .then(res => res.json())
-          .catch(err => console.log(err))
-          .then(nicknameExists => {
-            console.log(nicknameExists);
-            if (nicknameExists) {
-              setNicknameExistsAlert(true);
-            } else {
-              window.location.href = "/";
-            }
-          });
+      if (props.userInfoFormDisplayed) {
+        // fetch('/user/editProfile', {method: 'POST', body: formData})
+      } else {
+        fetch('/user/createProfile', {method: 'POST', body: formData})
+            .then(res => res.json())
+            .catch(err => console.log(err))
+            .then(nicknameExists => {
+              if (nicknameExists) {
+                setNicknameExistsAlert(true);
+              } else {
+                window.location.href = "/";
+              }
+            });
+      }
     }
   }
 
-  return <div style={{margin: "auto", textAlign: "center", marginTop: "2em"}}>
-    <div style={{
+  return <div style={{
+        position: "absolute",
+        zIndex: "9000000000000000000000000000000000000000",
         width: "500px",
         height: "590px",
         marginLeft: "auto",
         marginRight: "auto",
         backgroundColor: "white",
-        top: "0",
+        top: "3em",
         bottom: "0",
         left: "0",
         right: "0",
@@ -127,6 +153,9 @@ export default function UserInfoForm() {
         paddingRight: "5px",
         paddingBottom: "2em",
         overflow: "auto"}}>
+        {props.userInfoFormDisplayed && <IconButton style={{top: "10px", right: "10px", position: "absolute", zIndex: "4000000000000000000000000"}} onClick={props.undisplayUserInfoForm}>
+          <Clear/>
+        </IconButton>}
         <h1 style={{userSelect: "none"}}>Movelp</h1>
         <p style={{fontFamily: 'roboto'}}>CREATE A NICKNAME</p>
         <form className={classes.root} noValidate autoComplete="off" onSubmit={handleSubmit}>
@@ -154,13 +183,17 @@ export default function UserInfoForm() {
             />
           </div>
           {avatarData.preview && <div style={{margin: "auto"}}><img src={avatarData.preview} alt="Preview" /></div>}
+          {props.userInfoFormDisplayed && <Button
+            style={{backgroundColor: "black", color: "white", marginTop: "1em"}}
+            variant="contained"
+            className={classes.button}
+            onClick={submit}>delete account</Button>}
           <Button
             style={{backgroundColor: "black", color: "white", marginTop: "1em"}}
             variant="contained"
             className={classes.button}
-            onClick={submit}>submit</Button>
+            onClick={submit}>{props.userInfoFormDisplayed ? "edit" : "submit"}</Button>
           <input style={{display: "none"}} type="submit" id="submit"/>
         </form>
     </div>
-  </div>
 }

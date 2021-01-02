@@ -58,6 +58,20 @@ module.exports = function(app) {
     })
   );
   app.use(
+    '/post/getPostsByUser',
+    createProxyMiddleware({
+      target: 'http://localhost:5000',
+      changeOrigin: true,
+    })
+  );
+  app.use(
+    '/post/getMoviesSpecificPosts',
+    createProxyMiddleware({
+      target: 'http://localhost:5000',
+      changeOrigin: true,
+    })
+  );
+  app.use(
     '/post/edit',
     createProxyMiddleware({
       target: 'http://localhost:5000',
@@ -94,6 +108,20 @@ module.exports = function(app) {
   );
   app.use(
     '/user/createProfile',
+    createProxyMiddleware({
+      target: 'http://localhost:5000',
+      changeOrigin: true,
+    })
+  );
+  app.use(
+    '/user/editProfile',
+    createProxyMiddleware({
+      target: 'http://localhost:5000',
+      changeOrigin: true,
+    })
+  );
+  app.use(
+    '/user/delete',
     createProxyMiddleware({
       target: 'http://localhost:5000',
       changeOrigin: true,
