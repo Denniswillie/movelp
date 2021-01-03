@@ -211,7 +211,7 @@ export default function RecommendationBox(props) {
       flexWrap: "wrap",
       padding: "10px",
     }}>
-    <IconButton>
+    <IconButton onClick={() => {props.displayLikers(props.post._id)}}>
       {data.isLiked ? <ThumbUpAltIcon /> : <ThumbUpAltOutlinedIcon />}
     </IconButton>
     <span style={{fontFamily: "roboto", marginLeft: "4px"}}>{data.noOfLikes}</span>

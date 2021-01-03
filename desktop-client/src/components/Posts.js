@@ -231,7 +231,8 @@ export default function Posts(props) {
               urls={postData.urls[index]}
               liked={postData.liked[index]}
               handleEditClick={handleEditClick}
-              userId={props.user._id}/>
+              userId={props.user._id}
+              displayLikers={displayLikers}/>
           } else if (post.type === PostType.ASK_SUGGESTION) {
             return <DisplayAskForSuggestionsBox
               key={post._id}
@@ -240,7 +241,8 @@ export default function Posts(props) {
               urls={postData.urls[index]}
               liked={postData.liked[index]}
               handleEditClick={handleEditClick}
-              userId={props.user._id}/>
+              userId={props.user._id}
+              displayLikers={displayLikers}/>
           } else {
             return <DisplayGeneralBox
               key={post._id}
@@ -249,7 +251,8 @@ export default function Posts(props) {
               urls={postData.urls[index]}
               liked={postData.liked[index]}
               handleEditClick={handleEditClick}
-              userId={props.user._id}/>
+              userId={props.user._id}
+              displayLikers={displayLikers}/>
           }
         })}
       </div>

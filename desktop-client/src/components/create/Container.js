@@ -43,9 +43,13 @@ export default function Container(props) {
         const movieIds = props.createState.data.post.movieIds;
         const promises = [];
         for (var i = 0; i < movieIds.length; i++) {
-          var movieDataRaw =
-              await fetch("https://api.themoviedb.org/3/movie/" + props.post.movieIds[i] + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
-          if (movieDataRaw.status === 404) {
+          var movieDataRaw;
+          try {
+            movieDataRaw =
+                await fetch("https://api.themoviedb.org/3/movie/" + props.post.movieIds[i] + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
+          } catch (err) {
+            console.log("failed to fetch");
+          } finally {
             movieDataRaw = await fetch("https://api.themoviedb.org/3/tv/" + props.post.movieIds[i] + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
           }
           const movieData = await movieDataRaw.json();
