@@ -210,7 +210,7 @@ export default function Posts(props) {
       {loading ? <div className="sweet-loading">
         <ClipLoader color={"#4287f5"} loading={loading} css={override} size={200} />
       </div> : <div>
-      <div>
+      <div style={{opacity: isDisplayingLikers ? "0.1" : "1", pointerEvents: isDisplayingLikers ? "none": "auto"}}>
         {props.notCreateBox === undefined && <CreateBox handleClick={handleCreatePostClick}/>}
         {postData.posts.map((post, index) => {
           if (post.type === PostType.DIARY) {
@@ -260,7 +260,16 @@ export default function Posts(props) {
           handleExitClick={handleExitClick}
           handlePostAction={handlePostAction}/>}
       </div>
-      {isDisplayingLikers && <TableContainer component={Paper} style={{width: "500px", height: "300px", overflow: "auto"}}>
+      {isDisplayingLikers && <TableContainer
+          component={Paper}
+          style={{
+            width: "500px",
+            height: "300px",
+            overflow: "auto",
+            position: "absolute",
+            top: window.pageYOffset + (window.innerHeight / 4),
+            left: "33.5%",
+            zIndex: "999999999999999999999999999999999999"}}>
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
@@ -280,7 +289,7 @@ export default function Posts(props) {
                   <div>
                   <Avatar alt="liker image" src={likerData.likerUrl ? likerData.likerUrl : process.env.PUBLIC_URL + '/images/loginImage.png'} />
                   </div>
-                  <div>
+                  <div style={{marginTop: "9px", marginLeft: "5px"}}>
                   {likerData.liker.nickname}
                   </div>
                 </div>
