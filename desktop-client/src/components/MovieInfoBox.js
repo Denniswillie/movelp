@@ -3,7 +3,7 @@ import Avatar from '@material-ui/core/Avatar';
 import SettingsIcon from '@material-ui/icons/Settings';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 
 const useStyles = makeStyles((theme) => ({
   large: {
@@ -12,45 +12,70 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function UserInfoBox(props) {
+export default function MovieInfoBox(props) {
   const classes = useStyles();
+  const [movieData, setMovieData] = useState();
 
   useEffect(() => {
-    const movieDataRaw = await fetch("https://api.themoviedb.org/3/movie/" + 47095 + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
+    fetch("https://api.themoviedb.org/3/movie/" + 47095 + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US")
+        .then(res => res.json())
+        .catch(err => console.log(err))
+        .then(movie => {
+          var title;
+          if (movie.title) {
+            title = movie.title;
+          } else {
+            title = movie.name;
+          }
+
+          var genres = "";
+          if (movie.genres) {
+            for (var i = 0; i < movie.genres.length; i++) {
+              genres += (" " + movie.genres[i].name);
+              if (i !== movie.genres.length - 1) {
+                genres += " |";
+              }
+            }
+          }
+          const releaseDate = movie.release_date;
+          const overview = movie.overview;
+          const runtime = movie.runtime;
+          const posterUrl = !movie.poster_path ? process.env.PUBLIC_URL + '/images/defaultImage.png' : "https://image.tmdb.org/t/p/w500" + movie.poster_path;
+
+          setMovieData({
+            title: title,
+            genres: genres,
+            releaseDate: releaseDate,
+            overview: overview,
+            posterUrl: posterUrl,
+            runtime: runtime
+          })
+        })
   }, [])
 
   return <div style={{
-      width: "700px",
+      position: "absolute",
+      width: "300px",
       backgroundColor: "white",
-      marginLeft: "auto",
-      marginRight: "auto",
-      marginTop: "1em",
-      marginBottom: "1em",
+      right: "5em",
+      top: "6em",
       borderRadius: "5px",
       boxShadow: "0 0 2px #999",
-      paddingRight: "5px",
-      paddingLeft: "1em",
       paddingTop: "1em",
       paddingBottom: "1em"}}>
-      <div style={{width: "100%", margin: "auto", textAlign: "left", padding: "5px", display: "flex", position: "relative"}}>
-        <Avatar
-          style={{borderStyle: "solid", borderColor: "#F0F2F5", borderWidth: "2px"}}
-          alt="{props.user.nickname}"
-          src={process.env.PUBLIC_URL + '/images/loginImage.png'}
-          className={classes.large} />
-        <div style={{marginLeft: "2em", marginTop: "1em"}}>
-          <h1 style={{fontFamily: "roboto", fontWeight: "normal", marginBottom: "0.2em"}}>hthft</h1>
-          <div style={{marginTop: "0", textAlign: "left", padding: "5px", display: "flex"}}>
-            <p style={{marginTop: "0", fontFamily: "roboto"}}><b>6</b> posts</p>
+      {movieData && <div style={{width: "100%", margin: "auto", position: "relative"}}>
+        <img
+          style={{borderStyle: "solid", borderRadius: "10px", borderColor: "#F0F2F5", borderWidth: "2px", width: "17em", margin: "auto", height: "21em"}}
+          alt="movie poster"
+          src={movieData.posterUrl}/>
+        <div style={{textAlign: "center"}}>
+          <h1 style={{fontFamily: "roboto", fontWeight: "normal", marginBottom: "0.2em"}}>{movieData.title}</h1>
+          <div style={{textAlign: "left", marginLeft: "2.7em"}}>
+          <p style={{marginTop: "0", marginBottom: "0.4em", fontFamily: "roboto"}}>Release Date: <b>{movieData.releaseDate}</b></p>
+          <p style={{marginTop: "0", marginBottom: "0.4em", fontFamily: "roboto"}}>Genres: <b>{movieData.genres}</b></p>
+          <p style={{marginTop: "0", marginBottom: "0.4em", fontFamily: "roboto"}}>Runtime: <b>{movieData.runtime} minutes</b></p>
           </div>
         </div>
-        <div style={{top: "0", right: "15px", position: "absolute"}}>
-            <Button
-              onClick={props.displayUserInfoForm}
-              style={{backgroundColor: "black", color: "white"}}
-              variant="contained"
-              className={classes.button}>Edit Profile</Button>
-        </div>
-      </div>
+      </div>}
   </div>
 }
