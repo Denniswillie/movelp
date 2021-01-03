@@ -238,7 +238,7 @@ export default function RecommendationBox(props) {
         handleDeleteComment={handleDeleteComment}/>
     })}
   <form ref={form} className={classes.root} noValidate autoComplete="off" style={{width: "100%"}} onSubmit={handleCommentSubmit}>
-    <Avatar src={process.env.PUBLIC_URL + '/images/loginImage.png'} />
+    <Avatar src={props.creatorProfileImageUrl ? props.creatorProfileImageUrl : process.env.PUBLIC_URL + '/images/loginImage.png'} />
     <TextField
       inputRef={commentField}
       label="Write a comment..."

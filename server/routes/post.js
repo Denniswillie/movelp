@@ -191,7 +191,15 @@ router.post('/toggleLike', upload.none(), async (req, res) => {
 
 router.post('/getLikers', upload.none(), async (req, res) => {
   const postId = req.body.postId;
-  
+  const postLikes = await MongoDBPostManager.getLikers(postId);
+  const likers = postLikes.map(postLike => {
+    return postLike.userId;
+  })
+  const likerUrls = await GoogleStorageManager.downloadLikerProfileImages(likers);
+  res.send({
+    likers: likers,
+    likerUrls: likerUrls
+  });
 });
 
 module.exports = router;

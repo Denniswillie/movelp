@@ -153,6 +153,20 @@ class GoogleStorageManager {
     return creatorProfileImageUrls;
   }
 
+  static async downloadLikerProfileImages(users) {
+    const promises = [];
+    for (var i = 0; i < users.length; i++) {
+      const url = await this.downloadUserProfileImage(users[i]._id, this.STORAGE.BUCKET.USER_PROFILE, true);
+      if (url) {
+        promises.push(url);
+      } else {
+        promises.push(null);
+      }
+    }
+    const likerProfileImageUrls = await Promise.all(promises);
+    return likerProfileImageUrls;
+  }
+
   static async downloadUserProfileImage(userId, bucket, cropped) {
     const file = await bucket.file(this.createUserImageProfileDestination(userId, cropped));
     const fileExists = await file.exists();

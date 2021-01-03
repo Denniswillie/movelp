@@ -1,4 +1,5 @@
 import {useState, useEffect, useContext} from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 import CreateBox from './create/CreateBox';
 import Container from './create/Container';
 import DisplayDiaryBox from './display/DiaryBox';
@@ -18,6 +19,9 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Clear from '@material-ui/icons/Clear';
 import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
+import Avatar from '@material-ui/core/Avatar';
+import { css } from "@emotion/core";
+import ClipLoader from "react-spinners/RingLoader";
 
 const useStyles = makeStyles({
   table: {
@@ -25,12 +29,20 @@ const useStyles = makeStyles({
   },
 });
 
+const override = css`
+  display: block;
+  margin: 0 auto;
+  margin-top: 13em;
+  border-color: red;
+`;
+
 export default function Posts(props) {
   const PostType = useContext(PostTypeContext);
   const PostsFetchType = useContext(PostsFetchTypeContext);
 
   const [isDisplayingLikers, setDisplayingLikers] = useState(false);
-  const [likers, setLikers] = useState();
+  const [likersData, setLikersData] = useState();
+  const [loading, setLoading] = useState(false);
 
   const [postData, setPostData] = useState({
     posts: [],
@@ -42,6 +54,7 @@ export default function Posts(props) {
   const classes = useStyles();
 
   useEffect(() => {
+    setLoading(true);
     const formData = new FormData();
     if (props.postRoute === PostsFetchType.CREATOR) {
       formData.append('creatorId', props.creatorId);
@@ -53,6 +66,7 @@ export default function Posts(props) {
       .catch(err => console.log(err))
       .then(res => {
         setPostData(res);
+        setLoading(false);
       })
       .catch(err => console.log(err));
   }, [props.postRoute, PostsFetchType.CREATOR, PostsFetchType.MOVIE, props.creatorId, props.movieId]);
@@ -128,7 +142,8 @@ export default function Posts(props) {
   const handlePostAction = {
     handleAddPost: handleAddPost,
     handleEditPost: handleEditPost,
-    handleDeletePost: handleDeletePost
+    handleDeletePost: handleDeletePost,
+    setLoading: setLoading
   }
 
   function handleEditClick(data) {
@@ -174,11 +189,27 @@ export default function Posts(props) {
   }
 
   function displayLikers(postId) {
-    setDisplayingLikers(true);
+    const formData = new FormData();
+    formData.append('postId', postId);
+    fetch('/post/getLikers', {method: 'POST', body: formData})
+        .then(res => res.json())
+        .catch(err => console.log(err))
+        .then(postLikes => {
+          setLikersData(postLikes.likers.map((liker, index) => {
+            return {
+              liker: liker,
+              likerUrl: postLikes.likerUrls[index]
+            }
+          }))
+          setDisplayingLikers(true);
+        })
   }
 
   return (
     <div>
+      {loading ? <div className="sweet-loading">
+        <ClipLoader color={"#4287f5"} loading={loading} css={override} size={200} />
+      </div> : <div>
       <div>
         {props.notCreateBox === undefined && <CreateBox handleClick={handleCreatePostClick}/>}
         {postData.posts.map((post, index) => {
@@ -224,29 +255,37 @@ export default function Posts(props) {
       </div>
       <div style={{textAlign: "center"}}>
         {createState.type && <Container
+          setLoading={setLoading}
           createState={createState}
           handleExitClick={handleExitClick}
           handlePostAction={handlePostAction}/>}
       </div>
-      {isDisplayingLikers && <TableContainer component={Paper} style={{width: "500px"}}>
+      {isDisplayingLikers && <TableContainer component={Paper} style={{width: "500px", height: "300px", overflow: "auto"}}>
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell><IconButton>
-          <ThumbUpAltIcon />
-        </IconButton></TableCell>
-              <TableCell align="right"><IconButton>
+              <TableCell>
+                <ThumbUpAltIcon />
+              </TableCell>
+              <TableCell align="right"><IconButton onClick={() => {setDisplayingLikers(false)}}>
           <Clear/>
         </IconButton></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {likers && likers.map((liker) => (
-              <TableRow key={liker}>
+            {likersData && likersData.map((likerData) => (
+              <TableRow key={likerData.liker._id}>
                 <TableCell component="th" scope="row">
-                  {likers}
+                <div style={{display: "flex"}}>
+                  <div>
+                  <Avatar alt="liker image" src={likerData.likerUrl ? likerData.likerUrl : process.env.PUBLIC_URL + '/images/loginImage.png'} />
+                  </div>
+                  <div>
+                  {likerData.liker.nickname}
+                  </div>
+                </div>
                 </TableCell>
-                <TableCell align="right"><Button variant="contained" color="primary">
+                <TableCell align="right"><Button variant="contained" color="primary" onClick={() => {window.open("/profile/" + likerData.liker._id, "_self")}}>
                   Visit Profile
                 </Button></TableCell>
               </TableRow>
@@ -254,6 +293,7 @@ export default function Posts(props) {
           </TableBody>
         </Table>
       </TableContainer>}
+    </div>}
     </div>
   );
 }

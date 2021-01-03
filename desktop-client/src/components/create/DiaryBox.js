@@ -88,6 +88,7 @@ export default function DiaryBox(props) {
   function handleSubmit(event) {
     if (isEditing) {
       event.preventDefault();
+      handlePostAction.setLoading(true);
       const formData = new FormData(form.current);
       formData.set('postId', post._id);
       formData.set('postType', DIARY);
@@ -106,10 +107,12 @@ export default function DiaryBox(props) {
         .catch(err => console.log(err))
         .then(res => {
           handlePostAction.handleEditPost(res);
+          handlePostAction.setLoading(false);
         })
         .catch(err => console.log(err));
     } else {
       event.preventDefault();
+      handlePostAction.setLoading(true);
       const formData = new FormData(form.current);
       for (var k = 0; k < createInput.uploadedFiles.length; k++) {
         formData.append('fileInput[]', createInput.uploadedFiles[k].file);
@@ -117,7 +120,10 @@ export default function DiaryBox(props) {
       fetch('/post/create/diary', {method: 'POST', body: formData})
           .then(res => res.json())
           .catch(err => console.log(err))
-          .then(res => handlePostAction.handleAddPost(res))
+          .then(res => {
+            handlePostAction.handleAddPost(res);
+            handlePostAction.setLoading(false);
+          })
           .catch(err => console.log(err));
     }
   }
