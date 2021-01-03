@@ -14,6 +14,7 @@ class Comment {
   static FIELDS = {
     POST_ID: 'postId',
     CREATOR_ID: 'creatorId',
+    CREATOR_NAME: 'creatorName',
     TIME_OF_CREATION: 'timeOfCreation',
     TEXT: 'text',
     NO_OF_LIKES: 'noOfLikes',
@@ -24,6 +25,7 @@ class Comment {
     if (arguments.length === 1 && this.validateBuild(build)) {
       const postId = build.postId;
       const creatorId = build.creatorId;
+      const creatorName = build.creatorName;
       const timeOfCreation = build.timeOfCreation;
       const text = build.text;
       const noOfLikes = build.noOfLikes;
@@ -36,6 +38,10 @@ class Comment {
         },
         creatorId: {
           value: creatorId,
+          writable: false
+        },
+        creatorName: {
+          value: creatorName,
           writable: false
         },
         timeOfCreation: {
@@ -68,6 +74,10 @@ class Comment {
       }
       setCreatorId(creatorId) {
         this.creatorId = creatorId;
+        return this;
+      }
+      setCreatorName(creatorName) {
+        this.creatorName = creatorName;
         return this;
       }
       setTimeOfCreation(timeOfCreation) {

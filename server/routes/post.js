@@ -40,6 +40,7 @@ router.post('/create/:type', uploadFields, async (req, res) => {
 
   const post =
       postBuilder.setCreatorId(req.user._id)
+      .setCreatorName(req.user.nickname)
       .setFileIds(fileIds)
       .setType(type)
       .setText(req.body.text)
@@ -49,24 +50,71 @@ router.post('/create/:type', uploadFields, async (req, res) => {
       .setIsEdited(false)
       .build();
 
-  await MongoDBPostManager.create(post);
-  res.redirect(CLIENT_URL);
+  const createdPost = await MongoDBPostManager.create(post);
+  const urls = await GoogleStorageManager.downloadFilesForSinglePost(
+    createdPost,
+    GoogleStorageManager.STORAGE.BUCKET.POST
+  );
+  const creatorProfileImageUrl = await GoogleStorageManager.downloadUserProfileImage(req.user._id, GoogleStorageManager.STORAGE.BUCKET.USER_PROFILE);
+  const liked = false;
+  res.send({
+    post: createdPost,
+    urls: urls,
+    liked: liked,
+    creatorProfileImageUrl: creatorProfileImageUrl
+  });
 })
 
-router.get('/get', async (req, res) => {
+router.post('/get', upload.none(), async (req, res) => {
   const userId = req.user._id;
   const [docs, liked] = await MongoDBPostManager.getAll(userId);
   const urls = await GoogleStorageManager.downloadFilesForMultiplePosts(
       docs, GoogleStorageManager.STORAGE.BUCKET.POST
   );
-  res.send([docs, urls, liked]);
+  const creatorProfileImageUrls = await GoogleStorageManager.downloadUserProfileImages(docs);
+  res.send({
+    posts: docs,
+    urls: urls,
+    liked: liked,
+    creatorProfileImageUrls: creatorProfileImageUrls
+  })
+})
+
+router.post('/getPostsByUser', upload.none(), async (req, res) => {
+  const userId = req.user._id;
+  const creatorId = req.body.creatorId;
+
+  const [docs, liked] = await MongoDBPostManager.getPostsByUser(creatorId, userId);
+  const urls = await GoogleStorageManager.downloadFilesForMultiplePosts(
+      docs, GoogleStorageManager.STORAGE.BUCKET.POST
+  );
+  const creatorProfileImageUrls = await GoogleStorageManager.downloadUserProfileImages(docs);
+  res.send({
+    posts: docs,
+    urls: urls,
+    liked: liked,
+    creatorProfileImageUrls: creatorProfileImageUrls
+  })
+});
+
+router.post('/getMoviesSpecificPosts', upload.none(), async (req, res) => {
+  const userId = req.user._id;
+  const movieId = req.body.movieId;
+
+  const [docs, liked] = await MongoDBPostManager.getMoviesSpecificPosts(movieId, userId);
+  const urls = await GoogleStorageManager.downloadFilesForMultiplePosts(
+      docs, GoogleStorageManager.STORAGE.BUCKET.POST
+  );
+  const creatorProfileImageUrls = await GoogleStorageManager.downloadUserProfileImages(docs);
+  res.send({
+    posts: docs,
+    urls: urls,
+    liked: liked,
+    creatorProfileImageUrls: creatorProfileImageUrls
+  })
 })
 
 router.post('/edit', uploadFields, async (req, res) => {
-
-  console.log(req.body);
-  console.log(req.files);
-
   const postId = req.body.postId;
   const type = req.body.postType;
   const existingFileIds = req.body.fileInput ? req.body.fileInput : [];
@@ -111,17 +159,27 @@ router.post('/edit', uploadFields, async (req, res) => {
 
   postBuilder.setFileIds(existingFileIds.concat(uploadedFileIds));
 
-  await MongoDBPostManager.edit(postId, postBuilder);
+  const editedPost = await MongoDBPostManager.edit(postId, postBuilder);
+  const urls = await GoogleStorageManager.downloadFilesForSinglePost(
+    editedPost,
+    GoogleStorageManager.STORAGE.BUCKET.POST
+  );
+  const liked = await MongoDBPostManager.userHasLiked(req.user._id, editedPost._id);
+  const creatorProfileImageUrl = await GoogleStorageManager.downloadUserProfileImage(req.user._id, GoogleStorageManager.STORAGE.BUCKET.USER_PROFILE);
 
-  res.redirect(CLIENT_URL);
+  res.send({
+    post: editedPost,
+    urls: urls,
+    liked: liked,
+    creatorProfileImageUrl: creatorProfileImageUrl
+  })
 });
 
 router.post('/delete', upload.none(), async (req, res) => {
   const postId = req.body.postId;
   const fileIds = req.body.fileIds;
   await MongoDBPostManager.delete(postId);
-  await GoogleStorageManager.deleteMultipleFiles(fileIds, GoogleStorageManager.STORAGE.BUCKET.POST);
-  res.end();
+  res.status(200).send(true);
 });
 
 router.post('/toggleLike', upload.none(), async (req, res) => {
@@ -129,6 +187,19 @@ router.post('/toggleLike', upload.none(), async (req, res) => {
   const userId = req.user._id;
   await MongoDBPostManager.createOrToggleLike(postId, userId);
   res.end();
+});
+
+router.post('/getLikers', upload.none(), async (req, res) => {
+  const postId = req.body.postId;
+  const postLikes = await MongoDBPostManager.getLikers(postId);
+  const likers = postLikes.map(postLike => {
+    return postLike.userId;
+  })
+  const likerUrls = await GoogleStorageManager.downloadLikerProfileImages(likers);
+  res.send({
+    likers: likers,
+    likerUrls: likerUrls
+  });
 });
 
 module.exports = router;

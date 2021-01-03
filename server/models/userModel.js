@@ -8,9 +8,10 @@ const userSchema = new mongoose.Schema ({
   googleId: String,
   facebookId: String,
   nickname: String,
-  genre: String,
   numOfFollowers: Number,
-  numOfFollowing: Number
+  numOfFollowing: Number,
+  genre: String,
+  numOfPosts: Number
 });
 
 userSchema.plugin(passportLocalMongoose);

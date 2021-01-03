@@ -11,6 +11,7 @@ const CLIENT_URL = inProduction ? process.env.DOMAIN_NAME : "http://localhost:30
 router.post('/create', upload.none(), async (req, res) => {
   const postId = req.body.postId;
   const creatorId = req.user._id;
+  const creatorName = req.user.nickname;
   const timeOfCreation = new Date();
   const text = req.body.text;
   const noOfLikes = 0;
@@ -20,6 +21,7 @@ router.post('/create', upload.none(), async (req, res) => {
       new Comment.Builder()
       .setPostId(postId)
       .setCreatorId(creatorId)
+      .setCreatorName(creatorName)
       .setTimeOfCreation(timeOfCreation)
       .setText(text)
       .setNoOfLikes(noOfLikes)
@@ -27,7 +29,7 @@ router.post('/create', upload.none(), async (req, res) => {
       .build();
 
   const createdComment = await MongoDBCommentManager.create(comment);
-  res.end();
+  res.send(createdComment);
 });
 
 router.post('/get', upload.none(), async (req, res) => {
@@ -46,6 +48,12 @@ router.post('/edit', upload.none(), async (req, res) => {
       .setIsEdited(isEdited);
   await MongoDBCommentManager.edit(commentId, commentBuilder);
   res.end();
+});
+
+router.post('/delete', upload.none(), async(req, res) => {
+  const commentId = req.body.commentId;
+  await MongoDBCommentManager.delete(commentId);
+  res.status(200).send(true);
 });
 
 module.exports = router;

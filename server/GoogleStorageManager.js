@@ -36,6 +36,28 @@ class GoogleStorageManager {
     }
   }
 
+  static createUserImageProfileDestination(userId, cropped) {
+    if (cropped) {
+      return userId + " cropped";
+    } else {
+      return userId + " original";
+    }
+  }
+
+  static async uploadUserImageProfileToBucket(bucket, file, userId, cropped) {
+    const options = {
+      destination: this.createUserImageProfileDestination(userId, cropped),
+      resumable: true,
+      validation: 'crc32c'
+    };
+
+    return bucket.upload(file.path, options)
+      .then(doc => {
+        return doc;
+      })
+      .catch(err => console.log(err));
+  }
+
   static async uploadMultipleToBucket(bucket, requestFiles) {
     if (requestFiles.length <= 0) {
       console.log('No files uploaded');
@@ -77,17 +99,30 @@ class GoogleStorageManager {
     return result;
   }
 
+  static async delay(ms) {
+    return new Promise(function (resolve) { return setTimeout(resolve, ms); });
+  };
+
   static async downloadFilesForSinglePost(post, bucket) {
     const promises = [];
     if (!post.fileIds || post.fileIds.length <= 0) {
       return [];
     }
+    var counterTrialPerFile = 0;
     for (var i = 0; i < post.fileIds.length; i++) {
+      if (counterTrialPerFile > 3) {
+        counterTrialPerFile = 0;
+        continue;
+      }
       const file = await bucket.file(post.fileIds[i]);
       const fileExists = await file.exists();
       if (fileExists[0]) {
         const signedUrlList = await file.getSignedUrl(this.STORAGE.DOWNLOAD_OPTIONS);
         promises.push(signedUrlList[0]);
+      } else {
+        i--;
+        counterTrialPerFile++;
+        await this.delay(1000);
       }
     }
     const urls = await Promise.all(promises);
@@ -102,6 +137,45 @@ class GoogleStorageManager {
 
   static async deleteFile(fileId, bucket) {
     await bucket.file(fileId).delete();
+  }
+
+  static async downloadUserProfileImages(posts) {
+    const promises = [];
+    for (var i = 0; i < posts.length; i++) {
+      const url = await this.downloadUserProfileImage(posts[i].creatorId, this.STORAGE.BUCKET.USER_PROFILE, true);
+      if (url) {
+        promises.push(url);
+      } else {
+        promises.push(null);
+      }
+    }
+    const creatorProfileImageUrls = await Promise.all(promises);
+    return creatorProfileImageUrls;
+  }
+
+  static async downloadLikerProfileImages(users) {
+    const promises = [];
+    for (var i = 0; i < users.length; i++) {
+      const url = await this.downloadUserProfileImage(users[i]._id, this.STORAGE.BUCKET.USER_PROFILE, true);
+      if (url) {
+        promises.push(url);
+      } else {
+        promises.push(null);
+      }
+    }
+    const likerProfileImageUrls = await Promise.all(promises);
+    return likerProfileImageUrls;
+  }
+
+  static async downloadUserProfileImage(userId, bucket, cropped) {
+    const file = await bucket.file(this.createUserImageProfileDestination(userId, cropped));
+    const fileExists = await file.exists();
+    if (fileExists[0]) {
+      const signedUrl = await file.getSignedUrl(this.STORAGE.DOWNLOAD_OPTIONS);
+      return signedUrl[0];
+    } else {
+      return;
+    }
   }
 }
 

@@ -11,11 +11,13 @@ const mongoose = require("mongoose");
 const ObjectId = require("mongodb").ObjectID;
 const CommentModel = require('../../models/commentModel');
 const CommentLikeModel = require('../../models/commentLikeModel');
+const MongoDBPostManager = require('./MongoDBPostManager');
 
 class MongoDBCommentManager {
   static create(comment) {
     return CommentModel.create(this.constructSchemaFields(comment))
-      .then(docs => {
+      .then(async (docs) => {
+        await MongoDBPostManager.updateNoOfComments(docs.postId, true);
         return docs;
       })
       .catch(console.log);
@@ -25,6 +27,7 @@ class MongoDBCommentManager {
     return {
       postId: comment.postId,
       creatorId: comment.creatorId,
+      creatorName: comment.creatorName,
       timeOfCreation: comment.timeOfCreation,
       text: comment.text,
       noOfLikes: comment.noOfLikes,
@@ -33,7 +36,7 @@ class MongoDBCommentManager {
   }
 
   static edit(commentId, commentBuilder) {
-    return CommentModel.findByIdAndUpdate(comment._id, commentBuilder, {new: true})
+    return CommentModel.findByIdAndUpdate(commentId, commentBuilder, {new: true})
       .then(docs => {
         return docs;
       })
@@ -50,7 +53,8 @@ class MongoDBCommentManager {
 
   static delete(commentId) {
     return CommentModel.findByIdAndDelete(commentId)
-      .then(docs => {
+      .then(async (docs) => {
+        await MongoDBPostManager.updateNoOfComments(docs.postId, false);
         return docs;
       })
       .catch(console.log);

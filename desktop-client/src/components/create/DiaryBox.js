@@ -6,8 +6,6 @@ import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 import IconButton from '@material-ui/core/IconButton';
 import Chip from '@material-ui/core/Chip';
-import Paper from '@material-ui/core/Paper';
-import TagFacesIcon from '@material-ui/icons/TagFaces';
 import {useRef, useCallback, useState} from 'react';
 import Gallery from 'react-photo-gallery';
 import SelectedImage from "../SelectedImage";
@@ -35,7 +33,18 @@ const useStyles = makeStyles((theme) => ({
 export default function DiaryBox(props) {
   const classes = useStyles();
   const form = useRef(null);
-  const [selectAll, setSelectAll] = useState(false);
+  const [selectAll] = useState(false);
+  const DIARY = 'diary';
+
+  const {
+    createInput,
+    deletedExistingFiles,
+    handlePostAction,
+    post,
+    isEditing,
+    handleInputChange,
+    photoGalleryStylings
+  } = props.renderProps;
 
   const imageRenderer = useCallback(
     ({ index, left, top, key, photo }) => (
@@ -47,11 +56,11 @@ export default function DiaryBox(props) {
         photo={photo}
         left={left}
         top={top}
-        handleChooseToDeleteFile={props.handleChooseToDeleteFile}
-        handleChooseNotToDeleteFile={props.handleChooseNotToDeleteFile}
+        handleChooseToDeleteFile={handleInputChange.handleChooseToDeleteFile}
+        handleChooseNotToDeleteFile={handleInputChange.handleChooseNotToDeleteFile}
       />
     ),
-    [selectAll]
+    [selectAll, handleInputChange.handleChooseToDeleteFile, handleInputChange.handleChooseNotToDeleteFile]
   );
 
   function uploadPhoto() {
@@ -64,55 +73,66 @@ export default function DiaryBox(props) {
 
   function deletePost() {
     const formData = new FormData();
-    formData.set('postId', props.data._id);
-    formData.set('fileIds', props.data.fileIds);
-    fetch('/post/delete', {method: 'POST', body: formData});
+    formData.set('postId', post._id);
+    formData.set('fileIds', post.fileIds);
+    fetch('/post/delete', {method: 'POST', body: formData})
+        .then(res => res.json())
+        .catch(err => console.log(err))
+        .then(res => {
+          if (res) {
+            handlePostAction.handleDeletePost(post._id);
+          }
+        })
   }
 
   function handleSubmit(event) {
-    if (props.isEditing) {
+    if (isEditing) {
       event.preventDefault();
+      handlePostAction.setLoading(true);
       const formData = new FormData(form.current);
-      formData.set('postId', props.data._id);
-      formData.set('postType', 'diary');
-      for (var i = 0; i < props.deletedExistingFiles.length; i++) {
-        formData.append('deletedFileIds[]', props.deletedExistingFiles[i]);
+      formData.set('postId', post._id);
+      formData.set('postType', DIARY);
+      for (var i = 0; i < deletedExistingFiles.length; i++) {
+        formData.append('deletedFileIds[]', deletedExistingFiles[i]);
       }
-      for (var i = 0; i < props.uploadedFiles.length; i++) {
-        if (props.uploadedFiles[i].file) {
-          formData.append('fileInput[]', props.uploadedFiles[i].file);
+      for (var j = 0; j < createInput.uploadedFiles.length; j++) {
+        if (createInput.uploadedFiles[j].file) {
+          formData.append('fileInput[]', createInput.uploadedFiles[j].file);
         } else {
-          formData.append('fileInput[]', props.uploadedFiles[i].fileId);
+          formData.append('fileInput[]', createInput.uploadedFiles[j].fileId);
         }
       }
-      fetch('/post/edit', {method: 'POST', body: formData});
+      fetch('/post/edit', {method: 'POST', body: formData})
+        .then(res => res.json())
+        .catch(err => console.log(err))
+        .then(res => {
+          handlePostAction.handleEditPost(res);
+          handlePostAction.setLoading(false);
+        })
+        .catch(err => console.log(err));
     } else {
       event.preventDefault();
+      handlePostAction.setLoading(true);
       const formData = new FormData(form.current);
-      for (var i = 0; i < props.uploadedFiles.length; i++) {
-        formData.append('fileInput[]', props.uploadedFiles[i].file);
+      for (var k = 0; k < createInput.uploadedFiles.length; k++) {
+        formData.append('fileInput[]', createInput.uploadedFiles[k].file);
       }
-      fetch('/post/create/diary', {method: 'POST', body: formData});
+      fetch('/post/create/diary', {method: 'POST', body: formData})
+          .then(res => res.json())
+          .catch(err => console.log(err))
+          .then(res => {
+            handlePostAction.handleAddPost(res);
+            handlePostAction.setLoading(false);
+          })
+          .catch(err => console.log(err));
     }
-  }
-
-  function logUploadedFiles() {
-    console.log(props.uploadedFiles);
-  }
-
-  function logWillBeDeletedFiles() {
-    console.log(props.willBeDeletedFiles);
-  }
-
-  function logDeletedExistingFiles() {
-    console.log(props.deletedExistingFiles);
   }
 
   return <div>
     <div id = "createDiaryForm">
       <form className={classes.root} noValidate autoComplete="off" onSubmit={handleSubmit} ref={form}>
-        {props.chosenMovies.length > 0 && <p style={{fontFamily: "roboto", marginLeft: "auto", marginRight: "auto", marginTop: "8px"}}>Movie titles</p>}
-        {props.chosenMovies.length > 0 && <div
+        {createInput.chosenMovies.length > 0 && <p style={{fontFamily: "roboto", marginLeft: "auto", marginRight: "auto", marginTop: "8px"}}>Movie titles</p>}
+        {createInput.chosenMovies.length > 0 && <div
           className={classes.movieTags}
           style={{boxShadow: "1px",
             borderRadius: "4px",
@@ -123,10 +143,11 @@ export default function DiaryBox(props) {
             marginLeft: "auto",
             marginRight: "auto",
             marginTop: "9px"}}>
-        {props.chosenMovies.map(chosenMovie => {
+        {createInput.chosenMovies.map(chosenMovie => {
           return <Chip
+            key={chosenMovie.id}
             label={chosenMovie.title}
-            onDelete={() => {props.handleDeleteChosenMovie(chosenMovie.id)}}
+            onDelete={() => {handleInputChange.handleDeleteChosenMovie(chosenMovie.id)}}
           />
         })}
         </div>}
@@ -135,8 +156,8 @@ export default function DiaryBox(props) {
           variant="outlined"
           name="title"
           style={{width: "90%"}}
-          value={props.diaryTitle}
-          onChange={props.handleDiaryTitleChange}/>
+          value={createInput.diaryTitle}
+          onChange={handleInputChange.handleDiaryTitleChange}/>
         <TextField
           multiline
           label="Share your story"
@@ -144,63 +165,49 @@ export default function DiaryBox(props) {
           name="text"
           variant="outlined"
           style={{width: "90%"}}
-          value={props.text}
-          onChange={props.handleTextChange}/>
-        {props.chosenMovies.map(chosenMovie => {
-          return <input type="hidden" name="chosenMoviesIds[]" value={chosenMovie.id}/>
+          value={createInput.text}
+          onChange={handleInputChange.handleTextChange}/>
+        {createInput.chosenMovies.map(chosenMovie => {
+          return <input type="hidden" key={chosenMovie.id} name="chosenMoviesIds[]" value={chosenMovie.id}/>
         })}
         <input
           type="file"
           id="imageUpload"
           style={{display: "none"}}
-          onChange={props.handleUploadedFilesChange}/>
+          onChange={handleInputChange.handleUploadedFilesChange}/>
         <input type="submit" id="submit" style={{display: "none"}}/>
       </form>
       <div>
 
-      {props.uploadedFiles.length > 0 && <div style={{
+      {createInput.uploadedFiles.length > 0 && <div style={{
         padding: "10px",
       }}>
-      <Gallery photos={props.uploadedFiles} renderImage={imageRenderer} />
-      <IconButton onClick={props.handleDeleteChosenFiles}>
+      <div style={createInput.uploadedFiles.length <= 1 ? photoGalleryStylings[0] : photoGalleryStylings[1]}>
+        <Gallery photos={createInput.uploadedFiles} renderImage={imageRenderer} />
+      </div>
+      <IconButton onClick={handleInputChange.handleDeleteChosenFiles}>
       <DeleteOutlinedIcon />
       </IconButton>
       </div>}
 
 
-        <Button style={{width: "40%"}} onClick={uploadPhoto}>
+        {createInput.uploadedFiles.length < 4 ? <Button style={{width: "40%"}} onClick={uploadPhoto}>
           <InsertPhoto />
           <p style={{fontFamily: 'Roboto', marginLeft: "6px"}}>Upload Photo</p>
-        </Button>
+        </Button> : <p style={{fontFamily: "roboto"}}>You can only choose up to 4 files.</p>}
       </div>
       <Button
         style={{backgroundColor: "black", color: "white"}}
         variant="contained"
         className={classes.button}
         startIcon={<AddCircleOutline />}
-        onClick={submit}>{props.isEditing ? "edit" : "create"}</Button>
-      <Button
-        style={{backgroundColor: "black", color: "white"}}
-        variant="contained"
-        className={classes.button}
-        onClick={logWillBeDeletedFiles}>logWillBeDeletedFiles</Button>
-      <Button
-        style={{backgroundColor: "black", color: "white"}}
-        variant="contained"
-        className={classes.button}
-        onClick={logUploadedFiles}>logUploadedFiles</Button>
-      {props.isEditing && <Button
-        style={{backgroundColor: "black", color: "white"}}
-        variant="contained"
-        className={classes.button}
-        onClick={logDeletedExistingFiles}>logDeletedExistingFiles</Button>}
-      {props.isEditing && <Button
+        onClick={submit}>{isEditing ? "edit" : "create"}</Button>
+      {isEditing && <Button
         style={{backgroundColor: "black", color: "white"}}
         variant="contained"
         className={classes.button}
         startIcon={<DeleteOutlinedIcon />}
         onClick={deletePost}>Delete post</Button>}
-
     </div>
   </div>
 }

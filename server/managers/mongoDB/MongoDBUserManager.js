@@ -15,31 +15,64 @@ const UserModel = require('../../models/userModel');
 const FollowModel = require('../../models/followModel');
 
 class MongoDBUserManager {
-  static async createOrEditProfile(user) {
-    UserModel.findByIdAndUpdate(user._id, {
-      nickname: user.nickname,
-      genre: user.genre,
-      numOfFollowers: user.numOfFollowers,
-      numOfFollowing: user.numOfFollowing,
-      privacyType: user.privacyType
-    })
+  static async getProfile(userId) {
+    return UserModel.findById(userId)
+      .then(docs => {
+        return docs;
+      })
+      .catch(err => {
+        console.log(err);
+      })
+  }
+
+  static nicknameExists(nickname) {
+    return UserModel.findOne({nickname: nickname})
+      .then(docs => {
+        if (docs) {
+          return true;
+        }
+        return false;
+      })
+      .catch(err => console.log(err));
+  }
+
+  static createProfile(user, userId) {
+    return UserModel.findByIdAndUpdate(userId, this.constructSchemaFields(user), {new: true})
     .then(docs => {
       return docs;
     })
     .catch(err => console.log(err));
   }
 
-  static async delete(userId) {
-    UserModel.findByIdAndDelete(userId)
+  static constructSchemaFields(user) {
+    return {
+      nickname:user.nickname,
+      numOfFollowers: user.numOfFollowers,
+      numOfFollowing: user.numOfFollowing,
+      genre: user.genre,
+      numOfPosts: user.numOfPosts
+    }
+  }
+
+  static editProfile(userBuilder, userId) {
+    return UserModel.findByIdAndUpdate(userId, userBuilder, {new: true})
+    .then(docs => {
+      return docs;
+    })
+    .catch(err => console.log(err));
+  }
+
+  static delete(userId) {
+    return UserModel.findByIdAndDelete(userId)
       .then(docs => {
         return docs;
       })
       .catch(err => console.log(err));
   }
 
-  static async createOrToggleFollow(followerId, followedId) {
-    FollowModel.findOneAndUpdate({followerId: followerId, followedId: followedId}, {
-      {$bit: {followed: {xor: 1}}}
+  static createOrToggleFollow(followerId, followedId) {
+    return FollowModel.findOneAndUpdate({followerId: followerId, followedId: followedId}, {
+      $bit: {followed: {xor: 1}}
     })
     .then(docs => {
       if (docs) {
@@ -49,7 +82,7 @@ class MongoDBUserManager {
           this.updateFollowNumber(followerId, followedId, false);
         }
       } else {
-        FollowModel.create({followerId: followerId, followedId: followedId, followed: 1});
+        FollowModel.create({followerId: followerId, followedId: followedId, followed: 1})
           .then(this.updateFollowNumber(followerId, followedId, true))
           .catch(err => console.log(err))
       }
@@ -79,7 +112,7 @@ class MongoDBUserManager {
   }
 
   static async fetchFollowings(userId, lastFollowId) {
-    const query;
+    var query;
     if (lastFollowId) {
       query = FollowModel.find({followerId: userId, _id: {$gte: lastFollowId}});
     } else {
@@ -95,7 +128,7 @@ class MongoDBUserManager {
   }
 
   static async fetchFollowers(userId, lastFollowId) {
-    const query;
+    var query;
     if (lastFollowId) {
       query = FollowModel.find({followedId: userId, _id: {$gte: lastFollowId}});
     } else {
@@ -108,6 +141,14 @@ class MongoDBUserManager {
       }
       return docs;
     });
+  }
+
+  static async updateNumOfPosts(userId, isIncreased) {
+    if (isIncreased) {
+      await UserModel.findByIdAndUpdate(userId, {$inc: {numOfPosts: 1}}, {new: true});
+    } else {
+      await UserModel.findByIdAndUpdate(userId, {$inc: {numOfPosts: -1}}, {new: true});
+    }
   }
 }
 

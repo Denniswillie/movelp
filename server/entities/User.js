@@ -7,36 +7,30 @@
 // •	facebookId
 // •	password
 // •	nickname
-// •	genre
 // •	numOfFollowers
 // •	numOfFollowing
-// •	privacyType
 
 class User {
 
   static FIELDS = {
     NICKNAME: 'nickname',
-    GENRE: 'genre',
     NUM_OF_FOLLOWERS: 'numOfFollowers',
     NUM_OF_FOLLOWING: 'numOfFollowing',
-    PRIVACY_TYPE: 'privacyType'
+    GENRE: 'genre',
+    NUM_OF_POSTS: 'numOfPosts'
   }
 
   constructor(build) {
     if (arguments.length === 1 && this.validateBuild(build)) {
       const nickname = build.nickname;
-      const genre = build.genre;
       const numOfFollowers = build.numOfFollowers;
       const numOfFollowing = build.numOfFollowing;
-      const privacyType = build.privacyType;
+      const genre = build.genre;
+      const numOfPosts = build.numOfPosts;
 
       Object.defineProperties(this, {
         nickname: {
           value: nickname,
-          writable: false
-        },
-        genre: {
-          value: genre,
           writable: false
         },
         numOfFollowers: {
@@ -47,8 +41,12 @@ class User {
           value: numOfFollowing,
           writable: false
         },
-        privacyType: {
-          value: privacyType,
+        genre: {
+          value: genre,
+          writable: false
+        },
+        numOfPosts: {
+          value: numOfPosts,
           writable: false
         },
       });
@@ -63,10 +61,6 @@ class User {
         this.nickname = nickname;
         return this;
       }
-      setGenre(genre) {
-        this.genre = genre;
-        return this;
-      }
       setNumOfFollowers(numOfFollowers) {
         this.numOfFollowers = numOfFollowers;
         return this;
@@ -75,8 +69,12 @@ class User {
         this.numOfFollowing = numOfFollowing;
         return this;
       }
-      setPrivacyType(privacyType) {
-        this.privacyType = privacyType;
+      setGenre(genre) {
+        this.genre = genre;
+        return this;
+      }
+      setNumOfPosts(numOfPosts) {
+        this.numOfPosts = numOfPosts;
         return this;
       }
       build() {

@@ -1,5 +1,5 @@
 import {useState, useEffect, useContext} from 'react';
-import Navbar from './Navbar';
+import { makeStyles } from '@material-ui/core/styles';
 import CreateBox from './create/CreateBox';
 import Container from './create/Container';
 import DisplayDiaryBox from './display/DiaryBox';
@@ -7,48 +7,162 @@ import DisplayGeneralBox from './display/GeneralBox';
 import DisplayRecommendationBox from './display/RecommendationBox';
 import DisplayAskForSuggestionsBox from './display/AskForSuggestionsBox';
 import PostTypeContext from './PostTypeContext';
+import PostsFetchTypeContext from './PostsFetchTypeContext';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import Clear from '@material-ui/icons/Clear';
+import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
+import Avatar from '@material-ui/core/Avatar';
+import { css } from "@emotion/core";
+import ClipLoader from "react-spinners/RingLoader";
 
-export default function Posts() {
+const useStyles = makeStyles({
+  table: {
+    minWidth: 200,
+  },
+});
+
+const override = css`
+  display: block;
+  margin: 0 auto;
+  margin-top: 13em;
+  border-color: red;
+`;
+
+export default function Posts(props) {
   const PostType = useContext(PostTypeContext);
-  const [posts, setPosts] = useState([[], []]);
+  const PostsFetchType = useContext(PostsFetchTypeContext);
+
+  const [isDisplayingLikers, setDisplayingLikers] = useState(false);
+  const [likersData, setLikersData] = useState();
+  const [loading, setLoading] = useState(false);
+
+  const [postData, setPostData] = useState({
+    posts: [],
+    urls: [],
+    liked: [],
+    creatorProfileImageUrls: []
+  });
+
+  const classes = useStyles();
 
   useEffect(() => {
-    fetch('/post/get', {method: 'GET', headers: {
-      'Content-Type': 'application/json'
-    }})
+    setLoading(true);
+    const formData = new FormData();
+    if (props.postRoute === PostsFetchType.CREATOR) {
+      formData.append('creatorId', props.creatorId);
+    } else if (props.postRoute === PostsFetchType.MOVIE) {
+      formData.append('movieId', props.movieId);
+    }
+    fetch('/post/' + props.postRoute, {method: 'POST', body: formData})
       .then(res => res.json())
       .catch(err => console.log(err))
       .then(res => {
-        console.log(res[2]);
-        setPosts(res);
+        setPostData(res);
+        setLoading(false);
       })
       .catch(err => console.log(err));
-  }, []);
+  }, [props.postRoute, PostsFetchType.CREATOR, PostsFetchType.MOVIE, props.creatorId, props.movieId]);
 
-  const [createData, setCreateData] = useState({
+  const [createState, setCreateState] = useState({
     isEditing: false,
     type: null,
-    typeData: null
+    data: null
   });
 
-  function handleEditClick(post) {
-    if (post.type === PostType.DIARY) {
-      setCreateData({isEditing: true, type: PostType.DIARY, typeData: post});
-    } else if (post.type === PostType.RECOMMENDATION) {
-      setCreateData({isEditing: true, type: PostType.RECOMMENDATION, typeData: post});
-    } else if (post.type === PostType.GENERAL) {
-      setCreateData({isEditing: true, type: PostType.GENERAL, typeData: post});
-    } else if (post.type === PostType.ASK_SUGGESTION) {
-      setCreateData({isEditing: true, type: PostType.ASK_SUGGESTION, typeData: post});
+  function handleAddPost(addedPostData) {
+    setPostData(prevData => {
+      return {
+        posts: [addedPostData.post, ...prevData.posts],
+        urls: [addedPostData.urls, ...prevData.urls],
+        liked: [addedPostData.liked, ...prevData.liked],
+        creatorProfileImageUrls: [addedPostData.creatorProfileImageUrl, ...prevData.creatorProfileImageUrls]
+      }
+    });
+    setCreateState({isEditing: false, type: null, data: null});
+    if (props.addOrDeletePost) {
+      props.addOrDeletePost(true);
     }
   }
 
-  function handleExitClick(event) {
-    setCreateData({isEditing: false, type: null, typeData: null});
+  function handleEditPost(editedPostData) {
+    setPostData(prevData => {
+      var previousPostDataFound = false;
+      for (var i = 0; i < prevData.posts.length; i++) {
+        if (prevData.posts[i]._id.trim() === editedPostData.post._id.trim()) {
+          prevData.posts[i] = editedPostData.post;
+          prevData.urls[i] = editedPostData.urls;
+          prevData.liked[i] = editedPostData.liked;
+          prevData.creatorProfileImageUrls[i] = editedPostData.creatorProfileImageUrl;
+          previousPostDataFound = true;
+          break;
+        }
+      }
+      if (!previousPostDataFound) {
+        return {
+          posts: [editedPostData.post, ...prevData.posts],
+          urls: [editedPostData.urls, ...prevData.urls],
+          liked: [editedPostData.liked, ...prevData.liked],
+          creatorProfileImageUrls: [editedPostData.creatorProfileImageUrl, ...prevData.creatorProfileImageUrls]
+        }
+      } else {
+        return prevData;
+      }
+    });
+    setCreateState({isEditing: false, type: null, data: null});
+  }
+
+  function handleDeletePost(postId) {
+    setPostData(prevData => {
+      const temp = {...prevData};
+      for (var i = 0; i < temp.posts.length; i++) {
+        if (temp.posts[i]._id.trim() === postId.trim()) {
+          temp.posts.splice(i, 1);
+          temp.urls.splice(i, 1);
+          temp.liked.splice(i, 1);
+          temp.creatorProfileImageUrls.splice(i, 1);
+          return temp;
+        }
+      }
+      return temp;
+    })
+    setCreateState({isEditing: false, type: null, data: null});
+    if (props.addOrDeletePost) {
+      props.addOrDeletePost(false);
+    }
+  }
+
+  const handlePostAction = {
+    handleAddPost: handleAddPost,
+    handleEditPost: handleEditPost,
+    handleDeletePost: handleDeletePost,
+    setLoading: setLoading
+  }
+
+  function handleEditClick(data) {
+    if (data.post.type === PostType.DIARY) {
+      setCreateState({isEditing: true, type: PostType.DIARY, data: data});
+    } else if (data.post.type === PostType.RECOMMENDATION) {
+      setCreateState({isEditing: true, type: PostType.RECOMMENDATION, data: data});
+    } else if (data.post.type === PostType.GENERAL) {
+      setCreateState({isEditing: true, type: PostType.GENERAL, data: data});
+    } else if (data.post.type === PostType.ASK_SUGGESTION) {
+      setCreateState({isEditing: true, type: PostType.ASK_SUGGESTION, data: data});
+    }
+  }
+
+  function handleExitClick() {
+    setCreateState({isEditing: false, type: null, data: null});
   }
 
   function handleCreatePostClick(event) {
-    console.log(event);
     var name;
     if (event.target.name) {
       name = event.target.name;
@@ -56,85 +170,139 @@ export default function Posts() {
       name = event.target.id;
     }
     if (name === PostType.GENERAL) {
-      setCreateData(prevData => {
+      setCreateState(prevData => {
         return {...prevData, type: PostType.GENERAL};
       })
     } else if (name === PostType.RECOMMENDATION) {
-      setCreateData(prevData => {
+      setCreateState(prevData => {
         return {...prevData, type: PostType.RECOMMENDATION};
       })
     } else if (name === PostType.DIARY) {
-      setCreateData(prevData => {
+      setCreateState(prevData => {
         return {...prevData, type: PostType.DIARY};
       })
     } else if (name === PostType.ASK_SUGGESTION){
-      setCreateData(prevData => {
+      setCreateState(prevData => {
         return {...prevData, type: PostType.ASK_SUGGESTION};
       })
     }
   }
 
+  function displayLikers(postId) {
+    const formData = new FormData();
+    formData.append('postId', postId);
+    fetch('/post/getLikers', {method: 'POST', body: formData})
+        .then(res => res.json())
+        .catch(err => console.log(err))
+        .then(postLikes => {
+          setLikersData(postLikes.likers.map((liker, index) => {
+            return {
+              liker: liker,
+              likerUrl: postLikes.likerUrls[index]
+            }
+          }))
+          setDisplayingLikers(true);
+        })
+  }
+
   return (
     <div>
-    <Navbar />
-    <div id="feed" style={{position: "relative", padding: "1em", textAlign: "center", paddingTop: "5em"}}>
-      <CreateBox handleClick={handleCreatePostClick}/>
-      {posts[0].map((post, index) => {
-        switch (post.type) {
-          case PostType.DIARY:
+      {loading ? <div className="sweet-loading">
+        <ClipLoader color={"#4287f5"} loading={loading} css={override} size={200} />
+      </div> : <div>
+      <div style={{opacity: isDisplayingLikers ? "0.1" : "1", pointerEvents: isDisplayingLikers ? "none": "auto"}}>
+        {props.notCreateBox === undefined && <CreateBox handleClick={handleCreatePostClick}/>}
+        {postData.posts.map((post, index) => {
+          if (post.type === PostType.DIARY) {
             return <DisplayDiaryBox
-              _id={post._id}
               key={post._id}
-              type={post.type}
-              text={post.text}
-              title={post.title}
-              fileIds={post.fileIds}
-              urls={posts[1][index]}
-              liked={posts[2][index]}
-              noOfLikes={post.noOfLikes}
-              noOfComments={post.noOfComments}
+              post={post}
+              creatorProfileImageUrl={postData.creatorProfileImageUrls[index]}
+              urls={postData.urls[index]}
+              liked={postData.liked[index]}
               handleEditClick={handleEditClick}
-              movieIds={post.movieIds}/>
-          case PostType.RECOMMENDATION:
+              userId={props.user._id}
+              displayLikers={displayLikers}/>
+          } else if (post.type === PostType.RECOMMENDATION) {
             return <DisplayRecommendationBox
-              _id={post._id}
               key={post._id}
-              type={post.type}
-              text={post.text}
-              urls={posts[1][index]}
-              rating={post.rating}
-              noOfLikes={post.noOfLikes}
-              noOfComments={post.noOfComments}
+              post={post}
+              creatorProfileImageUrl={postData.creatorProfileImageUrls[index]}
+              urls={postData.urls[index]}
+              liked={postData.liked[index]}
               handleEditClick={handleEditClick}
-              movieIds={post.movieIds}/>
-          case PostType.GENERAL:
-            return <DisplayGeneralBox
-              _id={post._id}
-              key={post._id}
-              type={post.type}
-              text={post.text}
-              urls={posts[1][index]}
-              noOfLikes={post.noOfLikes}
-              noOfComments={post.noOfComments}
-              handleEditClick={handleEditClick}
-              movieIds={post.movieIds}/>
-          case PostType.ASK_SUGGESTION:
+              userId={props.user._id}/>
+          } else if (post.type === PostType.ASK_SUGGESTION) {
             return <DisplayAskForSuggestionsBox
-              _id={post._id}
               key={post._id}
-              type={post.type}
-              text={post.text}
-              urls={posts[1][index]}
-              noOfLikes={post.noOfLikes}
-              noOfComments={post.noOfComments}
+              post={post}
+              creatorProfileImageUrl={postData.creatorProfileImageUrls[index]}
+              urls={postData.urls[index]}
+              liked={postData.liked[index]}
               handleEditClick={handleEditClick}
-              movieIds={post.movieIds}/>
-        }
-      })}
-    </div>
-    <div style={{textAlign: "center"}}>
-      {createData.type && <Container createData={createData} handleExitClick={handleExitClick} />}
-    </div>
+              userId={props.user._id}/>
+          } else {
+            return <DisplayGeneralBox
+              key={post._id}
+              post={post}
+              creatorProfileImageUrl={postData.creatorProfileImageUrls[index]}
+              urls={postData.urls[index]}
+              liked={postData.liked[index]}
+              handleEditClick={handleEditClick}
+              userId={props.user._id}/>
+          }
+        })}
+      </div>
+      <div style={{textAlign: "center"}}>
+        {createState.type && <Container
+          setLoading={setLoading}
+          createState={createState}
+          handleExitClick={handleExitClick}
+          handlePostAction={handlePostAction}/>}
+      </div>
+      {isDisplayingLikers && <TableContainer
+          component={Paper}
+          style={{
+            width: "500px",
+            height: "300px",
+            overflow: "auto",
+            position: "absolute",
+            top: window.pageYOffset + (window.innerHeight / 4),
+            left: "33.5%",
+            zIndex: "999999999999999999999999999999999999"}}>
+        <Table className={classes.table} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell>
+                <ThumbUpAltIcon />
+              </TableCell>
+              <TableCell align="right"><IconButton onClick={() => {setDisplayingLikers(false)}}>
+          <Clear/>
+        </IconButton></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {likersData && likersData.map((likerData) => (
+              <TableRow key={likerData.liker._id}>
+                <TableCell component="th" scope="row">
+                <div style={{display: "flex"}}>
+                  <div>
+                  <Avatar alt="liker image" src={likerData.likerUrl ? likerData.likerUrl : process.env.PUBLIC_URL + '/images/loginImage.png'} />
+                  </div>
+                  <div style={{marginTop: "9px", marginLeft: "5px"}}>
+                  {likerData.liker.nickname}
+                  </div>
+                </div>
+                </TableCell>
+                <TableCell align="right"><Button variant="contained" color="primary" onClick={() => {window.open("/profile/" + likerData.liker._id, "_self")}}>
+                  Visit Profile
+                </Button></TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>}
+    </div>}
     </div>
   );
 }
