@@ -189,4 +189,9 @@ router.post('/toggleLike', upload.none(), async (req, res) => {
   res.end();
 });
 
+router.post('/getLikers', upload.none(), async (req, res) => {
+  const postId = req.body.postId;
+  
+});
+
 module.exports = router;

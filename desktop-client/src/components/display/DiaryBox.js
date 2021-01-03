@@ -226,7 +226,7 @@ export default function DiaryBox(props) {
       flexWrap: "wrap",
       padding: "10px",
     }}>
-      <IconButton>
+      <IconButton onClick={props.displayLikers}>
         {data.isLiked ? <ThumbUpAltIcon /> : <ThumbUpAltOutlinedIcon />}
       </IconButton>
       <span style={{fontFamily: "roboto", marginLeft: "4px"}}>{data.noOfLikes}</span>

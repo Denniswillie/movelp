@@ -114,6 +114,11 @@ class MongoDBPostManager {
     return [docs, liked];
   }
 
+  // static async getLikers(postId) {
+  //   return PostLikeModel.find({postId: postId, liked: 1})
+  //       .then(async (docs))
+  // }
+
   static async delete(postId) {
     await PostModel.findByIdAndDelete(postId)
       .then(async (docs) => {

@@ -7,10 +7,30 @@ import DisplayRecommendationBox from './display/RecommendationBox';
 import DisplayAskForSuggestionsBox from './display/AskForSuggestionsBox';
 import PostTypeContext from './PostTypeContext';
 import PostsFetchTypeContext from './PostsFetchTypeContext';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import Clear from '@material-ui/icons/Clear';
+import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
+
+const useStyles = makeStyles({
+  table: {
+    minWidth: 200,
+  },
+});
 
 export default function Posts(props) {
   const PostType = useContext(PostTypeContext);
   const PostsFetchType = useContext(PostsFetchTypeContext);
+
+  const [isDisplayingLikers, setDisplayingLikers] = useState(false);
+  const [likers, setLikers] = useState();
 
   const [postData, setPostData] = useState({
     posts: [],
@@ -19,6 +39,8 @@ export default function Posts(props) {
     creatorProfileImageUrls: []
   });
 
+  const classes = useStyles();
+
   useEffect(() => {
     const formData = new FormData();
     if (props.postRoute === PostsFetchType.CREATOR) {
@@ -26,8 +48,6 @@ export default function Posts(props) {
     } else if (props.postRoute === PostsFetchType.MOVIE) {
       formData.append('movieId', props.movieId);
     }
-    console.log(props.postRoute);
-    console.log(props.creatorId);
     fetch('/post/' + props.postRoute, {method: 'POST', body: formData})
       .then(res => res.json())
       .catch(err => console.log(err))
@@ -153,10 +173,14 @@ export default function Posts(props) {
     }
   }
 
+  function displayLikers(postId) {
+    setDisplayingLikers(true);
+  }
+
   return (
     <div>
       <div>
-        <CreateBox handleClick={handleCreatePostClick}/>
+        {props.notCreateBox === undefined && <CreateBox handleClick={handleCreatePostClick}/>}
         {postData.posts.map((post, index) => {
           if (post.type === PostType.DIARY) {
             return <DisplayDiaryBox
@@ -166,7 +190,8 @@ export default function Posts(props) {
               urls={postData.urls[index]}
               liked={postData.liked[index]}
               handleEditClick={handleEditClick}
-              userId={props.user._id}/>
+              userId={props.user._id}
+              displayLikers={displayLikers}/>
           } else if (post.type === PostType.RECOMMENDATION) {
             return <DisplayRecommendationBox
               key={post._id}
@@ -203,6 +228,32 @@ export default function Posts(props) {
           handleExitClick={handleExitClick}
           handlePostAction={handlePostAction}/>}
       </div>
+      {isDisplayingLikers && <TableContainer component={Paper} style={{width: "500px"}}>
+        <Table className={classes.table} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell><IconButton>
+          <ThumbUpAltIcon />
+        </IconButton></TableCell>
+              <TableCell align="right"><IconButton>
+          <Clear/>
+        </IconButton></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {likers && likers.map((liker) => (
+              <TableRow key={liker}>
+                <TableCell component="th" scope="row">
+                  {likers}
+                </TableCell>
+                <TableCell align="right"><Button variant="contained" color="primary">
+                  Visit Profile
+                </Button></TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>}
     </div>
   );
 }
