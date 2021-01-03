@@ -168,6 +168,14 @@ export default function GeneralBox(props) {
     window.open("/profile/" + props.post.creatorId, "_self");
   }
 
+  function renderTime() {
+    const today = new Date(parseInt(Date.parse(props.post.timeOfCreation), 10));
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
+    return mm + '/' + dd + '/' + yyyy;
+  }
+
   return <div style={{
       width: "610px",
       backgroundColor: "white",
@@ -208,7 +216,10 @@ export default function GeneralBox(props) {
             style={{cursor: "pointer"}}
             onClick={navigateToCreator}/>
         </div>
-        <p style={{bottom: "0", fontFamily: "roboto", fontWeight: "700"}}>{props.post.creatorName}</p>
+        <div>
+          <p style={{bottom: "0", fontFamily: "roboto", fontWeight: "700", marginBottom: "0"}}>{props.post.creatorName}</p>
+          <p style={{bottom: "0", fontFamily: "roboto", marginTop: "0", fontSize: "0.7em"}}>{renderTime()}</p>
+        </div>
       </div>
     </div>
     <div style={{padding: "1em", textAlign: "justify", fontFamily: "roboto", wordWrap: "break-word"}}>
@@ -253,6 +264,7 @@ export default function GeneralBox(props) {
     <div style={{borderTop: "1px solid #9ba89e", padding: "10px"}}>
       {comments.map(comment => {
         return <Comment
+          timeOfCreation={comment.timeOfCreation}
           key={comment._id}
           text={comment.text}
           creatorName={comment.creatorName}

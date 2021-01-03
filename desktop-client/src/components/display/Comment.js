@@ -50,13 +50,21 @@ export default function Comment(props) {
     setEditedText(event.target.value);
   }
 
+  function renderTime() {
+    const today = new Date(parseInt(Date.parse(props.timeOfCreation), 10));
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
+    return mm + '/' + dd + '/' + yyyy;
+  }
+
   return <div style={{marginBottom: "1em", textAlign: "left", display: "flex"}} onMouseOver={displayButtons} onMouseOut={hideButtons}>
     <div className={classes.root}>
       <Avatar src={process.env.PUBLIC_URL + '/images/loginImage.png'} />
     </div>
     <div style={{backgroundColor: "#F0F2F5", paddingLeft: "10px", paddingRight: "10px", borderRadius: "15px",  wordWrap: "break-word", maxWidth: "70%"}}>
       <p style={{bottom: "0", fontFamily: "roboto", fontSize: "0.9em", fontWeight: "700", marginBottom: "0", width: "100%"}}>{props.creatorName}</p>
-      <p style={{marginTop: "0", fontFamily: "roboto", fontSize: "0.7em"}}>41m</p>
+      <p style={{marginTop: "0", fontFamily: "roboto", fontSize: "0.7em"}}>{renderTime()}</p>
       {props.editedCommentId === props._id ? <form onSubmit={handleEditSubmit} ref={editForm}>
         <TextField
           style={{marginBottom: "1em", width: "100%"}}

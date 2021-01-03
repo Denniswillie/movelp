@@ -132,6 +132,14 @@ export default function AskForSuggestionsBox(props) {
     window.open("/profile/" + props.post.creatorId, "_self");
   }
 
+  function renderTime() {
+    const today = new Date(parseInt(Date.parse(props.post.timeOfCreation), 10));
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
+    return mm + '/' + dd + '/' + yyyy;
+  }
+
   return <div style={{
       width: "610px",
       backgroundColor: "white",
@@ -197,6 +205,7 @@ export default function AskForSuggestionsBox(props) {
     <div style={{borderTop: "1px solid #9ba89e", padding: "10px"}}>
       {comments.map(comment => {
         return <Comment
+          timeOfCreation={comment.timeOfCreation}
           key={comment._id}
           text={comment.text}
           creatorName={comment.creatorName}
