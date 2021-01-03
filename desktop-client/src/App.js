@@ -59,6 +59,10 @@ export default function App(props) {
             handleChangeDisplayNavbar={handleChangeDisplayNavbar}
             {...props}/>
         }}/>
+        <Route path='/auth/google' component={() => {
+          window.location.href = 'https://www.movelp.com/auth/google'; 
+          return null;
+        }}/>
 	      <Route component={PageNotFoundError} />
       </Switch>
     </main>
