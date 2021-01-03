@@ -39,13 +39,13 @@ export default function UserInfoBox(props) {
             <p style={{marginTop: "0", fontFamily: "roboto"}}><b>{props.user.numOfPosts}</b> posts</p>
           </div>
         </div>
-        <div style={{top: "0", right: "15px", position: "absolute"}}>
+        {props.user._id === props.creatorId && <div style={{top: "0", right: "15px", position: "absolute"}}>
             <Button
               onClick={props.displayUserInfoForm}
               style={{backgroundColor: "black", color: "white"}}
               variant="contained"
               className={classes.button}>Edit Profile</Button>
-        </div>
+        </div>}
       </div>
   </div>
 }

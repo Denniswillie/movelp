@@ -13,6 +13,8 @@ import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import Comment from './Comment';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,12 +36,15 @@ export default function GeneralBox(props) {
   const form = useRef(null);
   const [commentInput, setCommentInput] = useState("");
   const [comments, setComments] = useState([]);
+  const [movies, setMovies] = useState([]);
   const [data, setData] = useState({
     isLiked: props.liked,
     editedCommentId: null,
     noOfLikes: props.post.noOfLikes,
     noOfComments: props.post.noOfComments
   })
+
+  const [anchorEl, setAnchorEl] = useState(null);
 
   useEffect(() => {
     const ac = new AbortController();
@@ -51,6 +56,23 @@ export default function GeneralBox(props) {
         .catch(err => console.log(err))
         .then(res => setComments(res))
         .catch(err => console.log(err));
+
+    async function fetchMovieTitles() {
+      const promises = [];
+      for (var i = 0; i < props.post.movieIds.length; i++) {
+        const movieDataRaw =
+            await fetch("https://api.themoviedb.org/3/movie/" + props.post.movieIds[i] + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
+        const movieData = await movieDataRaw.json();
+        promises.push({
+          title: movieData.title ? movieData.title : movieData.name,
+          id: props.post.movieIds[i]
+        })
+      }
+      const result = await Promise.all(promises);
+      setMovies(result);
+    }
+
+    fetchMovieTitles();
 
     return () => ac.abort();
   }, [props.post._id]);
@@ -129,6 +151,23 @@ export default function GeneralBox(props) {
     fetch('/comment/delete', {method: 'POST', body: formData});
   }
 
+  const handleClick = (event) => {
+    console.log(movies);
+    console.log(props.post.movieIds);
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = (id) => {
+    setAnchorEl(null);
+    if (id) {
+      window.open("/movie/" + id, "_self");
+    }
+  };
+
+  function navigateToCreator() {
+    window.open("/profile/" + props.post.creatorId, "_self");
+  }
+
   return <div style={{
       width: "610px",
       backgroundColor: "white",
@@ -140,13 +179,34 @@ export default function GeneralBox(props) {
       boxShadow: "0 0 2px #999"}}>
     <div>
       <div style={{width: "100%", margin: "auto", textAlign: "left", padding: "5px", display: "flex"}}>
-        <Button
-          style={{backgroundColor: "black", color: "white"}}
-          variant="contained"
-          className={classes.button}
-          startIcon={<MovieIcon />}>Related movies</Button>
+        <div>
+          <Button
+            style={{backgroundColor: "black", color: "white"}}
+            aria-controls="simple-menu"
+            aria-haspopup="true"
+            onClick={handleClick}
+            variant="contained"
+            className={classes.button}
+            startIcon={<MovieIcon />}>
+            Related movies
+          </Button>
+          {movies.length > 0 && <Menu
+            id="simple-menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={() => {handleClose()}}
+          >
+            {movies.map(movie => {
+              return <MenuItem key={movie.id} onClick={() => {handleClose(movie.id)}}>{movie.title}</MenuItem>;
+            })}
+          </Menu>}
+        </div>
         <div className={classes.root}>
-          <Avatar src={props.creatorProfileImageUrl ? props.creatorProfileImageUrl : process.env.PUBLIC_URL + '/images/loginImage.png'} />
+          <Avatar
+            src={props.creatorProfileImageUrl ? props.creatorProfileImageUrl : process.env.PUBLIC_URL + '/images/loginImage.png'}
+            style={{cursor: "pointer"}}
+            onClick={navigateToCreator}/>
         </div>
         <p style={{bottom: "0", fontFamily: "roboto", fontWeight: "700"}}>{props.post.creatorName}</p>
       </div>

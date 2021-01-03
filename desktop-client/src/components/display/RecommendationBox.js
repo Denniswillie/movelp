@@ -141,6 +141,16 @@ export default function RecommendationBox(props) {
     fetch('/comment/delete', {method: 'POST', body: formData});
   }
 
+  function navigateToMovie() {
+    if (props.post.movieIds > 0) {
+      window.open("/movie/" + props.post.movieIds[0], "_self");
+    }
+  }
+
+  function navigateToCreator() {
+    window.open("/profile/" + props.post.creatorId, "_self");
+  }
+
   return <div style={{
       width: "610px",
       backgroundColor: "white",
@@ -153,13 +163,17 @@ export default function RecommendationBox(props) {
     <div>
       <div style={{width: "100%", margin: "auto", textAlign: "left", padding: "5px", display: "flex"}}>
         <Button
+          onClick={navigateToMovie}
           style={{backgroundColor: "black", color: "white"}}
           variant="contained"
           className={classes.button}
           startIcon={<NavigateNextOutlinedIcon />}>Navigate to movie</Button>
-        <div className={classes.root}>
-          <Avatar src={props.creatorProfileImageUrl ? props.creatorProfileImageUrl : process.env.PUBLIC_URL + '/images/loginImage.png'} />
-        </div>
+          <div className={classes.root}>
+            <Avatar
+              src={props.creatorProfileImageUrl ? props.creatorProfileImageUrl : process.env.PUBLIC_URL + '/images/loginImage.png'}
+              style={{cursor: "pointer"}}
+              onClick={navigateToCreator}/>
+          </div>
         <p style={{bottom: "0", fontFamily: "roboto", fontWeight: "700"}}>{props.post.creatorName}</p>
       </div>
     </div>

@@ -17,7 +17,7 @@ export default function MovieInfoBox(props) {
   const [movieData, setMovieData] = useState();
 
   useEffect(() => {
-    fetch("https://api.themoviedb.org/3/movie/" + 47095 + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US")
+    fetch("https://api.themoviedb.org/3/movie/" + props.movieId + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US")
         .then(res => res.json())
         .catch(err => console.log(err))
         .then(movie => {
@@ -70,11 +70,9 @@ export default function MovieInfoBox(props) {
           src={movieData.posterUrl}/>
         <div style={{textAlign: "center"}}>
           <h1 style={{fontFamily: "roboto", fontWeight: "normal", marginBottom: "0.2em"}}>{movieData.title}</h1>
-          <div style={{textAlign: "left", marginLeft: "2.7em"}}>
           <p style={{marginTop: "0", marginBottom: "0.4em", fontFamily: "roboto"}}>Release Date: <b>{movieData.releaseDate}</b></p>
           <p style={{marginTop: "0", marginBottom: "0.4em", fontFamily: "roboto"}}>Genres: <b>{movieData.genres}</b></p>
           <p style={{marginTop: "0", marginBottom: "0.4em", fontFamily: "roboto"}}>Runtime: <b>{movieData.runtime} minutes</b></p>
-          </div>
         </div>
       </div>}
   </div>

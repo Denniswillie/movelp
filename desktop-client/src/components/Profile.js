@@ -72,7 +72,7 @@ export default function Profile(props) {
           creatorId={props.match.params.creatorId}
           displayUserInfoForm={displayUserInfoForm}/>
         <Posts user={user} addOrDeletePost={addOrDeletePost} postRoute={PostsFetchType.CREATOR} creatorId={props.match.params.creatorId}/>
-        {userInfoFormDisplayed && <UserInfoForm
+        {(userInfoFormDisplayed && user._id === props.match.params.creatorId) && <UserInfoForm
           user={user}
           userInfoFormDisplayed={userInfoFormDisplayed}
           style={{position: "absolute"}}
