@@ -2,6 +2,7 @@
 // jshint esversion:6
 
 const {Storage} = require('@google-cloud/storage');
+const {format} = require('util');
 const projectId = 'movelp';
 const path = require('path');
 const keyFilename = path.join(__dirname, '/key.json');
@@ -30,7 +31,7 @@ class GoogleStorageManager {
     UPLOAD_OPTIONS: (itemId) => {
       return {
         destination: itemId,
-        resumable: true,
+        resumable: false,
         validation: 'crc32c'
       }
     }
@@ -47,7 +48,7 @@ class GoogleStorageManager {
   static async uploadUserImageProfileToBucket(bucket, file, userId, cropped) {
     const options = {
       destination: this.createUserImageProfileDestination(userId, cropped),
-      resumable: true,
+      resumable: false,
       validation: 'crc32c'
     };
 
