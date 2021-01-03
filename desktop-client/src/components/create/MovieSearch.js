@@ -31,7 +31,6 @@ export default function MovieSearch(props) {
     {(props.createInput.chosenMovies.length >= 4 && props.postType !== PostType.RECOMMENDATION) || (props.createInput.chosenMovies.length >= 1 && props.postType === PostType.RECOMMENDATION)
       ? <p style={{fontFamily: "roboto"}}>You can only choose up to {props.postType === PostType.RECOMMENDATION ? "1" : "4"} movies.</p>
       : props.moviesList.reduce((result, movie) => {
-
       var imagePath;
       var title;
       if (!movie.poster_path) {

@@ -40,7 +40,7 @@ export default function Movie(props) {
   return <div id="feed" style={{position: "relative", padding: "1em", textAlign: "center", paddingTop: "5em"}}>
       <MovieInfoBox movieId={props.match.params.movieId}/>
       {user !== USER_NOT_SET && <div>
-        <Posts user={user} postRoute={PostsFetchType.CREATOR} movieId={props.match.params.movieId}/>
+        <Posts user={user} postRoute={PostsFetchType.MOVIE} movieId={props.match.params.movieId}/>
       </div>}
     </div>
 }

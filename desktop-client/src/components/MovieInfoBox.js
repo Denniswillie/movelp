@@ -17,40 +17,45 @@ export default function MovieInfoBox(props) {
   const [movieData, setMovieData] = useState();
 
   useEffect(() => {
-    fetch("https://api.themoviedb.org/3/movie/" + props.movieId + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US")
-        .then(res => res.json())
-        .catch(err => console.log(err))
-        .then(movie => {
-          var title;
-          if (movie.title) {
-            title = movie.title;
-          } else {
-            title = movie.name;
-          }
+    async function fetchData() {
+      var movieDataRaw =
+          await fetch("https://api.themoviedb.org/3/movie/" + props.movieId + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
+      if (movieDataRaw.status === 404) {
+        movieDataRaw = await fetch("https://api.themoviedb.org/3/tv/" + props.movieId + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
+      }
+      const movie = await movieDataRaw.json();
+      var title;
+      if (movie.title) {
+        title = movie.title;
+      } else {
+        title = movie.name;
+      }
 
-          var genres = "";
-          if (movie.genres) {
-            for (var i = 0; i < movie.genres.length; i++) {
-              genres += (" " + movie.genres[i].name);
-              if (i !== movie.genres.length - 1) {
-                genres += " |";
-              }
-            }
+      var genres = "";
+      if (movie.genres) {
+        for (var i = 0; i < movie.genres.length; i++) {
+          genres += (" " + movie.genres[i].name);
+          if (i !== movie.genres.length - 1) {
+            genres += " |";
           }
-          const releaseDate = movie.release_date;
-          const overview = movie.overview;
-          const runtime = movie.runtime;
-          const posterUrl = !movie.poster_path ? process.env.PUBLIC_URL + '/images/defaultImage.png' : "https://image.tmdb.org/t/p/w500" + movie.poster_path;
+        }
+      }
+      const releaseDate = movie.release_date;
+      const overview = movie.overview;
+      const runtime = movie.runtime;
+      const posterUrl = !movie.poster_path ? process.env.PUBLIC_URL + '/images/defaultImage.png' : "https://image.tmdb.org/t/p/w500" + movie.poster_path;
 
-          setMovieData({
-            title: title,
-            genres: genres,
-            releaseDate: releaseDate,
-            overview: overview,
-            posterUrl: posterUrl,
-            runtime: runtime
-          })
-        })
+      setMovieData({
+        title: title,
+        genres: genres,
+        releaseDate: releaseDate,
+        overview: overview,
+        posterUrl: posterUrl,
+        runtime: runtime
+      })
+    }
+
+    fetchData();
   }, [])
 
   return <div style={{

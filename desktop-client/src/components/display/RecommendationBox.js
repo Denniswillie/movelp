@@ -47,9 +47,14 @@ export default function RecommendationBox(props) {
     const ac = new AbortController();
 
     async function fetchData() {
+      console.log(props.post.movieIds[0]);
       const formData = new FormData();
       formData.append('postId', props.post._id);
-      const movieDataRaw = await fetch("https://api.themoviedb.org/3/movie/" + props.post.movieIds[0] + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
+      var movieDataRaw =
+          await fetch("https://api.themoviedb.org/3/movie/" + props.post.movieIds[0] + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
+      if (movieDataRaw.status === 404) {
+        movieDataRaw = await fetch("https://api.themoviedb.org/3/tv/" + props.post.movieIds[0] + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
+      }
       if (movieDataRaw !== false) {
         const movieData = await movieDataRaw.json();
         const title = movieData.title ? movieData.title : movieData.name;
