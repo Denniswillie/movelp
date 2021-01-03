@@ -2,7 +2,7 @@ import { GoogleLoginButton } from "react-social-login-buttons";
 
 export default function Login() {
   function handleClick() {
-    window.open('/auth/google', '_self');
+    window.location.href = "/auth/google";
   }
   return <div id="loginPageContainer">
     <center><div id="watchDiaryIntro">
