@@ -3,6 +3,7 @@ import Avatar from '@material-ui/core/Avatar';
 import SettingsIcon from '@material-ui/icons/Settings';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
+import {useEffect} from 'react';
 
 const useStyles = makeStyles((theme) => ({
   large: {
@@ -13,6 +14,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function UserInfoBox(props) {
   const classes = useStyles();
+
+  useEffect(() => {
+    const movieDataRaw = await fetch("https://api.themoviedb.org/3/movie/" + 47095 + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
+  }, [])
 
   return <div style={{
       width: "700px",
@@ -30,13 +35,13 @@ export default function UserInfoBox(props) {
       <div style={{width: "100%", margin: "auto", textAlign: "left", padding: "5px", display: "flex", position: "relative"}}>
         <Avatar
           style={{borderStyle: "solid", borderColor: "#F0F2F5", borderWidth: "2px"}}
-          alt={props.user.nickname}
-          src={props.user.profileImageUrlCropped ? props.user.profileImageUrlCropped : process.env.PUBLIC_URL + '/images/loginImage.png'}
+          alt="{props.user.nickname}"
+          src={process.env.PUBLIC_URL + '/images/loginImage.png'}
           className={classes.large} />
         <div style={{marginLeft: "2em", marginTop: "1em"}}>
-          <h1 style={{fontFamily: "roboto", fontWeight: "normal", marginBottom: "0.2em"}}>{props.user.nickname.toUpperCase()}</h1>
+          <h1 style={{fontFamily: "roboto", fontWeight: "normal", marginBottom: "0.2em"}}>hthft</h1>
           <div style={{marginTop: "0", textAlign: "left", padding: "5px", display: "flex"}}>
-            <p style={{marginTop: "0", fontFamily: "roboto"}}><b>{props.user.numOfPosts}</b> posts</p>
+            <p style={{marginTop: "0", fontFamily: "roboto"}}><b>6</b> posts</p>
           </div>
         </div>
         <div style={{top: "0", right: "15px", position: "absolute"}}>

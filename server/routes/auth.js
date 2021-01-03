@@ -19,14 +19,20 @@ router.get("/google/movelp",
 
 router.get("/isLoggedIn", async (req, res) => {
   if (req.user) {
-    const userProfileImageUrl = await GoogleStorageManager.downloadUserProfileImage(
+    const userProfileImageUrlOriginal = await GoogleStorageManager.downloadUserProfileImage(
       req.user._id,
-      GoogleStorageManager.STORAGE.BUCKET.USER_PROFILE
+      GoogleStorageManager.STORAGE.BUCKET.USER_PROFILE,
+      false
     );
-    console.log(userProfileImageUrl);
+    const userProfileImageUrlCropped = await GoogleStorageManager.downloadUserProfileImage(
+      req.user._id,
+      GoogleStorageManager.STORAGE.BUCKET.USER_PROFILE,
+      true
+    );
     res.send({
       user: req.user,
-      profileImageUrl: userProfileImageUrl
+      profileImageUrlOriginal: userProfileImageUrlOriginal,
+      profileImageUrlCropped: userProfileImageUrlCropped
     });
   } else {
     res.send(undefined);

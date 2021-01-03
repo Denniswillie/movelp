@@ -68,26 +68,27 @@ export default function Navbar(props) {
     window.open("/", "_self");
   }
 
+  // <div className={classes.search}>
+  //   <div className={classes.searchIcon}>
+  //     <SearchIcon />
+  //   </div>
+  //   <InputBase
+  //     style={{color: "black"}}
+  //     placeholder="Search"
+  //     classes={{
+  //       root: classes.inputRoot,
+  //       input: classes.inputInput,
+  //     }}
+  //     inputProps={{ 'roboto': 'search' }}
+  //   />
+  // </div>
+
   return <div className={classes.root} style={{position: "fixed", width: "100%", zIndex: "1000000000000000000000000000000000000000000000"}}>
     <AppBar position="static" style={{backgroundColor: "white"}}>
       <Toolbar style={{width: "80%", margin: "auto"}}>
         <h1 className={classes.title} style={{color: "black", fontSize: "1.6em", margin: "0", userSelect: "none"}} nowrap="true">
           Movelp
         </h1>
-        <div className={classes.search}>
-          <div className={classes.searchIcon}>
-            <SearchIcon />
-          </div>
-          <InputBase
-            style={{color: "black"}}
-            placeholder="Search"
-            classes={{
-              root: classes.inputRoot,
-              input: classes.inputInput,
-            }}
-            inputProps={{ 'roboto': 'search' }}
-          />
-        </div>
         <Button onClick={redirectToHome} style={{marginLeft: "1em"}}>Home</Button>
         <Button onClick={redirectToProfile} style={{marginLeft: "1em"}}>Profile</Button>
         <Button href="/auth/logout" style={{marginLeft: "1em"}}>

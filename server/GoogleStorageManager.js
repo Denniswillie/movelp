@@ -36,13 +36,17 @@ class GoogleStorageManager {
     }
   }
 
-  static createUserImageProfileDestination(userId) {
-    return userId + " user";
+  static createUserImageProfileDestination(userId, cropped) {
+    if (cropped) {
+      return userId + " cropped";
+    } else {
+      return userId + " original";
+    }
   }
 
-  static async uploadUserImageProfileToBucket(bucket, file, userId) {
+  static async uploadUserImageProfileToBucket(bucket, file, userId, cropped) {
     const options = {
-      destination: this.createUserImageProfileDestination(userId),
+      destination: this.createUserImageProfileDestination(userId, cropped),
       resumable: true,
       validation: 'crc32c'
     };
@@ -138,7 +142,7 @@ class GoogleStorageManager {
   static async downloadUserProfileImages(posts) {
     const promises = [];
     for (var i = 0; i < posts.length; i++) {
-      const url = await this.downloadUserProfileImage(posts[i].creatorId, this.STORAGE.BUCKET.USER_PROFILE);
+      const url = await this.downloadUserProfileImage(posts[i].creatorId, this.STORAGE.BUCKET.USER_PROFILE, true);
       if (url) {
         promises.push(url);
       } else {
@@ -149,8 +153,8 @@ class GoogleStorageManager {
     return creatorProfileImageUrls;
   }
 
-  static async downloadUserProfileImage(userId, bucket) {
-    const file = await bucket.file(this.createUserImageProfileDestination(userId));
+  static async downloadUserProfileImage(userId, bucket, cropped) {
+    const file = await bucket.file(this.createUserImageProfileDestination(userId, cropped));
     const fileExists = await file.exists();
     if (fileExists[0]) {
       const signedUrl = await file.getSignedUrl(this.STORAGE.DOWNLOAD_OPTIONS);

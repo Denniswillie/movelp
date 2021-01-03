@@ -36,7 +36,7 @@ class MongoDBUserManager {
       .catch(err => console.log(err));
   }
 
-  static createOrEditProfile(user, userId) {
+  static createProfile(user, userId) {
     return UserModel.findByIdAndUpdate(userId, this.constructSchemaFields(user), {new: true})
     .then(docs => {
       return docs;
@@ -52,6 +52,14 @@ class MongoDBUserManager {
       genre: user.genre,
       numOfPosts: user.numOfPosts
     }
+  }
+
+  static editProfile(userBuilder, userId) {
+    return UserModel.findByIdAndUpdate(userId, userBuilder, {new: true})
+    .then(docs => {
+      return docs;
+    })
+    .catch(err => console.log(err));
   }
 
   static delete(userId) {

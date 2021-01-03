@@ -3,6 +3,7 @@ import TextField from '@material-ui/core/TextField';
 import {useState, useEffect} from 'react';
 import Button from '@material-ui/core/Button';
 import Avatar from 'react-avatar-edit';
+import ReactAvatar from '@material-ui/core/Avatar';
 import Clear from '@material-ui/icons/Clear';
 import IconButton from '@material-ui/core/IconButton';
 
@@ -16,30 +17,29 @@ const useStyles = makeStyles((theme) => ({
   button: {
     margin: theme.spacing(1),
   },
+  large: {
+    width: theme.spacing(17),
+    height: theme.spacing(17),
+  },
 }));
 
 export default function UserInfoForm(props) {
   const classes = useStyles();
-  const [nickname, setNickname] = useState("");
-  const [genre, setGenre] = useState("");
+  const [nickname, setNickname] = useState(props.user.nickname ? props.user.nickname : "");
   const [regexAlert, setRegexAlert] = useState(false);
   const [nicknameExistsAlert, setNicknameExistsAlert] = useState(false);
   const [imageUploadAlert, setImageUploadAlert] = useState(false);
+  const [unableDeleteAccount, setUnableDeleteAccount] = useState(false);
   const [avatarData, setAvatarData] = useState({
     preview: null,
     src: null,
     file: null,
-    currentExtension: null
+    currentExtension: null,
+    originalFile: null
   });
 
-  useEffect(() => {
-    if (props.userInfoFormDisplayed) {
-      setNickname(props.user.nickname);
-    }
-  })
-
   function onClose() {
-    setAvatarData({preview: null, src: null, file: null});
+    setAvatarData({preview: null, src: null, file: null, originalFile: null});
   }
 
   async function onCrop(preview) {
@@ -64,7 +64,7 @@ export default function UserInfoForm(props) {
     } else {
       const separator = /(?:\.([^.]+))?$/;
       setAvatarData(prevData => {
-        return {...prevData, currentExtension: separator.exec(file.name)[1]};
+        return {...prevData, currentExtension: separator.exec(file.name)[1], originalFile: file};
       })
     }
   }
@@ -76,22 +76,13 @@ export default function UserInfoForm(props) {
     );
   }
 
-  function handleGenreChange(event) {
-    setGenre(prevData => {
-      if (event.target.value.length > 15) {
-        return event.target.value(0, 15);
-      }
-      return event.target.value;
-    })
-  }
-
   function handleNicknameChange(event) {
-    setNickname(prevData => {
-      if (event.target.value.length > 30) {
-        return event.target.value.slice(0,30);
-      }
-      return event.target.value;
-    });
+    console.log(event.target.value);
+    if (event.target.value.length > 30) {
+      setNickname(event.target.value.slice(0, 30));
+    } else {
+      setNickname(event.target.value);
+    }
   }
 
   function submit() {
@@ -105,7 +96,7 @@ export default function UserInfoForm(props) {
     }
     setNicknameExistsAlert(false);
     setImageUploadAlert(false);
-    if (nickname.length === 0 || genre.length === 0) {
+    if (nickname.length === 0) {
       return;
     }
     var re = /^\w+$/;
@@ -114,12 +105,21 @@ export default function UserInfoForm(props) {
     } else {
       const formData = new FormData();
       formData.append('nickname', nickname);
-      formData.append('genre', genre);
       if (avatarData.file) {
-        formData.append('userProfileImage', avatarData.file);
+        formData.append('userProfileImageCropped', avatarData.file);
+        formData.append('userProfileImageOriginal', avatarData.originalFile);
       }
       if (props.userInfoFormDisplayed) {
-        // fetch('/user/editProfile', {method: 'POST', body: formData})
+        fetch('/user/editProfile', {method: 'POST', body: formData})
+            .then(res => res.json())
+            .catch(err => console.log(err))
+            .then(nicknameExists => {
+              if (nicknameExists === true) {
+                setNicknameExistsAlert(true);
+              } else {
+                window.location.href = "/profile/" + props.user._id;
+              }
+            })
       } else {
         fetch('/user/createProfile', {method: 'POST', body: formData})
             .then(res => res.json())
@@ -133,6 +133,21 @@ export default function UserInfoForm(props) {
             });
       }
     }
+  }
+
+  function deleteAccount() {
+    fetch('/user/delete', {
+      method: "POST"
+    })
+    .then(res => res.json())
+    .catch(err => console.log(err))
+    .then(isDeleted => {
+      if (isDeleted) {
+        window.open("/auth/logout", "_self");
+      } else {
+        setUnableDeleteAccount(true);
+      }
+    })
   }
 
   return <div style={{
@@ -157,6 +172,11 @@ export default function UserInfoForm(props) {
           <Clear/>
         </IconButton>}
         <h1 style={{userSelect: "none"}}>Movelp</h1>
+        {(props.userInfoFormDisplayed && props.user.profileImageUrlCropped) && <ReactAvatar
+            style={{borderStyle: "solid", borderColor: "#F0F2F5", borderWidth: "2px", margin: "auto"}}
+            alt={props.user.nickname}
+            src={props.user.profileImageUrlCropped ? props.user.profileImageUrlCropped : process.env.PUBLIC_URL + '/images/loginImage.png'}
+            className={classes.large} />}
         <p style={{fontFamily: 'roboto'}}>CREATE A NICKNAME</p>
         <form className={classes.root} noValidate autoComplete="off" onSubmit={handleSubmit}>
           <TextField
@@ -183,11 +203,12 @@ export default function UserInfoForm(props) {
             />
           </div>
           {avatarData.preview && <div style={{margin: "auto"}}><img src={avatarData.preview} alt="Preview" /></div>}
+          {unableDeleteAccount && <p style={{color: 'red', margin: 'auto', fontFamily: 'roboto'}}>Unable to delete account.</p>}
           {props.userInfoFormDisplayed && <Button
             style={{backgroundColor: "black", color: "white", marginTop: "1em"}}
             variant="contained"
             className={classes.button}
-            onClick={submit}>delete account</Button>}
+            onClick={deleteAccount}>delete account</Button>}
           <Button
             style={{backgroundColor: "black", color: "white", marginTop: "1em"}}
             variant="contained"

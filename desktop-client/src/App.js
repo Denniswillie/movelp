@@ -54,7 +54,10 @@ export default function App(props) {
             handleChangeDisplayNavbar={handleChangeDisplayNavbar}
             {...props}/>
         }}/>
-        <Route path="/movie/:movieId" exact component={Movie}/>
+        <Route path="/movie/:movieId" exact render={(props) => {
+          return <Movie
+            handleChangeDisplayNavbar={handleChangeDisplayNavbar}
+            {...props}/>
         }}/>
 	      <Route component={PageNotFoundError} />
       </Switch>

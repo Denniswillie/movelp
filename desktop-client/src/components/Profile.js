@@ -24,25 +24,6 @@ export default function Profile(props) {
     setUserInfoFormDisplayed(false);
   }
 
-  function deleteAccount() {
-    fetch('/user/delete', {
-      method: "POST"
-    })
-    .then(res => res.json())
-    .catch(err => console.log(err))
-    .then(isDeleted => {
-      if (isDeleted) {
-        window.open("/auth/logout");
-      } else {
-        setUnableDeleteAccount(true);
-      }
-    })
-  }
-
-  function editProfile() {
-
-  }
-
   function addOrDeletePost(addedPost) {
     var adder;
     if (addedPost) {
@@ -75,7 +56,7 @@ export default function Profile(props) {
           window.open("/", "_self");
         }
         handleChangeDisplayNavbar(true);
-        setUser({...res.user, profileImageUrl: res.profileImageUrl});
+        setUser({...res.user, profileImageUrlOriginal: res.profileImageUrlOriginal, profileImageUrlCropped: res.profileImageUrlCropped});
 
       }
     })
@@ -95,9 +76,6 @@ export default function Profile(props) {
           user={user}
           userInfoFormDisplayed={userInfoFormDisplayed}
           style={{position: "absolute"}}
-          deleteAccount={deleteAccount}
-          editProfile={editProfile}
-          unableDeleteAccount={unableDeleteAccount}
           undisplayUserInfoForm={undisplayUserInfoForm}/>}
       </div>}
     </div>
