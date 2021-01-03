@@ -31,12 +31,12 @@ export default function UserInfoBox(props) {
         <Avatar
           style={{borderStyle: "solid", borderColor: "#F0F2F5", borderWidth: "2px"}}
           alt={props.user.nickname}
-          src={props.user.profileImageUrlCropped ? props.user.profileImageUrlCropped : process.env.PUBLIC_URL + '/images/loginImage.png'}
+          src={props.creator.profileImageUrl ? props.creator.profileImageUrl : process.env.PUBLIC_URL + '/images/loginImage.png'}
           className={classes.large} />
         <div style={{marginLeft: "2em", marginTop: "1em"}}>
-          <h1 style={{fontFamily: "roboto", fontWeight: "normal", marginBottom: "0.2em"}}>{props.user.nickname.toUpperCase()}</h1>
+          <h1 style={{fontFamily: "roboto", fontWeight: "normal", marginBottom: "0.2em"}}>{props.creator.nickname.toUpperCase()}</h1>
           <div style={{marginTop: "0", textAlign: "left", padding: "5px", display: "flex"}}>
-            <p style={{marginTop: "0", fontFamily: "roboto"}}><b>{props.user.numOfPosts}</b> posts</p>
+            <p style={{marginTop: "0", fontFamily: "roboto"}}><b>{props.creator.numOfPosts}</b> posts</p>
           </div>
         </div>
         {props.user._id === props.creatorId && <div style={{top: "0", right: "15px", position: "absolute"}}>

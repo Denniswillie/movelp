@@ -104,4 +104,18 @@ router.post('/delete', async (req, res) => {
   }
 })
 
+router.post('/getProfile', uploadCreateUserProfile.none(), async (req, res) => {
+  const userId = req.body.userId;
+  const user = await MongoDBUserManager.getProfile(userId);
+  const userProfileImageUrl = await GoogleStorageManager.downloadUserProfileImage(
+    userId,
+    GoogleStorageManager.STORAGE.BUCKET.USER_PROFILE,
+    true
+  );
+  res.send({
+    user: user,
+    profileImageUrl: userProfileImageUrl
+  });
+});
+
 module.exports = router;

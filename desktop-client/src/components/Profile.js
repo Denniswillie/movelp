@@ -6,11 +6,14 @@ import UserInfoForm from './UserInfoForm';
 
 export default function Profile(props) {
   const USER_NOT_SET = "userNotSet";
+  const CREATOR_NOT_SET = "creatorNotSet";
   const [user, setUser] = useState(USER_NOT_SET);
+  const [creator, setCreator] = useState(CREATOR_NOT_SET);
   const PostsFetchType = useContext(PostsFetchTypeContext);
   const {handleChangeDisplayNavbar} = props;
   const [userInfoFormDisplayed, setUserInfoFormDisplayed] = useState(false);
   const [unableDeleteAccount, setUnableDeleteAccount] = useState(false);
+  const creatorId = props.match.params.creatorId;
 
   function setEditedUserProfile(editedUser) {
     setUser(editedUser);
@@ -60,19 +63,27 @@ export default function Profile(props) {
 
       }
     })
+    const formData = new FormData();
+    formData.append('userId', creatorId);
+    fetch('/user/getProfile', {method: 'POST', signal: signal, body: formData})
+    .then(res => res.json())
+    .catch(err => console.log(err))
+    .then(res => {
+      setCreator({...res.user, profileImageUrl: res.profileImageUrl});
+    })
     .catch(err => console.log(err));
 
     return () => ac.abort();
-  }, [handleChangeDisplayNavbar]);
+  }, [handleChangeDisplayNavbar, creatorId]);
 
   return <div id="feed" style={{position: "relative", padding: "1em", textAlign: "center", paddingTop: "5em"}}>
-      {user !== USER_NOT_SET && <div>
+      {(user !== USER_NOT_SET && creator !== CREATOR_NOT_SET && creator !== undefined) && <div>
         <UserInfoBox
           user={user}
-          creatorId={props.match.params.creatorId}
+          creator={creator}
           displayUserInfoForm={displayUserInfoForm}/>
-        <Posts user={user} addOrDeletePost={addOrDeletePost} postRoute={PostsFetchType.CREATOR} creatorId={props.match.params.creatorId}/>
-        {(userInfoFormDisplayed && user._id === props.match.params.creatorId) && <UserInfoForm
+        <Posts user={user} addOrDeletePost={addOrDeletePost} postRoute={PostsFetchType.CREATOR} creatorId={creatorId}/>
+        {(userInfoFormDisplayed && user._id === creatorId) && <UserInfoForm
           user={user}
           userInfoFormDisplayed={userInfoFormDisplayed}
           style={{position: "absolute"}}

@@ -128,6 +128,13 @@ module.exports = function(app) {
     })
   );
   app.use(
+    '/user/getProfile',
+    createProxyMiddleware({
+      target: 'http://localhost:5000',
+      changeOrigin: true,
+    })
+  );
+  app.use(
     '/comment/edit',
     createProxyMiddleware({
       target: 'http://localhost:5000',
