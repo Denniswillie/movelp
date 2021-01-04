@@ -3,6 +3,7 @@ import UserInfoBox from './UserInfoBox';
 import Posts from './Posts';
 import PostsFetchTypeContext from './PostsFetchTypeContext';
 import UserInfoForm from './UserInfoForm';
+import Navbar from './Navbar';
 
 export default function Profile(props) {
   const USER_NOT_SET = "userNotSet";
@@ -10,10 +11,9 @@ export default function Profile(props) {
   const [user, setUser] = useState(USER_NOT_SET);
   const [creator, setCreator] = useState(CREATOR_NOT_SET);
   const PostsFetchType = useContext(PostsFetchTypeContext);
-  const {handleChangeDisplayNavbar} = props;
   const [userInfoFormDisplayed, setUserInfoFormDisplayed] = useState(false);
   const [unableDeleteAccount, setUnableDeleteAccount] = useState(false);
-  const creatorId = props.match.params.creatorId;
+  const {creatorId} = props;
 
   function setEditedUserProfile(editedUser) {
     setUser(editedUser);
@@ -58,7 +58,6 @@ export default function Profile(props) {
         if (res.user.nickname === undefined) {
           window.open("/", "_self");
         }
-        handleChangeDisplayNavbar(true);
         setUser({...res.user, profileImageUrlOriginal: res.profileImageUrlOriginal, profileImageUrlCropped: res.profileImageUrlCropped});
 
       }
@@ -74,9 +73,11 @@ export default function Profile(props) {
     .catch(err => console.log(err));
 
     return () => ac.abort();
-  }, [handleChangeDisplayNavbar, creatorId]);
+  }, [creatorId]);
 
-  return <div id="feed" style={{position: "relative", padding: "1em", textAlign: "center", paddingTop: "5em"}}>
+  return <div>
+  {(user !== USER_NOT_SET && user !== undefined && user.nickname !== undefined) && <Navbar userId={user._id}/>}
+  <div id="feed" style={{position: "relative", padding: "1em", textAlign: "center", paddingTop: "5em"}}>
       {(user !== USER_NOT_SET && creator !== CREATOR_NOT_SET && creator !== undefined) && <div>
         <UserInfoBox
           user={user}
@@ -90,4 +91,5 @@ export default function Profile(props) {
           undisplayUserInfoForm={undisplayUserInfoForm}/>}
       </div>}
     </div>
+  </div>
 }

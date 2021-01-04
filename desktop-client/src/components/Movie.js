@@ -2,12 +2,13 @@ import React, { useState, useEffect, useContext } from 'react';
 import Posts from './Posts';
 import PostsFetchTypeContext from './PostsFetchTypeContext';
 import MovieInfoBox from './MovieInfoBox';
+import Navbar from './Navbar';
 
 export default function Movie(props) {
   const USER_NOT_SET = "userNotSet";
   const [user, setUser] = useState(USER_NOT_SET);
   const PostsFetchType = useContext(PostsFetchTypeContext);
-  const {handleChangeDisplayNavbar} = props;
+  const {movieId} = props;
 
   useEffect(() => {
     const ac = new AbortController();
@@ -28,19 +29,21 @@ export default function Movie(props) {
         if (res.user.nickname === undefined) {
           window.open("/", "_self");
         }
-        handleChangeDisplayNavbar(true);
         setUser(res.user);
       }
     })
     .catch(err => console.log(err));
 
     return () => ac.abort();
-  }, [handleChangeDisplayNavbar]);
+  }, []);
 
-  return <div id="feed" style={{position: "relative", padding: "1em", textAlign: "center", paddingTop: "5em"}}>
-      <MovieInfoBox movieId={props.match.params.movieId}/>
+  return <div>
+  {(user !== USER_NOT_SET && user !== undefined && user.nickname !== undefined) && <Navbar userId={user._id}/>}
+  <div id="feed" style={{position: "relative", padding: "1em", textAlign: "center", paddingTop: "5em"}}>
+      <MovieInfoBox movieId={movieId}/>
       {user !== USER_NOT_SET && <div>
-        <Posts user={user} postRoute={PostsFetchType.MOVIE} movieId={props.match.params.movieId}/>
+        <Posts user={user} postRoute={PostsFetchType.MOVIE} movieId={movieId}/>
       </div>}
     </div>
+  </div>
 }
