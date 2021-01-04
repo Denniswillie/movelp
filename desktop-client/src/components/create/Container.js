@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     right: "0",
     borderRadius: "5px",
     boxShadow: "0 0 20px #999",
-    zIndex: "999999999999999999999999999999999999999999999999999999999999999999999",
+    zIndex: "99",
     position: "absolute",
     paddingLeft: "5px",
     paddingRight: "5px",
