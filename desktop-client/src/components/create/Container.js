@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
     width: isBrowser ? "500px" : "100%",
     height: isBrowser && "500px",
     margin: "auto",
-    marginTop: isBrowser ? window.pageYOffset + (window.innerHeight / 6) : window.pageYOffset + (window.innerHeight / 8),
+    marginTop: isBrowser ? window.pageYOffset + (window.innerHeight / 6) : "0",
     backgroundColor: "white",
     top: "0",
     bottom: "0",

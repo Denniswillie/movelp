@@ -22,6 +22,7 @@ import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
 import Avatar from '@material-ui/core/Avatar';
 import { css } from "@emotion/core";
 import ClipLoader from "react-spinners/RingLoader";
+import UserInfoBox from './UserInfoBox';
 
 const useStyles = makeStyles({
   table: {
@@ -229,6 +230,7 @@ export default function Posts(props) {
           pointerEvents: (isDisplayingLikers || createState.type) ? "none": "auto",
         }}>
         {props.notCreateBox === undefined && <CreateBox handleClick={handleCreatePostClick}/>}
+        {props.userInfoBox && <UserInfoBox creator={props.creator} displayUserInfoForm={props.displayUserInfoForm} handleClick={handleCreatePostClick}/>}
         {postData.posts.map((post, index) => {
           if (post.type === PostType.DIARY) {
             return <DisplayDiaryBox

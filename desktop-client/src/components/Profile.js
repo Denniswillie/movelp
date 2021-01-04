@@ -98,11 +98,7 @@ export default function Profile(props) {
       </BrowserView>
       <MobileView>
       {(user !== USER_NOT_SET && creator !== CREATOR_NOT_SET && creator !== undefined) && <div>
-        <UserInfoBox
-          user={user}
-          creator={creator}
-          displayUserInfoForm={displayUserInfoForm}/>
-        <Posts user={user} notCreateBox={user._id !== creator._id && true} addOrDeletePost={addOrDeletePost} postRoute={PostsFetchType.CREATOR} creatorId={creatorId}/>
+        <Posts user={user} userInfoBox={true} creator={creator} displayUserInfoForm={displayUserInfoForm} notCreateBox={user._id !== creator._id && true} addOrDeletePost={addOrDeletePost} postRoute={PostsFetchType.CREATOR} creatorId={creatorId}/>
         {(userInfoFormDisplayed && user._id === creatorId) && <UserInfoForm
           user={user}
           userInfoFormDisplayed={userInfoFormDisplayed}
