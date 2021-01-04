@@ -72,7 +72,7 @@ export default function Container(props) {
     }
     fetchData();
     return () => ac.abort();
-  });
+  }, []);
 
   const handleInputChange = {
     handleDiaryTitleChange: (event) => {
@@ -214,6 +214,9 @@ export default function Container(props) {
     } else if (param.type === PostType.RECOMMENDATION) {
       return <RecommendationBox renderProps={renderProps(param)} />
     } else if (param.type === PostType.ASK_SUGGESTION) {
+      if (props.createState.isEditing) {
+        console.log("edit ask suggestion");
+      }
       return <AskForSuggestionsBox renderProps={renderProps(param)} />
     }
   }
