@@ -37,7 +37,7 @@ export default function UserInfoBox(props) {
   const classes = useStyles();
 
   return <div style={{
-      width: isBrowser ? "700px" : "100%",
+      width: isBrowser ? "700px" : "90%",
       backgroundColor: "white",
       marginLeft: "auto",
       marginRight: "auto",
