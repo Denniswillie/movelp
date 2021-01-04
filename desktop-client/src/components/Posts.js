@@ -78,6 +78,7 @@ export default function Posts(props) {
   });
 
   function handleAddPost(addedPostData) {
+    document.body.style.overflow = "auto";
     setPostData(prevData => {
       return {
         posts: [addedPostData.post, ...prevData.posts],
@@ -93,6 +94,7 @@ export default function Posts(props) {
   }
 
   function handleEditPost(editedPostData) {
+    document.body.style.overflow = "auto";
     setPostData(prevData => {
       var previousPostDataFound = false;
       for (var i = 0; i < prevData.posts.length; i++) {
@@ -120,6 +122,7 @@ export default function Posts(props) {
   }
 
   function handleDeletePost(postId) {
+    document.body.style.overflow = "auto";
     setPostData(prevData => {
       const temp = {...prevData};
       for (var i = 0; i < temp.posts.length; i++) {
@@ -148,17 +151,22 @@ export default function Posts(props) {
 
   function handleEditClick(data) {
     if (data.post.type === PostType.DIARY) {
+      document.body.style.overflow = "hidden";
       setCreateState({isEditing: true, type: PostType.DIARY, data: data});
     } else if (data.post.type === PostType.RECOMMENDATION) {
+      document.body.style.overflow = "hidden";
       setCreateState({isEditing: true, type: PostType.RECOMMENDATION, data: data});
     } else if (data.post.type === PostType.GENERAL) {
+      document.body.style.overflow = "hidden";
       setCreateState({isEditing: true, type: PostType.GENERAL, data: data});
     } else if (data.post.type === PostType.ASK_SUGGESTION) {
+      document.body.style.overflow = "hidden";
       setCreateState({isEditing: true, type: PostType.ASK_SUGGESTION, data: data});
     }
   }
 
   function handleExitClick() {
+    document.body.style.overflow = "auto";
     setCreateState({isEditing: false, type: null, data: null});
   }
 
@@ -170,18 +178,22 @@ export default function Posts(props) {
       name = event.target.id;
     }
     if (name === PostType.GENERAL) {
+      document.body.style.overflow = "hidden";
       setCreateState(prevData => {
         return {...prevData, type: PostType.GENERAL};
       })
     } else if (name === PostType.RECOMMENDATION) {
+      document.body.style.overflow = "hidden";
       setCreateState(prevData => {
         return {...prevData, type: PostType.RECOMMENDATION};
       })
     } else if (name === PostType.DIARY) {
+      document.body.style.overflow = "hidden";
       setCreateState(prevData => {
         return {...prevData, type: PostType.DIARY};
       })
     } else if (name === PostType.ASK_SUGGESTION){
+      document.body.style.overflow = "hidden";
       setCreateState(prevData => {
         return {...prevData, type: PostType.ASK_SUGGESTION};
       })
@@ -201,6 +213,7 @@ export default function Posts(props) {
               likerUrl: postLikes.likerUrls[index]
             }
           }))
+          document.body.style.overflow = "hidden";
           setDisplayingLikers(true);
         })
   }
@@ -210,7 +223,11 @@ export default function Posts(props) {
       {loading ? <div className="sweet-loading">
         <ClipLoader color={"#4287f5"} loading={loading} css={override} size={200} />
       </div> : <div>
-      <div style={{opacity: isDisplayingLikers ? "0.1" : "1", pointerEvents: isDisplayingLikers ? "none": "auto"}}>
+      <div
+        style={{
+          opacity: (isDisplayingLikers || createState.type) ? "0.1" : "1",
+          pointerEvents: (isDisplayingLikers || createState.type) ? "none": "auto",
+        }}>
         {props.notCreateBox === undefined && <CreateBox handleClick={handleCreatePostClick}/>}
         {postData.posts.map((post, index) => {
           if (post.type === PostType.DIARY) {
@@ -283,7 +300,7 @@ export default function Posts(props) {
               <TableCell>
                 <ThumbUpAltIcon />
               </TableCell>
-              <TableCell align="right"><IconButton onClick={() => {setDisplayingLikers(false)}}>
+              <TableCell align="right"><IconButton onClick={() => {setDisplayingLikers(false); document.body.style.overflow = "auto";}}>
           <Clear/>
         </IconButton></TableCell>
             </TableRow>

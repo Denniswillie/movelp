@@ -1,4 +1,5 @@
 import DiaryBox from './DiaryBox';
+import { makeStyles } from '@material-ui/core/styles';
 import AskForSuggestionsBox from './AskForSuggestionsBox';
 import GeneralBox from './GeneralBox';
 import RecommendationBox from './RecommendationBox';
@@ -10,6 +11,32 @@ import Backspace from '@material-ui/icons/Backspace'
 import MovieSearch from './MovieSearch';
 import {useState, useContext, useEffect, useRef} from 'react';
 import PostTypeContext from '../PostTypeContext';
+import {
+  isBrowser,
+  isMobile
+} from "react-device-detect";
+
+const useStyles = makeStyles((theme) => ({
+  createContainer: {
+    width: isBrowser ? "500px" : "100%",
+    height: isBrowser && "500px",
+    margin: "auto",
+    marginTop: isBrowser ? window.pageYOffset + (window.innerHeight / 6) : window.pageYOffset + (window.innerHeight / 8),
+    backgroundColor: "white",
+    top: "0",
+    bottom: "0",
+    left: "0",
+    right: "0",
+    borderRadius: "5px",
+    boxShadow: "0 0 20px #999",
+    zIndex: "100",
+    position: "absolute",
+    paddingLeft: "5px",
+    paddingRight: "5px",
+    paddingBottom: "3px",
+    overflow: "auto",
+  }
+}));
 
 export default function Container(props) {
   const [isSearchingMovie, setSearchingMovie] = useState(false);
@@ -17,6 +44,7 @@ export default function Container(props) {
   const [willBeDeletedFiles, setWillBeDeletedFiles] = useState([]);
   const [deletedExistingFiles, setDeletedExistingFiles] = useState([]);
   const form = useRef();
+  const classes = useStyles();
 
   const [createInput, setCreateInput] = useState({
     diaryTitle: "",
@@ -279,7 +307,7 @@ export default function Container(props) {
   }
 
   return (
-    <div className="createContainer">
+    <div className={classes.createContainer}>
       <IconButton style={{position: "absolute", top: "10px", right: "10px"}} onClick={props.handleExitClick}>
         <Clear/>
       </IconButton>

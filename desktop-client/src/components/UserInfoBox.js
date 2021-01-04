@@ -10,8 +10,8 @@ import {
 
 const useStyles = makeStyles((theme) => ({
   small: {
-    width: theme.spacing(10),
-    height: theme.spacing(10),
+    width: theme.spacing(8),
+    height: theme.spacing(8),
   },
   large: {
     width: theme.spacing(17),
@@ -23,6 +23,14 @@ const useStyles = makeStyles((theme) => ({
     top: "0",
     right: "0"
   },
+  buttonMobile: {
+    margin: theme.spacing(1),
+    position: "absolute",
+    top: "0",
+    right: "0",
+    fontSize: "10px",
+    width: "20px"
+  }
 }));
 
 export default function UserInfoBox(props) {
@@ -58,7 +66,7 @@ export default function UserInfoBox(props) {
               onClick={props.displayUserInfoForm}
               style={{backgroundColor: "black", color: "white"}}
               variant="contained"
-              className={classes.buttonBrowser}>Edit Profile</Button>
+              className={isBrowser ? classes.buttonBrowser : classes.buttonMobile}>Edit Profile</Button>
         </div>}
       </div>
   </div>

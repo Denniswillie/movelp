@@ -92,27 +92,6 @@ h3 {
 /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
 .show {display:block;}
 
-.createContainer {
-  width: 500px;
-  height: 500px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 5em;
-  background-color: white;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  border-radius: 5px;
-  box-shadow: 0 0 20px #999;
-  z-index: 100;
-  position: absolute;
-  padding-left: 5px;
-  padding-right: 5px;
-  padding-bottom: 3px;
-  overflow: auto;
-}
-
 .backFromSearchingMovie {
   background-color: black;
   color: white;
