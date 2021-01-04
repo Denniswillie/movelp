@@ -118,4 +118,14 @@ router.post('/getProfile', uploadCreateUserProfile.none(), async (req, res) => {
   });
 });
 
+router.post('/getProfileImageUrl', uploadCreateUserProfile.none(), async (req, res) => {
+  const userId = req.body.userId;
+  const userProfileImageUrl = await GoogleStorageManager.downloadUserProfileImage(
+    userId,
+    GoogleStorageManager.STORAGE.BUCKET.USER_PROFILE,
+    true
+  )
+  res.send({url: userProfileImageUrl});
+})
+
 module.exports = router;

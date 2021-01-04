@@ -271,6 +271,7 @@ export default function DiaryBox(props) {
           timeOfCreation={comment.timeOfCreation}
           key={comment._id}
           text={comment.text}
+          creatorId={comment.creatorId}
           creatorName={comment.creatorName}
           _id={comment._id}
           isCreatedByUser={props.userId === comment.creatorId}

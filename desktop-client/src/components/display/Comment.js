@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
@@ -20,10 +20,25 @@ export default function Comment(props) {
   const classes = useStyles();
   const VISIBLE = "visible";
   const HIDDEN = "hidden";
+  const [creatorProfileImageUrl, setCreatorProfileImageUrl] = useState();
   const [buttonsVisibility, setButtonsVisibility] = useState(HIDDEN);
   const [text, setText] = useState(props.text);
   const [editedText, setEditedText] = useState(text);
   const editForm = useRef(null);
+
+  useEffect(() => {
+    const ac = new AbortController();
+    const formData = new FormData();
+    formData.append('userId', props.creatorId);
+    fetch('/user/getProfileImageUrl', {method: 'POST', body: formData})
+        .then(res => res.json())
+        .catch(err => console.log(err))
+        .then(res => {
+          setCreatorProfileImageUrl(res.url);
+        })
+        .catch(err => console.log(err));
+    return () => {ac.abort()};
+  }, [])
 
   function displayButtons() {
     if (props.isCreatedByUser) {
@@ -60,7 +75,7 @@ export default function Comment(props) {
 
   return <div style={{marginBottom: "1em", textAlign: "left", display: "flex"}} onMouseOver={displayButtons} onMouseOut={hideButtons}>
     <div className={classes.root}>
-      <Avatar src={process.env.PUBLIC_URL + '/images/loginImage.png'} />
+      <Avatar src={creatorProfileImageUrl ? creatorProfileImageUrl : process.env.PUBLIC_URL + '/images/loginImage.png'} />
     </div>
     <div style={{backgroundColor: "#F0F2F5", paddingLeft: "10px", paddingRight: "10px", borderRadius: "15px",  wordWrap: "break-word", maxWidth: "70%"}}>
       <p style={{bottom: "0", fontFamily: "roboto", fontSize: "0.9em", fontWeight: "700", marginBottom: "0", width: "100%"}}>{props.creatorName}</p>
