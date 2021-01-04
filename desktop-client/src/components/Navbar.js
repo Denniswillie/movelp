@@ -60,7 +60,6 @@ export default function Navbar(props) {
   const classes = useStyles();
 
   function redirectToProfile() {
-    props.handleChangeCreatorId(props.userId);
     window.open("/profile/" + props.userId, "_self");
   }
 
