@@ -37,10 +37,10 @@ export default function Home(props) {
     .catch(err => console.log(err));
   }, []);
 
-  function renderPage(browser) {
+  function renderPage() {
     if (user !== USER_NOT_SET && user !== undefined) {
       if (user.nickname) {
-        return <Posts user={user} browser={browser} postRoute={PostsFetchType.ALL}/>;
+        return <Posts user={user} postRoute={PostsFetchType.ALL}/>;
       }
       return <UserInfoForm user={user}/>
     } else {
@@ -51,12 +51,7 @@ export default function Home(props) {
   return <div>
     {(user !== USER_NOT_SET && user !== undefined && user.nickname !== undefined) && <Navbar userId={user._id}/>}
     <div id="feed" style={{position: "relative", padding: "1em", textAlign: "center", paddingTop: paddingTop}}>
-      <BrowserView>
-          {user !== USER_NOT_SET && renderPage(true)}
-      </BrowserView>
-      <MobileView>
-          {user !== USER_NOT_SET && renderPage(false)}
-      </MobileView>
+      {user !== USER_NOT_SET && renderPage(true)}
     </div>
   </div>
 }

@@ -14,6 +14,10 @@ import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import Comment from './Comment';
+import {
+  isBrowser,
+  isMobile
+} from "react-device-detect";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,11 +26,17 @@ const useStyles = makeStyles((theme) => ({
       margin: theme.spacing(2),
     },
   },
-  button: {
+  buttonBrowser: {
     margin: theme.spacing(1),
     position: "absolute",
-    marginLeft: "400px"
+    marginLeft: "421px"
   },
+  buttonMobile: {
+    margin: theme.spacing(1),
+    position: "absolute",
+    top: "1px",
+    right: "1px"
+  }
 }));
 
 export default function RecommendationBox(props) {
@@ -164,7 +174,7 @@ export default function RecommendationBox(props) {
   }
 
   return <div style={{
-      width: "610px",
+      width: isBrowser ? "610px" : "100%",
       backgroundColor: "white",
       marginLeft: "auto",
       marginRight: "auto",
@@ -178,8 +188,8 @@ export default function RecommendationBox(props) {
           onClick={navigateToMovie}
           style={{backgroundColor: "black", color: "white"}}
           variant="contained"
-          className={classes.button}
-          startIcon={<NavigateNextOutlinedIcon />}>Navigate to movie</Button>
+          className={isBrowser ? classes.buttonBrowser : classes.buttonMobile}
+          startIcon={isBrowser && <NavigateNextOutlinedIcon />}>Movie</Button>
           <div className={classes.root}>
             <Avatar
               src={props.creatorProfileImageUrl ? props.creatorProfileImageUrl : process.env.PUBLIC_URL + '/images/loginImage.png'}

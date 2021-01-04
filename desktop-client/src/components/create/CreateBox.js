@@ -6,6 +6,10 @@ import Movie from '@material-ui/icons/Movie';
 import LiveTv from '@material-ui/icons/LiveTv';
 import Button from '@material-ui/core/Button';
 import PostTypeContext from '../PostTypeContext';
+import {
+  isBrowser,
+  isMobile
+} from "react-device-detect";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,7 +24,7 @@ export default function CreateBox(props) {
   const PostType = useContext(PostTypeContext);
   const classes = useStyles();
   return <div style={{
-      width: props.browser ? "600px" : "100%",
+      width: isBrowser ? "600px" : "100%",
       backgroundColor: "white",
       marginLeft: "auto",
       marginRight: "auto",
@@ -41,10 +45,10 @@ export default function CreateBox(props) {
       <Movie style={{pointerEvents: "none"}}/>
       <p style={{fontFamily: 'Roboto', marginLeft: "6px"}} id={PostType.RECOMMENDATION}>Recommendation</p>
     </Button>
-    <Button style={{width: "30%"}} name={PostType.ASK_SUGGESTION} onClick={props.handleClick}>
+    {isBrowser && <Button style={{width: "30%"}} name={PostType.ASK_SUGGESTION} onClick={props.handleClick}>
       <LiveTv style={{pointerEvents: "none"}}/>
       <p style={{fontFamily: 'Roboto', marginLeft: "6px"}} id={PostType.ASK_SUGGESTION}>Ask Suggestion</p>
-    </Button>
+    </Button>}
     </div>
   </div>
 }

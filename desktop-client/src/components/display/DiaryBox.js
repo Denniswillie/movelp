@@ -15,6 +15,10 @@ import TextField from '@material-ui/core/TextField';
 import Comment from './Comment';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import {
+  isBrowser,
+  isMobile
+} from "react-device-detect";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,11 +27,17 @@ const useStyles = makeStyles((theme) => ({
       margin: theme.spacing(2),
     },
   },
-  button: {
+  buttonBrowser: {
     margin: theme.spacing(1),
     position: "absolute",
     marginLeft: "421px"
   },
+  buttonMobile: {
+    margin: theme.spacing(1),
+    position: "absolute",
+    top: "1px",
+    right: "1px"
+  }
 }));
 
 export default function DiaryBox(props) {
@@ -177,7 +187,7 @@ export default function DiaryBox(props) {
   }
 
   return <div style={{
-      width: "610px",
+      width: isBrowser ? "610px" : "100%",
       backgroundColor: "white",
       marginLeft: "auto",
       marginRight: "auto",
@@ -194,9 +204,9 @@ export default function DiaryBox(props) {
             aria-haspopup="true"
             onClick={handleClick}
             variant="contained"
-            className={classes.button}
-            startIcon={<MovieIcon />}>
-            Related movies
+            className={isBrowser ? classes.buttonBrowser : classes.buttonMobile}
+            startIcon={isBrowser && <MovieIcon />}>
+            Movies
           </Button>
           {movies.length > 0 && <Menu
             id="simple-menu"

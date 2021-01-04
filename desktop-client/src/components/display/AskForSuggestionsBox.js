@@ -12,6 +12,10 @@ import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import Comment from './Comment';
+import {
+  isBrowser,
+  isMobile
+} from "react-device-detect";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,11 +24,17 @@ const useStyles = makeStyles((theme) => ({
       margin: theme.spacing(2),
     },
   },
-  button: {
+  buttonBrowser: {
     margin: theme.spacing(1),
     position: "absolute",
     marginLeft: "421px"
   },
+  buttonMobile: {
+    margin: theme.spacing(1),
+    position: "absolute",
+    top: "1px",
+    right: "1px"
+  }
 }));
 
 export default function AskForSuggestionsBox(props) {
@@ -141,7 +151,7 @@ export default function AskForSuggestionsBox(props) {
   }
 
   return <div style={{
-      width: "610px",
+      width: isBrowser ? "610px" : "100%",
       backgroundColor: "white",
       marginLeft: "auto",
       marginRight: "auto",
