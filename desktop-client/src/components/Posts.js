@@ -222,6 +222,7 @@ export default function Posts(props) {
               liked={postData.liked[index]}
               handleEditClick={handleEditClick}
               userId={props.user._id}
+              userProfileImageUrl={props.user.profileImageUrlCropped}
               displayLikers={displayLikers}/>
           } else if (post.type === PostType.RECOMMENDATION) {
             return <DisplayRecommendationBox
@@ -232,6 +233,7 @@ export default function Posts(props) {
               liked={postData.liked[index]}
               handleEditClick={handleEditClick}
               userId={props.user._id}
+              userProfileImageUrl={props.user.profileImageUrlCropped}
               displayLikers={displayLikers}/>
           } else if (post.type === PostType.ASK_SUGGESTION) {
             return <DisplayAskForSuggestionsBox
@@ -242,6 +244,7 @@ export default function Posts(props) {
               liked={postData.liked[index]}
               handleEditClick={handleEditClick}
               userId={props.user._id}
+              userProfileImageUrl={props.user.profileImageUrlCropped}
               displayLikers={displayLikers}/>
           } else {
             return <DisplayGeneralBox
@@ -252,6 +255,7 @@ export default function Posts(props) {
               liked={postData.liked[index]}
               handleEditClick={handleEditClick}
               userId={props.user._id}
+              userProfileImageUrl={props.user.profileImageUrlCropped}
               displayLikers={displayLikers}/>
           }
         })}

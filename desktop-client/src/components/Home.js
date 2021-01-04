@@ -23,7 +23,7 @@ export default function Home(props) {
     .then(res => {
       if (res !== undefined && res.user.nickname !== undefined) {
         setPaddingTop("5em");
-        setUser(res.user);
+        setUser({...res.user, profileImageUrlCropped: res.profileImageUrlCropped, profileImageUrlOriginal: res.profileImageUrlOriginal});
       } else if (res === undefined) {
         setUser(res);
       } else if (res.user.nickname === undefined) {

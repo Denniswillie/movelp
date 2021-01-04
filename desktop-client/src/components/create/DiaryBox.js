@@ -6,7 +6,7 @@ import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 import IconButton from '@material-ui/core/IconButton';
 import Chip from '@material-ui/core/Chip';
-import {useRef, useCallback, useState} from 'react';
+import {useCallback, useState} from 'react';
 import Gallery from 'react-photo-gallery';
 import SelectedImage from "../SelectedImage";
 
@@ -32,7 +32,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function DiaryBox(props) {
   const classes = useStyles();
-  const form = useRef(null);
   const [selectAll] = useState(false);
   const DIARY = 'diary';
 
@@ -43,7 +42,10 @@ export default function DiaryBox(props) {
     post,
     isEditing,
     handleInputChange,
-    photoGalleryStylings
+    photoGalleryStylings,
+    handleSubmit,
+    deletePost,
+    formRef
   } = props.renderProps;
 
   const imageRenderer = useCallback(
@@ -71,66 +73,9 @@ export default function DiaryBox(props) {
     document.getElementById("submit").click();
   }
 
-  function deletePost() {
-    const formData = new FormData();
-    formData.set('postId', post._id);
-    formData.set('fileIds', post.fileIds);
-    fetch('/post/delete', {method: 'POST', body: formData})
-        .then(res => res.json())
-        .catch(err => console.log(err))
-        .then(res => {
-          if (res) {
-            handlePostAction.handleDeletePost(post._id);
-          }
-        })
-  }
-
-  function handleSubmit(event) {
-    if (isEditing) {
-      event.preventDefault();
-      handlePostAction.setLoading(true);
-      const formData = new FormData(form.current);
-      formData.set('postId', post._id);
-      formData.set('postType', DIARY);
-      for (var i = 0; i < deletedExistingFiles.length; i++) {
-        formData.append('deletedFileIds[]', deletedExistingFiles[i]);
-      }
-      for (var j = 0; j < createInput.uploadedFiles.length; j++) {
-        if (createInput.uploadedFiles[j].file) {
-          formData.append('fileInput[]', createInput.uploadedFiles[j].file);
-        } else {
-          formData.append('fileInput[]', createInput.uploadedFiles[j].fileId);
-        }
-      }
-      fetch('/post/edit', {method: 'POST', body: formData})
-        .then(res => res.json())
-        .catch(err => console.log(err))
-        .then(res => {
-          handlePostAction.handleEditPost(res);
-          handlePostAction.setLoading(false);
-        })
-        .catch(err => console.log(err));
-    } else {
-      event.preventDefault();
-      handlePostAction.setLoading(true);
-      const formData = new FormData(form.current);
-      for (var k = 0; k < createInput.uploadedFiles.length; k++) {
-        formData.append('fileInput[]', createInput.uploadedFiles[k].file);
-      }
-      fetch('/post/create/diary', {method: 'POST', body: formData})
-          .then(res => res.json())
-          .catch(err => console.log(err))
-          .then(res => {
-            handlePostAction.handleAddPost(res);
-            handlePostAction.setLoading(false);
-          })
-          .catch(err => console.log(err));
-    }
-  }
-
   return <div>
     <div id = "createDiaryForm">
-      <form className={classes.root} noValidate autoComplete="off" onSubmit={handleSubmit} ref={form}>
+      <form className={classes.root} noValidate autoComplete="off" onSubmit={handleSubmit} ref={formRef}>
         {createInput.chosenMovies.length > 0 && <p style={{fontFamily: "roboto", marginLeft: "auto", marginRight: "auto", marginTop: "8px"}}>Movie titles</p>}
         {createInput.chosenMovies.length > 0 && <div
           className={classes.movieTags}

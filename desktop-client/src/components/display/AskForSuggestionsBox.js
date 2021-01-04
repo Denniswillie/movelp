@@ -154,7 +154,7 @@ export default function AskForSuggestionsBox(props) {
       <div className={classes.root}>
         <Avatar
           src={props.creatorProfileImageUrl ? props.creatorProfileImageUrl : process.env.PUBLIC_URL + '/images/loginImage.png'}
-          style={{cursor: "pointer"}}
+          style={{cursor: "pointer", borderStyle: "solid", borderColor: "#F0F2F5", borderWidth: "2px"}}
           onClick={navigateToCreator}/>
       </div>
         <p style={{bottom: "0", fontFamily: "roboto", fontWeight: "700"}}>{props.post.creatorName}</p>
@@ -217,7 +217,9 @@ export default function AskForSuggestionsBox(props) {
           handleDeleteComment={handleDeleteComment}/>
       })}
     <form ref={form} className={classes.root} noValidate autoComplete="off" style={{width: "100%"}} onSubmit={handleCommentSubmit}>
-      <Avatar src={props.creatorProfileImageUrl ? props.creatorProfileImageUrl : process.env.PUBLIC_URL + '/images/loginImage.png'} />
+      <Avatar
+        src={props.userProfileImageUrl ? props.userProfileImageUrl : process.env.PUBLIC_URL + '/images/loginImage.png'}
+        style={{borderStyle: "solid", borderColor: "#F0F2F5", borderWidth: "2px"}}/>
       <TextField
         inputRef={commentField}
         label="Write a comment..."

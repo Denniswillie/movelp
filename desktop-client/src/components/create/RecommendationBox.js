@@ -1,4 +1,4 @@
-import {useRef, useCallback, useState} from 'react';
+import {useCallback, useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -59,7 +59,6 @@ const ratings = [
 
 export default function RecommendationBox(props) {
   const classes = useStyles();
-  const form = useRef(null);
   const [selectAll] = useState(false);
   const RECOMMENDATION = 'recommendation';
 
@@ -70,7 +69,10 @@ export default function RecommendationBox(props) {
     post,
     isEditing,
     handleInputChange,
-    photoGalleryStylings
+    photoGalleryStylings,
+    handleSubmit,
+    deletePost,
+    formRef
   } = props.renderProps;
 
   const imageRenderer = useCallback(
@@ -98,66 +100,9 @@ export default function RecommendationBox(props) {
     document.getElementById("submit").click();
   }
 
-  function deletePost() {
-    const formData = new FormData();
-    formData.set('postId', post._id);
-    formData.set('fileIds', post.fileIds);
-    fetch('/post/delete', {method: 'POST', body: formData})
-        .then(res => res.json())
-        .catch(err => console.log(err))
-        .then(res => {
-          if (res) {
-            handlePostAction.handleDeletePost(post._id);
-          }
-        })
-  }
-
-  function handleSubmit(event) {
-    if (isEditing) {
-      event.preventDefault();
-      handlePostAction.setLoading(true);
-      const formData = new FormData(form.current);
-      formData.set('postId', post._id);
-      formData.set('postType', RECOMMENDATION);
-      for (var i = 0; i < deletedExistingFiles.length; i++) {
-        formData.append('deletedFileIds[]', deletedExistingFiles[i]);
-      }
-      for (var j = 0; j < createInput.uploadedFiles.length; j++) {
-        if (createInput.uploadedFiles[j].file) {
-          formData.append('fileInput[]', createInput.uploadedFiles[j].file);
-        } else {
-          formData.append('fileInput[]', createInput.uploadedFiles[j].fileId);
-        }
-      }
-      fetch('/post/edit', {method: 'POST', body: formData})
-        .then(res => res.json())
-        .catch(err => console.log(err))
-        .then(res => {
-          handlePostAction.handleEditPost(res);
-          handlePostAction.setLoading(false);
-        })
-        .catch(err => console.log(err));
-    } else {
-      event.preventDefault();
-      handlePostAction.setLoading(true);
-      const formData = new FormData(form.current);
-      for (var k = 0; k < createInput.uploadedFiles.length; k++) {
-        formData.append('fileInput[]', createInput.uploadedFiles[k].file);
-      }
-      fetch('/post/create/recommendation', {method: 'POST', body: formData})
-          .then(res => res.json())
-          .catch(err => console.log(err))
-          .then(res => {
-            handlePostAction.handleAddPost(res);
-            handlePostAction.setLoading(false);
-          })
-          .catch(err => console.log(err));
-    }
-  }
-
   return (
     <div>
-      <form className={classes.root} noValidate autoComplete="off" onSubmit={handleSubmit} ref={form}>
+      <form className={classes.root} noValidate autoComplete="off" onSubmit={handleSubmit} ref={formRef}>
         {createInput.chosenMovies.length > 0 && <p style={{fontFamily: "roboto", marginLeft: "auto", marginRight: "auto", marginTop: "8px"}}>Movie titles</p>}
         {createInput.chosenMovies.length > 0 && <div
           className={classes.movieTags}

@@ -216,7 +216,7 @@ export default function GeneralBox(props) {
         <div className={classes.root}>
           <Avatar
             src={props.creatorProfileImageUrl ? props.creatorProfileImageUrl : process.env.PUBLIC_URL + '/images/loginImage.png'}
-            style={{cursor: "pointer"}}
+            style={{cursor: "pointer", borderStyle: "solid", borderColor: "#F0F2F5", borderWidth: "2px"}}
             onClick={navigateToCreator}/>
         </div>
         <div>
@@ -279,7 +279,9 @@ export default function GeneralBox(props) {
           handleDeleteComment={handleDeleteComment}/>
       })}
     <form ref={form} className={classes.root} noValidate autoComplete="off" style={{width: "100%"}} onSubmit={handleCommentSubmit}>
-      <Avatar src={props.creatorProfileImageUrl ? props.creatorProfileImageUrl : process.env.PUBLIC_URL + '/images/loginImage.png'} />
+      <Avatar
+        src={props.userProfileImageUrl ? props.userProfileImageUrl : process.env.PUBLIC_URL + '/images/loginImage.png'}
+        style={{borderStyle: "solid", borderColor: "#F0F2F5", borderWidth: "2px"}}/>
       <TextField
         inputRef={commentField}
         label="Write a comment..."

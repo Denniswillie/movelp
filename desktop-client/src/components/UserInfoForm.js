@@ -56,7 +56,7 @@ export default function UserInfoForm(props) {
   function onBeforeFileLoad(event) {
     const re = /\.(gif|jpe?g|tiff?|png|webp|bmp)$/i;
     const file = event.target.files[0];
-    if (file.size > 71680) {
+    if (file.size > 1000000000000000) {
       setImageUploadAlert(true);
       event.target.value = "";
     } else if (!re.test(file.name)) {

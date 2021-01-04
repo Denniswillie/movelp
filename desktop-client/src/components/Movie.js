@@ -29,7 +29,7 @@ export default function Movie(props) {
         if (res.user.nickname === undefined) {
           window.open("/", "_self");
         }
-        setUser(res.user);
+        setUser({...res.user, profileImageUrlCropped: res.profileImageUrlCropped, profileImageUrlOriginal: res.profileImageUrlOriginal});
       }
     })
     .catch(err => console.log(err));

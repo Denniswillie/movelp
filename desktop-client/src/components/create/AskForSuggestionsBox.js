@@ -34,7 +34,10 @@ export default function AskForSuggestionsBox(props) {
     post,
     isEditing,
     handleInputChange,
-    photoGalleryStylings
+    photoGalleryStylings,
+    handleSubmit,
+    deletePost,
+    formRef
   } = props.renderProps;
 
   const imageRenderer = useCallback(
@@ -62,65 +65,8 @@ export default function AskForSuggestionsBox(props) {
     document.getElementById("submit").click();
   }
 
-  function deletePost() {
-    const formData = new FormData();
-    formData.set('postId', post._id);
-    formData.set('fileIds', post.fileIds);
-    fetch('/post/delete', {method: 'POST', body: formData})
-        .then(res => res.json())
-        .catch(err => console.log(err))
-        .then(res => {
-          if (res) {
-            handlePostAction.handleDeletePost(post._id);
-          }
-        })
-  }
-
-  function handleSubmit(event) {
-    if (isEditing) {
-      event.preventDefault();
-      handlePostAction.setLoading(true);
-      const formData = new FormData(form.current);
-      formData.set('postId', post._id);
-      formData.set('postType', ASK_SUGGESTION);
-      for (var i = 0; i < deletedExistingFiles.length; i++) {
-        formData.append('deletedFileIds[]', deletedExistingFiles[i]);
-      }
-      for (var j = 0; j < createInput.uploadedFiles.length; j++) {
-        if (createInput.uploadedFiles[j].file) {
-          formData.append('fileInput[]', createInput.uploadedFiles[j].file);
-        } else {
-          formData.append('fileInput[]', createInput.uploadedFiles[j].fileId);
-        }
-      }
-      fetch('/post/edit', {method: 'POST', body: formData})
-        .then(res => res.json())
-        .catch(err => console.log(err))
-        .then(res => {
-          handlePostAction.handleEditPost(res);
-          handlePostAction.setLoading(false);
-        })
-        .catch(err => console.log(err));
-    } else {
-      event.preventDefault();
-      handlePostAction.setLoading(true);
-      const formData = new FormData(form.current);
-      for (var k = 0; k < createInput.uploadedFiles.length; k++) {
-        formData.append('fileInput[]', createInput.uploadedFiles[k].file);
-      }
-      fetch('/post/create/asksuggestion', {method: 'POST', body: formData})
-          .then(res => res.json())
-          .catch(err => console.log(err))
-          .then(res => {
-            handlePostAction.handleAddPost(res);
-            handlePostAction.setLoading(false);
-          })
-          .catch(err => console.log(err));
-    }
-  }
-
   return <div>
-    <form className={classes.root} noValidate autoComplete="off" onSubmit={handleSubmit} ref={form}>
+    <form className={classes.root} noValidate autoComplete="off" onSubmit={handleSubmit} ref={formRef}>
       <TextField
         multiline
         label="Ask for movie recommendations"

@@ -47,15 +47,14 @@ export default function RecommendationBox(props) {
     const ac = new AbortController();
 
     async function fetchData() {
-      console.log(props.post.movieIds[0]);
       const formData = new FormData();
       formData.append('postId', props.post._id);
-      var movieDataRaw =
-          await fetch("https://api.themoviedb.org/3/movie/" + props.post.movieIds[0] + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
-      if (movieDataRaw.status === 404) {
-        movieDataRaw = await fetch("https://api.themoviedb.org/3/tv/" + props.post.movieIds[0] + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
-      }
-      if (movieDataRaw !== false) {
+      if (props.post.movieIds.length > 0) {
+        var movieDataRaw =
+            await fetch("https://api.themoviedb.org/3/movie/" + props.post.movieIds[0] + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
+        if (movieDataRaw.status === 404) {
+          movieDataRaw = await fetch("https://api.themoviedb.org/3/tv/" + props.post.movieIds[0] + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
+        }
         const movieData = await movieDataRaw.json();
         const title = movieData.title ? movieData.title : movieData.name;
         await setMovieTitle(title);
@@ -184,7 +183,7 @@ export default function RecommendationBox(props) {
           <div className={classes.root}>
             <Avatar
               src={props.creatorProfileImageUrl ? props.creatorProfileImageUrl : process.env.PUBLIC_URL + '/images/loginImage.png'}
-              style={{cursor: "pointer"}}
+              style={{cursor: "pointer", borderStyle: "solid", borderColor: "#F0F2F5", borderWidth: "2px"}}
               onClick={navigateToCreator}/>
           </div>
           <div>
@@ -255,7 +254,9 @@ export default function RecommendationBox(props) {
         handleDeleteComment={handleDeleteComment}/>
     })}
   <form ref={form} className={classes.root} noValidate autoComplete="off" style={{width: "100%"}} onSubmit={handleCommentSubmit}>
-    <Avatar src={props.creatorProfileImageUrl ? props.creatorProfileImageUrl : process.env.PUBLIC_URL + '/images/loginImage.png'} />
+    <Avatar
+      src={props.userProfileImageUrl ? props.userProfileImageUrl : process.env.PUBLIC_URL + '/images/loginImage.png'}
+      style={{borderStyle: "solid", borderColor: "#F0F2F5", borderWidth: "2px"}}/>
     <TextField
       inputRef={commentField}
       label="Write a comment..."

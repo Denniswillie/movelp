@@ -8,7 +8,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Clear from '@material-ui/icons/Clear';
 import Backspace from '@material-ui/icons/Backspace'
 import MovieSearch from './MovieSearch';
-import {useState, useContext, useEffect} from 'react';
+import {useState, useContext, useEffect, useRef} from 'react';
 import PostTypeContext from '../PostTypeContext';
 
 export default function Container(props) {
@@ -16,6 +16,7 @@ export default function Container(props) {
   const [moviesList, setMoviesList] = useState([]);
   const [willBeDeletedFiles, setWillBeDeletedFiles] = useState([]);
   const [deletedExistingFiles, setDeletedExistingFiles] = useState([]);
+  const form = useRef();
 
   const [createInput, setCreateInput] = useState({
     diaryTitle: "",
@@ -46,11 +47,9 @@ export default function Container(props) {
           var movieDataRaw;
           try {
             movieDataRaw =
-                await fetch("https://api.themoviedb.org/3/movie/" + props.post.movieIds[i] + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
+                await fetch("https://api.themoviedb.org/3/movie/" + props.createState.data.post.movieIds[i] + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
           } catch (err) {
-            console.log("failed to fetch");
-          } finally {
-            movieDataRaw = await fetch("https://api.themoviedb.org/3/tv/" + props.post.movieIds[i] + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
+            movieDataRaw = await fetch("https://api.themoviedb.org/3/tv/" + props.createState.data.post.movieIds[i] + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
           }
           const movieData = await movieDataRaw.json();
           const title = movieData.title ? movieData.title : movieData.name;
@@ -200,7 +199,10 @@ export default function Container(props) {
       post: param.data ? param.data.post : null,
       isEditing: param.isEditing,
       handleInputChange: handleInputChange,
-      photoGalleryStylings: photoGalleryStylings
+      photoGalleryStylings: photoGalleryStylings,
+      handleSubmit: handleSubmit,
+      deletePost: deletePost,
+      formRef: form
     }
   }
 
@@ -214,6 +216,63 @@ export default function Container(props) {
     } else if (param.type === PostType.ASK_SUGGESTION) {
       return <AskForSuggestionsBox renderProps={renderProps(param)} />
     }
+  }
+
+  function handleSubmit(event) {
+    if (props.createState.isEditing) {
+      event.preventDefault();
+      props.handlePostAction.setLoading(true);
+      const formData = new FormData(form.current);
+      formData.set('postId', props.createState.data.post._id);
+      formData.set('postType', props.createState.type);
+      for (var i = 0; i < deletedExistingFiles.length; i++) {
+        formData.append('deletedFileIds[]', deletedExistingFiles[i]);
+      }
+      for (var j = 0; j < createInput.uploadedFiles.length; j++) {
+        if (createInput.uploadedFiles[j].file) {
+          formData.append('fileInput[]', createInput.uploadedFiles[j].file);
+        } else {
+          formData.append('fileInput[]', createInput.uploadedFiles[j].fileId);
+        }
+      }
+      fetch('/post/edit', {method: 'POST', body: formData})
+        .then(res => res.json())
+        .catch(err => console.log(err))
+        .then(res => {
+          props.handlePostAction.handleEditPost(res);
+          props.handlePostAction.setLoading(false);
+        })
+        .catch(err => console.log(err));
+    } else {
+      event.preventDefault();
+      props.handlePostAction.setLoading(true);
+      const formData = new FormData(form.current);
+      for (var k = 0; k < createInput.uploadedFiles.length; k++) {
+        formData.append('fileInput[]', createInput.uploadedFiles[k].file);
+      }
+      fetch('/post/create/' + props.createState.type, {method: 'POST', body: formData})
+          .then(res => res.json())
+          .catch(err => console.log(err))
+          .then(res => {
+            props.handlePostAction.handleAddPost(res);
+            props.handlePostAction.setLoading(false);
+          })
+          .catch(err => console.log(err));
+    }
+  }
+
+  function deletePost() {
+    const formData = new FormData();
+    formData.set('postId', props.createState.data.post._id);
+    formData.set('fileIds', props.createState.data.post.fileIds);
+    fetch('/post/delete', {method: 'POST', body: formData})
+        .then(res => res.json())
+        .catch(err => console.log(err))
+        .then(res => {
+          if (res) {
+            props.handlePostAction.handleDeletePost(props.createState.data.post._id);
+          }
+        })
   }
 
   return (
