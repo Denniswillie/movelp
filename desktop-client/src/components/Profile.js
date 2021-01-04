@@ -4,6 +4,10 @@ import Posts from './Posts';
 import PostsFetchTypeContext from './PostsFetchTypeContext';
 import UserInfoForm from './UserInfoForm';
 import Navbar from './Navbar';
+import {
+  BrowserView,
+  MobileView
+} from "react-device-detect";
 
 export default function Profile(props) {
   const USER_NOT_SET = "userNotSet";
@@ -78,6 +82,7 @@ export default function Profile(props) {
   return <div>
   {(user !== USER_NOT_SET && user !== undefined && user.nickname !== undefined) && <Navbar userId={user._id}/>}
   <div id="feed" style={{position: "relative", padding: "1em", textAlign: "center", paddingTop: "5em"}}>
+      <BrowserView>
       {(user !== USER_NOT_SET && creator !== CREATOR_NOT_SET && creator !== undefined) && <div>
         <UserInfoBox
           user={user}
@@ -90,6 +95,21 @@ export default function Profile(props) {
           style={{position: "absolute"}}
           undisplayUserInfoForm={undisplayUserInfoForm}/>}
       </div>}
+      </BrowserView>
+      <MobileView>
+      {(user !== USER_NOT_SET && creator !== CREATOR_NOT_SET && creator !== undefined) && <div>
+        <UserInfoBox
+          user={user}
+          creator={creator}
+          displayUserInfoForm={displayUserInfoForm}/>
+        <Posts user={user} notCreateBox={user._id !== creator._id && true} addOrDeletePost={addOrDeletePost} postRoute={PostsFetchType.CREATOR} creatorId={creatorId}/>
+        {(userInfoFormDisplayed && user._id === creatorId) && <UserInfoForm
+          user={user}
+          userInfoFormDisplayed={userInfoFormDisplayed}
+          style={{position: "absolute"}}
+          undisplayUserInfoForm={undisplayUserInfoForm}/>}
+      </div>}
+      </MobileView>
     </div>
   </div>
 }

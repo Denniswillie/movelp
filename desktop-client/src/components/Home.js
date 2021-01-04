@@ -4,6 +4,10 @@ import Login from './Login';
 import UserInfoForm from './UserInfoForm';
 import PostsFetchTypeContext from './PostsFetchTypeContext';
 import Navbar from './Navbar';
+import {
+  BrowserView,
+  MobileView
+} from "react-device-detect";
 
 export default function Home(props) {
   const USER_NOT_SET = "userNotSet";
@@ -33,10 +37,10 @@ export default function Home(props) {
     .catch(err => console.log(err));
   }, []);
 
-  function renderPage() {
+  function renderPage(browser) {
     if (user !== USER_NOT_SET && user !== undefined) {
       if (user.nickname) {
-        return <Posts user={user} postRoute={PostsFetchType.ALL}/>;
+        return <Posts user={user} browser={browser} postRoute={PostsFetchType.ALL}/>;
       }
       return <UserInfoForm user={user}/>
     } else {
@@ -47,7 +51,12 @@ export default function Home(props) {
   return <div>
     {(user !== USER_NOT_SET && user !== undefined && user.nickname !== undefined) && <Navbar userId={user._id}/>}
     <div id="feed" style={{position: "relative", padding: "1em", textAlign: "center", paddingTop: paddingTop}}>
-      {user !== USER_NOT_SET && renderPage()}
+      <BrowserView>
+          {user !== USER_NOT_SET && renderPage(true)}
+      </BrowserView>
+      <MobileView>
+          {user !== USER_NOT_SET && renderPage(false)}
+      </MobileView>
     </div>
   </div>
 }

@@ -211,7 +211,7 @@ export default function Posts(props) {
         <ClipLoader color={"#4287f5"} loading={loading} css={override} size={200} />
       </div> : <div>
       <div style={{opacity: isDisplayingLikers ? "0.1" : "1", pointerEvents: isDisplayingLikers ? "none": "auto"}}>
-        {props.notCreateBox === undefined && <CreateBox handleClick={handleCreatePostClick}/>}
+        {props.notCreateBox === undefined && <CreateBox handleClick={handleCreatePostClick} browser={props.browser}/>}
         {postData.posts.map((post, index) => {
           if (post.type === PostType.DIARY) {
             return <DisplayDiaryBox
@@ -223,7 +223,8 @@ export default function Posts(props) {
               handleEditClick={handleEditClick}
               userId={props.user._id}
               userProfileImageUrl={props.user.profileImageUrlCropped}
-              displayLikers={displayLikers}/>
+              displayLikers={displayLikers}
+              browser={props.browser}/>
           } else if (post.type === PostType.RECOMMENDATION) {
             return <DisplayRecommendationBox
               key={post._id}
@@ -234,7 +235,8 @@ export default function Posts(props) {
               handleEditClick={handleEditClick}
               userId={props.user._id}
               userProfileImageUrl={props.user.profileImageUrlCropped}
-              displayLikers={displayLikers}/>
+              displayLikers={displayLikers}
+              browser={props.browser}/>
           } else if (post.type === PostType.ASK_SUGGESTION) {
             return <DisplayAskForSuggestionsBox
               key={post._id}
@@ -245,7 +247,8 @@ export default function Posts(props) {
               handleEditClick={handleEditClick}
               userId={props.user._id}
               userProfileImageUrl={props.user.profileImageUrlCropped}
-              displayLikers={displayLikers}/>
+              displayLikers={displayLikers}
+              browser={props.browser}/>
           } else {
             return <DisplayGeneralBox
               key={post._id}
@@ -256,7 +259,8 @@ export default function Posts(props) {
               handleEditClick={handleEditClick}
               userId={props.user._id}
               userProfileImageUrl={props.user.profileImageUrlCropped}
-              displayLikers={displayLikers}/>
+              displayLikers={displayLikers}
+              browser={props.browser}/>
           }
         })}
       </div>
@@ -265,7 +269,8 @@ export default function Posts(props) {
           setLoading={setLoading}
           createState={createState}
           handleExitClick={handleExitClick}
-          handlePostAction={handlePostAction}/>}
+          handlePostAction={handlePostAction}
+          browser={props.browser}/>}
       </div>
       {isDisplayingLikers && <TableContainer
           component={Paper}

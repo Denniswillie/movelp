@@ -20,7 +20,7 @@ export default function CreateBox(props) {
   const PostType = useContext(PostTypeContext);
   const classes = useStyles();
   return <div style={{
-      width: "600px",
+      width: props.browser ? "600px" : "100%",
       backgroundColor: "white",
       marginLeft: "auto",
       marginRight: "auto",
