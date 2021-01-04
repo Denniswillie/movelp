@@ -4,6 +4,10 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import {useEffect, useState} from 'react';
+import {
+  isBrowser,
+  isMobile
+} from "react-device-detect";
 
 const useStyles = makeStyles((theme) => ({
   large: {
@@ -60,7 +64,7 @@ export default function MovieInfoBox(props) {
 
   return <div style={{
       position: "absolute",
-      width: "300px",
+      width: isBrowser ? "300px" : "95%",
       backgroundColor: "white",
       right: "5em",
       top: "6em",

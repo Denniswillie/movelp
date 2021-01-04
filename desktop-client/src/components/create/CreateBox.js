@@ -30,7 +30,8 @@ export default function CreateBox(props) {
       marginTop: isBrowser ? "1em" : "0.6em",
       marginBottom: "1em",
       borderRadius: "5px",
-      boxShadow: "0 0 2px #999"}}>
+      boxShadow: "0 0 2px #999",
+      padding: isBrowser && "5px"}}>
     <form className={classes.root} noValidate autoComplete="off">
       <TextField name={PostType.GENERAL} id={PostType.GENERAL} label="Create a general post" variant="outlined" style={{width: "70%"}} onClick={props.handleClick}/>
     </form>

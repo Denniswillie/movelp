@@ -22,6 +22,10 @@ import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
 import Avatar from '@material-ui/core/Avatar';
 import { css } from "@emotion/core";
 import ClipLoader from "react-spinners/RingLoader";
+import {
+  isBrowser,
+  isMobile
+} from "react-device-detect";
 
 const useStyles = makeStyles({
   table: {
@@ -178,22 +182,30 @@ export default function Posts(props) {
       name = event.target.id;
     }
     if (name === PostType.GENERAL) {
-      document.body.style.overflow = "hidden";
+      if (isBrowser) {
+        document.body.style.overflow = "hidden";
+      }
       setCreateState(prevData => {
         return {...prevData, type: PostType.GENERAL};
       })
     } else if (name === PostType.RECOMMENDATION) {
-      document.body.style.overflow = "hidden";
+      if (isBrowser) {
+        document.body.style.overflow = "hidden";
+      }
       setCreateState(prevData => {
         return {...prevData, type: PostType.RECOMMENDATION};
       })
     } else if (name === PostType.DIARY) {
-      document.body.style.overflow = "hidden";
+      if (isBrowser) {
+        document.body.style.overflow = "hidden";
+      }
       setCreateState(prevData => {
         return {...prevData, type: PostType.DIARY};
       })
     } else if (name === PostType.ASK_SUGGESTION){
-      document.body.style.overflow = "hidden";
+      if (isBrowser) {
+        document.body.style.overflow = "hidden";
+      }
       setCreateState(prevData => {
         return {...prevData, type: PostType.ASK_SUGGESTION};
       })
@@ -213,7 +225,9 @@ export default function Posts(props) {
               likerUrl: postLikes.likerUrls[index]
             }
           }))
-          document.body.style.overflow = "hidden";
+          if (isBrowser) {
+            document.body.style.overflow = "hidden";
+          }
           setDisplayingLikers(true);
         })
   }

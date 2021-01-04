@@ -18,7 +18,7 @@ import {
 
 const useStyles = makeStyles((theme) => ({
   createContainer: {
-    width: isBrowser ? "500px" : "100%",
+    width: isBrowser ? "500px" : "95%",
     height: isBrowser && "500px",
     margin: "auto",
     marginTop: isBrowser ? window.pageYOffset + (window.innerHeight / 6) : "0",
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     right: "0",
     borderRadius: "5px",
     boxShadow: "0 0 20px #999",
-    zIndex: "100",
+    zIndex: "999999999999999999999999999999999999999999999999999999999999999999999",
     position: "absolute",
     paddingLeft: "5px",
     paddingRight: "5px",
