@@ -3,9 +3,16 @@ import Avatar from '@material-ui/core/Avatar';
 import SettingsIcon from '@material-ui/icons/Settings';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
-import {useEffect} from 'react';
+import {
+  isBrowser,
+  isMobile
+} from "react-device-detect";
 
 const useStyles = makeStyles((theme) => ({
+  small: {
+    width: theme.spacing(10),
+    height: theme.spacing(10),
+  },
   large: {
     width: theme.spacing(17),
     height: theme.spacing(17),
@@ -14,12 +21,9 @@ const useStyles = makeStyles((theme) => ({
 
 export default function UserInfoBox(props) {
   const classes = useStyles();
-  useEffect(() => {
-    console.log(props.creator.profileImageUrl);
-  }, []);
 
   return <div style={{
-      width: "700px",
+      width: isBrowser ? "700px" : "100%",
       backgroundColor: "white",
       marginLeft: "auto",
       marginRight: "auto",
@@ -36,14 +40,14 @@ export default function UserInfoBox(props) {
           style={{borderStyle: "solid", borderColor: "#F0F2F5", borderWidth: "2px"}}
           alt={props.user.nickname}
           src={props.creator.profileImageUrl ? props.creator.profileImageUrl : process.env.PUBLIC_URL + '/images/loginImage.png'}
-          className={classes.large} />
+          className={isBrowser ? classes.large : classes.small} />
         <div style={{marginLeft: "2em", marginTop: "1em"}}>
           <h1 style={{fontFamily: "roboto", fontWeight: "normal", marginBottom: "0.2em"}}>{props.creator.nickname.toUpperCase()}</h1>
           <div style={{marginTop: "0", textAlign: "left", padding: "5px", display: "flex"}}>
             <p style={{marginTop: "0", fontFamily: "roboto"}}><b>{props.creator.numOfPosts}</b> posts</p>
           </div>
         </div>
-        {props.user._id === props.creator._id && <div style={{top: "0", right: "15px", position: "absolute"}}>
+        {props.user._id === props.creator._id && <div style={{top: "0", right: isBrowser ? "15px" : "0", position: "absolute"}}>
             <Button
               onClick={props.displayUserInfoForm}
               style={{backgroundColor: "black", color: "white"}}

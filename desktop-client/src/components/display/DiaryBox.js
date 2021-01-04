@@ -30,13 +30,14 @@ const useStyles = makeStyles((theme) => ({
   buttonBrowser: {
     margin: theme.spacing(1),
     position: "absolute",
-    marginLeft: "421px"
+    top: "0",
+    right: "0"
   },
   buttonMobile: {
     margin: theme.spacing(1),
     position: "absolute",
-    top: "1px",
-    right: "1px"
+    top: "0",
+    right: "0"
   }
 }));
 
@@ -196,8 +197,8 @@ export default function DiaryBox(props) {
       borderRadius: "5px",
       boxShadow: "0 0 2px #999"}}>
     <div>
-      <div style={{width: "100%", margin: "auto", textAlign: "left", padding: "5px", display: "flex"}}>
-        <div>
+      <div style={{width: "100%", margin: "auto", textAlign: "left", display: "flex", position: "relative"}}>
+        <div style={{position: "absolute", width: "100%"}}>
           <Button
             style={{backgroundColor: "black", color: "white"}}
             aria-controls="simple-menu"
