@@ -63,13 +63,15 @@ export default function MovieInfoBox(props) {
   }, [])
   return <div style={{
       margin: isBrowser && "auto",
-      width: isBrowser ? "300px" : "95%",
+      width: isBrowser ? "300px" : "100%",
       backgroundColor: "white",
-      top: "6em",
+      top: "0em",
       borderRadius: "5px",
       boxShadow: "0 0 2px #999",
       paddingTop: "1em",
-      paddingBottom: "1em"}}>
+      paddingBottom: "1em",
+      marginTop: isBrowser && "6em",
+      position: isBrowser && "absolute"}}>
       {movieData && <div style={{width: "100%", margin: "auto", position: "relative"}}>
         <img
           style={{borderStyle: "solid", borderRadius: "10px", borderColor: "#F0F2F5", borderWidth: "2px", width: "17em", margin: "auto", height: "21em"}}
