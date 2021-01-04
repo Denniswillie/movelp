@@ -10,7 +10,7 @@ export default function Login() {
   }
   return <div id="loginPageContainer">
     <div id="watchDiaryIntro">
-      <h1 className="WatchDiaryTitle" style={{marginBottom: "0"}}>Movelp</h1>
+      <h1 className="WatchDiaryTitle" style={{marginBottom: "0", marginRight: isMobile && "1em"}}>Movelp</h1>
       <div className="WatchDiarySubTitleWrapper">
         <img src={process.env.PUBLIC_URL + '/images/clapperboard.png'} style={{width: "13em"}} alt="clapperboard"/>
         <h3 className="WatchDiarySubTitle" style={{marginTop:"0"}}>Made for all movie lovers.</h3>
