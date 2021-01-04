@@ -27,13 +27,16 @@ mongoose.set('useFindAndModify', false);
 if (inProduction) {
   app.use(express.static('desktop-client/build'));
   app.get('/', (req, res) => {
-      res.sendFile(path.join(__dirname, '../desktop-client/build/index.html'))
+      res.sendFile(path.join(__dirname, '../desktop-client/build/index.html'));
   })
   app.get('/profile/*', (req, res) => {
-      res.sendFile(path.join(__dirname, '../desktop-client/build/index.html'))
+      res.sendFile(path.join(__dirname, '../desktop-client/build/index.html'));
   })
   app.get('/movie/*', (req, res) => {
-      res.sendFile(path.join(__dirname, '../desktop-client/build/index.html'))
+      res.sendFile(path.join(__dirname, '../desktop-client/build/index.html'));
+  })
+  app.get('/*', (req, res) => {
+      res.sendFile(path.join(__dirname, '../desktop-client/build/index.html'));
   })
 }
 
