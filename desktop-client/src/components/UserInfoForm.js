@@ -77,7 +77,6 @@ export default function UserInfoForm(props) {
   }
 
   function handleNicknameChange(event) {
-    console.log(event.target.value);
     if (event.target.value.length > 30) {
       setNickname(event.target.value.slice(0, 30));
     } else {

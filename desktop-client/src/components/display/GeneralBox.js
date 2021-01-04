@@ -166,8 +166,6 @@ export default function GeneralBox(props) {
   }
 
   const handleClick = (event) => {
-    console.log(movies);
-    console.log(props.post.movieIds);
     setAnchorEl(event.currentTarget);
   };
 
