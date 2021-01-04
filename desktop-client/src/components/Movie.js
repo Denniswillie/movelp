@@ -43,9 +43,9 @@ export default function Movie(props) {
 
   return <div>
   {(user !== USER_NOT_SET && user !== undefined && user.nickname !== undefined) && <Navbar userId={user._id}/>}
-  <div id="feed" style={{margin: "auto", position: "relative", padding: "1em", textAlign: "center", paddingTop: "5em", display: isBrowser && "flex", width: isBrowser ? "70%" : "100%"}}>
-      <MovieInfoBox movieId={movieId} style={{float: isBrowser && "left"}}/>
-      {user !== USER_NOT_SET && <div style={{float: isBrowser && "left"}}>
+  <div id="feed" style={{margin: "auto", position: "relative", padding: "1em", textAlign: "center", paddingTop: "5em", display: isBrowser && "flex", width: isBrowser ? "90%" : "100%"}}>
+      <MovieInfoBox movieId={movieId}/>
+      {user !== USER_NOT_SET && <div style={{margin: "auto"}}>
         <Posts user={user} postRoute={PostsFetchType.MOVIE} movieId={movieId}/>
       </div>}
     </div>

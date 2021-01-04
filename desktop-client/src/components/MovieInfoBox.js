@@ -61,12 +61,10 @@ export default function MovieInfoBox(props) {
 
     fetchData();
   }, [])
-
   return <div style={{
-      position: "absolute",
+      margin: isBrowser && "auto",
       width: isBrowser ? "300px" : "95%",
       backgroundColor: "white",
-      right: "5em",
       top: "6em",
       borderRadius: "5px",
       boxShadow: "0 0 2px #999",
