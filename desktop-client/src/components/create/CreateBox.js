@@ -26,22 +26,20 @@ export default function CreateBox(props) {
   return <div style={{
       width: isBrowser ? "600px" : "100%",
       backgroundColor: "white",
-      marginLeft: "auto",
-      marginRight: "auto",
-      marginTop: "1em",
+      margin: "auto",
+      marginTop: isBrowser ? "1em" : "0.6em",
       marginBottom: "1em",
       borderRadius: "5px",
-      boxShadow: "0 0 2px #999",
-      padding: "5px"}}>
+      boxShadow: "0 0 2px #999"}}>
     <form className={classes.root} noValidate autoComplete="off">
       <TextField name={PostType.GENERAL} id={PostType.GENERAL} label="Create a general post" variant="outlined" style={{width: "70%"}} onClick={props.handleClick}/>
     </form>
-    <div style={{borderTop: "1px solid #9ba89e", paddingTop: "5px", width: "100%"}}>
-    <Button style={{width: isBrowser ? "30%" : "50%"}} name={PostType.DIARY} onClick={props.handleClick}>
+    <div style={{borderTop: "1px solid #9ba89e", paddingTop: "5px", paddingBottom: "5px"}}>
+    <Button style={{width: isBrowser ? "30%" : "40%"}} name={PostType.DIARY} onClick={props.handleClick}>
       {isBrowser && <Theaters style={{pointerEvents: "none"}}/>}
       <p style={{fontFamily: 'Roboto', marginLeft: isBrowser ? "6px" : "1px"}} id={PostType.DIARY}>Diary</p>
     </Button>
-    <Button style={{width: isBrowser ? "30%" : "50%"}} name={PostType.RECOMMENDATION} onClick={props.handleClick}>
+    <Button style={{width: isBrowser ? "30%" : "40%"}} name={PostType.RECOMMENDATION} onClick={props.handleClick}>
       {isBrowser && <Movie style={{pointerEvents: "none"}}/>}
       <p style={{fontFamily: 'Roboto', marginLeft: isBrowser ? "6px" : "3px"}} id={PostType.RECOMMENDATION}>Recommendation</p>
     </Button>
