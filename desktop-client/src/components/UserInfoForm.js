@@ -194,11 +194,11 @@ export default function UserInfoForm(props) {
 
           <p style={{fontFamily: 'roboto', margin: "auto", marginTop: "2em"}}>UPLOAD A PROFILE PICTURE</p>
           {imageUploadAlert && <p style={{color: 'red', margin: 'auto', fontFamily: 'roboto'}}>Uploaded image doesn't match requirements.</p>}
-          <div style={{marginLeft: isBrowser ? "auto" : "10px", marginRight: isBrowser && "auto", width: isBrowser ? "60%" : "80%"}}>
+          <div style={{marginLeft: isBrowser ? "auto" : "5px", marginRight: isBrowser && "auto", width: isBrowser ? "60%" : "90%"}}>
             <Avatar
               minCropRadius={80}
-              width={isBrowser ? 300 : 200}
-              height={isBrowser ? 250 : 150}
+              width={300}
+              height={250}
               onCrop={onCrop}
               onClose={onClose}
               onBeforeFileLoad={onBeforeFileLoad}
