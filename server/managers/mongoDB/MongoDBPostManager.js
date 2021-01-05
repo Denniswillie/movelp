@@ -22,6 +22,7 @@ const Post = require('../../entities/Post');
 const PostModel = require('../../models/postModel');
 const PostLikeModel = require('../../models/postLikeModel');
 const MongoDBUserManager = require('./MongoDBUserManager');
+const LIMIT = 4;
 
 class MongoDBPostManager {
   static create(post) {
@@ -64,7 +65,7 @@ class MongoDBPostManager {
     }
   }
 
-  static async getPostsByUser(creatorId, userId) {
+  static async getPostsByUser(creatorId, userId, numOfSkip) {
     const docs = await PostModel.find({creatorId: creatorId}).sort({timeOfCreation: -1}).exec();
 
     const promises = [];
@@ -80,7 +81,7 @@ class MongoDBPostManager {
     return [docs, liked];
   }
 
-  static async getMoviesSpecificPosts(movieId, userId) {
+  static async getMoviesSpecificPosts(movieId, userId, numOfSkip) {
     const docs = await PostModel.find({movieIds: movieId}).sort({timeOfCreation: -1}).exec();
 
     const promises = [];
@@ -96,8 +97,13 @@ class MongoDBPostManager {
     return [docs, liked];
   }
 
-  static async getAll(userId) {
-    const docs = await PostModel.find({}).sort({timeOfCreation: -1}).exec();
+  static async getAll(userId, numOfSkip) {
+    var docs;
+    if (numOfSkip) {
+      docs = await PostModel.find({}).sort({timeOfCreation: -1}).skip(numOfSkip).limit(LIMIT).exec();
+    } else {
+      docs = await PostModel.find({}).sort({timeOfCreation: -1}).limit(LIMIT).exec();
+    }
 
     // likeList contains boolean values (true = the user has liked the post,
     // false = the user has not liked the post)
@@ -111,7 +117,11 @@ class MongoDBPostManager {
       }
     }
     const liked = await Promise.all(promises);
-    return [docs, liked];
+    return {
+      docs: docs,
+      liked: liked,
+      nextNumOfSkip: numOfSkip ? LIMIT : numOfSkip + LIMIT
+    };
   }
 
   static async getLikers(postId) {
