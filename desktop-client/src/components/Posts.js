@@ -278,9 +278,7 @@ export default function Posts(props) {
               likerUrl: postLikes.likerUrls[index]
             }
           }))
-          if (isBrowser) {
-            document.body.style.overflow = "hidden";
-          }
+          document.body.style.overflow = "hidden";
           setDisplayingLikers(true);
         })
   }
