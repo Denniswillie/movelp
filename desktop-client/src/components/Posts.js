@@ -361,12 +361,13 @@ export default function Posts(props) {
       {isDisplayingLikers && <TableContainer
           component={Paper}
           style={{
-            width: "500px",
+            width: isBrowser ? "500px" : "100%",
             height: "300px",
             overflow: "auto",
             position: "absolute",
             top: window.pageYOffset + (window.innerHeight / 4),
-            left: "33.5%",
+            left: isBrowser && "33.5%",
+            margin: isMobile && "auto",
             zIndex: "999999999999999999999999999999999999"}}>
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
