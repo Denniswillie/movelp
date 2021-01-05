@@ -6,6 +6,10 @@ import Avatar from 'react-avatar-edit';
 import ReactAvatar from '@material-ui/core/Avatar';
 import Clear from '@material-ui/icons/Clear';
 import IconButton from '@material-ui/core/IconButton';
+import {
+  isBrowser,
+  isMobile
+} from "react-device-detect";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -152,7 +156,7 @@ export default function UserInfoForm(props) {
   return <div style={{
         position: "absolute",
         zIndex: "9000000000000000000000000000000000000000",
-        width: "500px",
+        width: isBrowser ? "500px" : "90%",
         height: "590px",
         marginLeft: "auto",
         marginRight: "auto",
