@@ -66,7 +66,7 @@ export default function UserInfoBox(props) {
               onClick={props.displayUserInfoForm}
               style={{backgroundColor: "black", color: "white"}}
               variant="contained"
-              className={isBrowser ? classes.buttonBrowser : classes.buttonMobile}>Edit Profile</Button>
+              className={isBrowser ? classes.buttonBrowser : classes.buttonMobile}>Edit</Button>
         </div>}
       </div>
   </div>
