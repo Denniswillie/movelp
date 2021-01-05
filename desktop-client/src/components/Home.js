@@ -48,9 +48,9 @@ export default function Home(props) {
     }
   }
 
-  return <div>
+  return <div style={{padding: "0"}}>
     {(user !== USER_NOT_SET && user !== undefined && user.nickname !== undefined) && <Navbar userId={user._id}/>}
-    <div id="feed" style={{position: "relative", padding: "1em", textAlign: "center", paddingTop: paddingTop}}>
+    <div id="feed" style={{position: "relative", textAlign: "center", paddingTop: paddingTop}}>
       {user !== USER_NOT_SET && renderPage(true)}
     </div>
   </div>

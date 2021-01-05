@@ -23,6 +23,7 @@ const PostModel = require('../../models/postModel');
 const PostLikeModel = require('../../models/postLikeModel');
 const MongoDBUserManager = require('./MongoDBUserManager');
 const LIMIT = 4;
+const UNDEFINED = -1;
 
 class MongoDBPostManager {
   static create(post) {
@@ -66,7 +67,13 @@ class MongoDBPostManager {
   }
 
   static async getPostsByUser(creatorId, userId, numOfSkip) {
-    const docs = await PostModel.find({creatorId: creatorId}).sort({timeOfCreation: -1}).exec();
+    numOfSkip = parseInt(numOfSkip, 10);
+    var docs;
+    if (numOfSkip === UNDEFINED) {
+      docs = await PostModel.find({creatorId: creatorId}).sort({timeOfCreation: -1}).limit(LIMIT).exec();
+    } else {
+      docs = await PostModel.find({creatorId: creatorId}).sort({timeOfCreation: -1}).skip(parseInt(numOfSkip, 10)).limit(LIMIT).exec();
+    }
 
     const promises = [];
     for (var i = 0; i < docs.length; i++) {
@@ -78,11 +85,21 @@ class MongoDBPostManager {
       }
     }
     const liked = await Promise.all(promises);
-    return [docs, liked];
+    return {
+      docs: docs,
+      liked: liked,
+      nextNumOfSkip: numOfSkip === UNDEFINED ? LIMIT : numOfSkip + LIMIT
+    };
   }
 
   static async getMoviesSpecificPosts(movieId, userId, numOfSkip) {
-    const docs = await PostModel.find({movieIds: movieId}).sort({timeOfCreation: -1}).exec();
+    numOfSkip = parseInt(numOfSkip, 10);
+    var docs;
+    if (numOfSkip === UNDEFINED) {
+      docs = await PostModel.find({movieIds: movieId}).sort({timeOfCreation: -1}).limit(LIMIT).exec();
+    } else {
+      docs = await PostModel.find({movieIds: movieId}).sort({timeOfCreation: -1}).skip(parseInt(numOfSkip, 10)).limit(LIMIT).exec();
+    }
 
     const promises = [];
     for (var i = 0; i < docs.length; i++) {
@@ -94,17 +111,21 @@ class MongoDBPostManager {
       }
     }
     const liked = await Promise.all(promises);
-    return [docs, liked];
+    return {
+      docs: docs,
+      liked: liked,
+      nextNumOfSkip: numOfSkip === UNDEFINED ? LIMIT : numOfSkip + LIMIT
+    };
   }
 
   static async getAll(userId, numOfSkip) {
+    numOfSkip = parseInt(numOfSkip, 10);
     var docs;
-    if (numOfSkip) {
-      docs = await PostModel.find({}).sort({timeOfCreation: -1}).skip(numOfSkip).limit(LIMIT).exec();
-    } else {
+    if (numOfSkip === UNDEFINED) {
       docs = await PostModel.find({}).sort({timeOfCreation: -1}).limit(LIMIT).exec();
+    } else {
+      docs = await PostModel.find({}).sort({timeOfCreation: -1}).skip(parseInt(numOfSkip, 10)).limit(LIMIT).exec();
     }
-
     // likeList contains boolean values (true = the user has liked the post,
     // false = the user has not liked the post)
     const promises = [];
@@ -120,7 +141,7 @@ class MongoDBPostManager {
     return {
       docs: docs,
       liked: liked,
-      nextNumOfSkip: numOfSkip ? LIMIT : numOfSkip + LIMIT
+      nextNumOfSkip: numOfSkip === UNDEFINED ? LIMIT : numOfSkip + LIMIT
     };
   }
 

@@ -87,7 +87,7 @@ router.post('/getPostsByUser', upload.none(), async (req, res) => {
   const creatorId = req.body.creatorId;
   const numOfSkip = req.body.numOfSkip;
 
-  const [docs, liked] = await MongoDBPostManager.getPostsByUser(creatorId, userId, numOfSkip);
+  const {docs, liked, nextNumOfSkip} = await MongoDBPostManager.getPostsByUser(creatorId, userId, numOfSkip);
   const urls = await GoogleStorageManager.downloadFilesForMultiplePosts(
       docs, GoogleStorageManager.STORAGE.BUCKET.POST
   );
@@ -96,7 +96,8 @@ router.post('/getPostsByUser', upload.none(), async (req, res) => {
     posts: docs,
     urls: urls,
     liked: liked,
-    creatorProfileImageUrls: creatorProfileImageUrls
+    creatorProfileImageUrls: creatorProfileImageUrls,
+    nextNumOfSkip: nextNumOfSkip
   })
 });
 
@@ -105,7 +106,7 @@ router.post('/getMoviesSpecificPosts', upload.none(), async (req, res) => {
   const movieId = req.body.movieId;
   const numOfSkip = req.body.numOfSkip;
 
-  const [docs, liked] = await MongoDBPostManager.getMoviesSpecificPosts(movieId, userId, numOfSkip);
+  const {docs, liked, nextNumOfSkip} = await MongoDBPostManager.getMoviesSpecificPosts(movieId, userId, numOfSkip);
   const urls = await GoogleStorageManager.downloadFilesForMultiplePosts(
       docs, GoogleStorageManager.STORAGE.BUCKET.POST
   );
@@ -114,7 +115,8 @@ router.post('/getMoviesSpecificPosts', upload.none(), async (req, res) => {
     posts: docs,
     urls: urls,
     liked: liked,
-    creatorProfileImageUrls: creatorProfileImageUrls
+    creatorProfileImageUrls: creatorProfileImageUrls,
+    nextNumOfSkip: nextNumOfSkip
   })
 })
 

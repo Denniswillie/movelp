@@ -26,6 +26,7 @@ import {
   isBrowser,
   isMobile
 } from "react-device-detect";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 const useStyles = makeStyles({
   table: {
@@ -40,6 +41,14 @@ const override = css`
   border-color: red;
 `;
 
+const overridePaginate = css`
+  display: block;
+  margin: auto;
+  margin-top: 2em;
+  margin-bottom: 3em;
+  border-color: red;
+`;
+
 export default function Posts(props) {
   const PostType = useContext(PostTypeContext);
   const PostsFetchType = useContext(PostsFetchTypeContext);
@@ -47,6 +56,9 @@ export default function Posts(props) {
   const [isDisplayingLikers, setDisplayingLikers] = useState(false);
   const [likersData, setLikersData] = useState();
   const [loading, setLoading] = useState(false);
+  const [paginateLoading, setPaginateLoading] = useState(false);
+  const [numOfSkip, setNumOfSkip] = useState(-1);
+  const [hasMorePosts, setHasMorePosts] = useState(true);
 
   const [postData, setPostData] = useState({
     posts: [],
@@ -58,6 +70,7 @@ export default function Posts(props) {
   const classes = useStyles();
 
   useEffect(() => {
+    console.log("useeffect");
     setLoading(true);
     const formData = new FormData();
     if (props.postRoute === PostsFetchType.CREATOR) {
@@ -65,15 +78,55 @@ export default function Posts(props) {
     } else if (props.postRoute === PostsFetchType.MOVIE) {
       formData.append('movieId', props.movieId);
     }
+    formData.append('numOfSkip', numOfSkip);
     fetch('/post/' + props.postRoute, {method: 'POST', body: formData})
       .then(res => res.json())
       .catch(err => console.log(err))
       .then(res => {
-        setPostData(res);
+        setPostData({
+          posts: [...res.posts],
+          urls: [...res.urls],
+          liked: [...res.liked],
+          creatorProfileImageUrls: [...res.creatorProfileImageUrls]
+        });
         setLoading(false);
+        setNumOfSkip(res.nextNumOfSkip);
+        if (res.posts.length === 0) {
+          setHasMorePosts(false);
+        }
       })
       .catch(err => console.log(err));
   }, [props.postRoute, PostsFetchType.CREATOR, PostsFetchType.MOVIE, props.creatorId, props.movieId]);
+
+  function fetchMorePosts() {
+    setPaginateLoading(true);
+    const formData = new FormData();
+    if (props.postRoute === PostsFetchType.CREATOR) {
+      formData.append('creatorId', props.creatorId);
+    } else if (props.postRoute === PostsFetchType.MOVIE) {
+      formData.append('movieId', props.movieId);
+    }
+    formData.append('numOfSkip', numOfSkip);
+    fetch('/post/' + props.postRoute, {method: 'POST', body: formData})
+      .then(res => res.json())
+      .catch(err => console.log(err))
+      .then(res => {
+        setPostData(prevData => {
+          return {
+            posts: [...prevData.posts, ...res.posts],
+            urls: [...prevData.urls, ...res.urls],
+            liked: [...prevData.liked, ...res.liked],
+            creatorProfileImageUrls: [...prevData.creatorProfileImageUrls, ...res.creatorProfileImageUrls]
+          }
+        })
+        setNumOfSkip(res.nextNumOfSkip);
+        setPaginateLoading(false);
+        if (res.posts.length === 0) {
+          setHasMorePosts(false);
+        }
+      })
+      .catch(err => console.log(err));
+  }
 
   const [createState, setCreateState] = useState({
     isEditing: false,
@@ -233,7 +286,7 @@ export default function Posts(props) {
   }
 
   return (
-    <div>
+    <div id="scrollableDiv">
       {loading ? <div className="sweet-loading">
         <ClipLoader color={"#4287f5"} loading={loading} css={override} size={200} />
       </div> : <div>
@@ -243,6 +296,12 @@ export default function Posts(props) {
           pointerEvents: (isDisplayingLikers || createState.type) ? "none": "auto",
         }}>
         {props.notCreateBox === undefined && <CreateBox handleClick={handleCreatePostClick}/>}
+        <InfiniteScroll
+          dataLength={postData.posts.length}
+          next={fetchMorePosts}
+          hasMore={hasMorePosts}
+          loader={<ClipLoader color={"#4287f5"} loading={paginateLoading} css={overridePaginate} size={100} />}
+        >
         {postData.posts.map((post, index) => {
           if (post.type === PostType.DIARY) {
             return <DisplayDiaryBox
@@ -290,6 +349,7 @@ export default function Posts(props) {
               displayLikers={displayLikers}/>
           }
         })}
+        </InfiniteScroll>
       </div>
       <div style={{textAlign: "center"}}>
         {createState.type && <Container
