@@ -361,7 +361,7 @@ export default function Posts(props) {
       {isDisplayingLikers && <TableContainer
           component={Paper}
           style={{
-            width: isBrowser ? "500px" : "100%",
+            width: isBrowser ? "500px" : "90%",
             height: "300px",
             overflow: "auto",
             position: "absolute",
