@@ -4,10 +4,6 @@ import Login from './Login';
 import UserInfoForm from './UserInfoForm';
 import PostsFetchTypeContext from './PostsFetchTypeContext';
 import Navbar from './Navbar';
-import {
-  BrowserView,
-  MobileView
-} from "react-device-detect";
 
 export default function Home(props) {
   const USER_NOT_SET = "userNotSet";

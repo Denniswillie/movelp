@@ -25,13 +25,9 @@ export default function AskForSuggestionsBox(props) {
   const classes = useStyles();
   const form = useRef(null);
   const [selectAll] = useState(false);
-  const ASK_SUGGESTION = 'asksuggestion';
 
   const {
     createInput,
-    deletedExistingFiles,
-    handlePostAction,
-    post,
     isEditing,
     handleInputChange,
     photoGalleryStylings,

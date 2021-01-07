@@ -4,8 +4,7 @@ import PostsFetchTypeContext from './PostsFetchTypeContext';
 import MovieInfoBox from './MovieInfoBox';
 import Navbar from './Navbar';
 import {
-  isBrowser,
-  isMobile
+  isBrowser
 } from "react-device-detect";
 
 export default function Movie(props) {

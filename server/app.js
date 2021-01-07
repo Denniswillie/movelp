@@ -1,6 +1,7 @@
 require('dotenv').config();
 const bodyParser = require('body-parser');
 const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 const express = require('express');
 const sslRedirect = require('heroku-ssl-redirect').default;
 const app = express();
@@ -45,7 +46,8 @@ app.use(bodyParser.urlencoded({
 app.use(session({
   secret: "535510n53cr3t",
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  store: new MongoStore({ mongooseConnection: mongoose.connection })
 }));
 
 app.use(passport.initialize());

@@ -38,7 +38,7 @@ export default function Comment(props) {
         })
         .catch(err => console.log(err));
     return () => {ac.abort()};
-  }, [])
+  }, [props.creatorId])
 
   function displayButtons() {
     if (props.isCreatedByUser) {

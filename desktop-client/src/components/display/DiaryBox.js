@@ -16,8 +16,7 @@ import Comment from './Comment';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import {
-  isBrowser,
-  isMobile
+  isBrowser
 } from "react-device-detect";
 
 const useStyles = makeStyles((theme) => ({
@@ -88,7 +87,7 @@ export default function DiaryBox(props) {
 
     fetchMovieTitles();
     return () => ac.abort();
-  }, [props.post._id]);
+  }, [props.post._id, props.post.movieIds]);
 
   function constructGalleryUrls(urls) {
     return urls.map(url => {

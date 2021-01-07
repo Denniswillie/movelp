@@ -13,8 +13,7 @@ import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import Comment from './Comment';
 import {
-  isBrowser,
-  isMobile
+  isBrowser
 } from "react-device-detect";
 
 const useStyles = makeStyles((theme) => ({
@@ -140,14 +139,6 @@ export default function AskForSuggestionsBox(props) {
 
   function navigateToCreator() {
     window.open("/profile/" + props.post.creatorId, "_self");
-  }
-
-  function renderTime() {
-    const today = new Date(parseInt(Date.parse(props.post.timeOfCreation), 10));
-    var dd = String(today.getDate()).padStart(2, '0');
-    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-    var yyyy = today.getFullYear();
-    return mm + '/' + dd + '/' + yyyy;
   }
 
   return <div style={{

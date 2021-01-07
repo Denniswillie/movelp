@@ -60,13 +60,9 @@ const ratings = [
 export default function RecommendationBox(props) {
   const classes = useStyles();
   const [selectAll] = useState(false);
-  const RECOMMENDATION = 'recommendation';
 
   const {
     createInput,
-    deletedExistingFiles,
-    handlePostAction,
-    post,
     isEditing,
     handleInputChange,
     photoGalleryStylings,

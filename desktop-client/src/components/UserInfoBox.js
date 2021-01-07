@@ -1,11 +1,8 @@
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
-import SettingsIcon from '@material-ui/icons/Settings';
-import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import {
-  isBrowser,
-  isMobile
+  isBrowser
 } from "react-device-detect";
 
 const useStyles = makeStyles((theme) => ({

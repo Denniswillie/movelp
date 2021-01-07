@@ -1,23 +1,9 @@
-import { makeStyles } from '@material-ui/core/styles';
-import Avatar from '@material-ui/core/Avatar';
-import SettingsIcon from '@material-ui/icons/Settings';
-import IconButton from '@material-ui/core/IconButton';
-import Button from '@material-ui/core/Button';
 import {useEffect, useState} from 'react';
 import {
-  isBrowser,
-  isMobile
+  isBrowser
 } from "react-device-detect";
 
-const useStyles = makeStyles((theme) => ({
-  large: {
-    width: theme.spacing(17),
-    height: theme.spacing(17),
-  },
-}));
-
 export default function MovieInfoBox(props) {
-  const classes = useStyles();
   const [movieData, setMovieData] = useState();
 
   useEffect(() => {
@@ -61,7 +47,7 @@ export default function MovieInfoBox(props) {
     }
 
     fetchData();
-  }, [])
+  }, [props.movieId])
   return <div style={{
       margin: isBrowser && "auto",
       width: isBrowser ? "300px" : "100%",

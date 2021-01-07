@@ -7,8 +7,7 @@ import LiveTv from '@material-ui/icons/LiveTv';
 import Button from '@material-ui/core/Button';
 import PostTypeContext from '../PostTypeContext';
 import {
-  isBrowser,
-  isMobile
+  isBrowser
 } from "react-device-detect";
 
 const useStyles = makeStyles((theme) => ({

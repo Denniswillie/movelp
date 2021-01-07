@@ -16,12 +16,7 @@ export default function Profile(props) {
   const [creator, setCreator] = useState(CREATOR_NOT_SET);
   const PostsFetchType = useContext(PostsFetchTypeContext);
   const [userInfoFormDisplayed, setUserInfoFormDisplayed] = useState(false);
-  const [unableDeleteAccount, setUnableDeleteAccount] = useState(false);
   const {creatorId} = props;
-
-  function setEditedUserProfile(editedUser) {
-    setUser(editedUser);
-  }
 
   function displayUserInfoForm() {
     setUserInfoFormDisplayed(true);

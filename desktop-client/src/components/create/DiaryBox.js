@@ -33,13 +33,9 @@ const useStyles = makeStyles((theme) => ({
 export default function DiaryBox(props) {
   const classes = useStyles();
   const [selectAll] = useState(false);
-  const DIARY = 'diary';
 
   const {
     createInput,
-    deletedExistingFiles,
-    handlePostAction,
-    post,
     isEditing,
     handleInputChange,
     photoGalleryStylings,

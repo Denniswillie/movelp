@@ -1,5 +1,4 @@
 import { Route, Switch } from 'react-router-dom';
-import { useState } from 'react';
 import Home from './components/Home';
 import Profile from './components/Profile';
 import Movie from './components/Movie';

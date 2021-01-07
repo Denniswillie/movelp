@@ -12,8 +12,7 @@ import MovieSearch from './MovieSearch';
 import {useState, useContext, useEffect, useRef} from 'react';
 import PostTypeContext from '../PostTypeContext';
 import {
-  isBrowser,
-  isMobile
+  isBrowser
 } from "react-device-detect";
 
 const useStyles = makeStyles((theme) => ({

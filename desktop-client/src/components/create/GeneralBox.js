@@ -33,13 +33,9 @@ const useStyles = makeStyles((theme) => ({
 export default function GeneralBox(props) {
   const classes = useStyles();
   const [selectAll] = useState(false);
-  const GENERAL = 'general';
 
   const {
     createInput,
-    deletedExistingFiles,
-    handlePostAction,
-    post,
     isEditing,
     handleInputChange,
     photoGalleryStylings,
