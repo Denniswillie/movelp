@@ -24,7 +24,8 @@ export default function MovieInfoBox(props) {
     async function fetchData() {
       var movieDataRaw =
           await fetch("https://api.themoviedb.org/3/movie/" + props.movieId + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
-      if (movieDataRaw.status === 404) {
+      if (movieDataRaw.status === 404 || parseInt(props.movieId, 10) === 78191) {
+        console.log("istvd")
         movieDataRaw = await fetch("https://api.themoviedb.org/3/tv/" + props.movieId + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
       }
       const movie = await movieDataRaw.json();
