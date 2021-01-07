@@ -2,6 +2,7 @@ require('dotenv').config();
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const express = require('express');
+const sslRedirect = require('heroku-ssl-redirect').default;
 const app = express();
 const cors = require('cors');
 const port = process.env.PORT || 5000;
@@ -15,6 +16,8 @@ const commentRoutes = require('./routes/comment');
 const userRoutes = require('./routes/user');
 const passport = require('passport');
 const passportSetup = require('./config/passport-setup');
+
+app.use(sslRedirect());
 
 if (inProduction) {
   mongoose.connect("mongodb+srv://admin-dennis:JOUwExYMLOD7KkDn@movelpdb.8hxbz.mongodb.net/movelpDB?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true});
