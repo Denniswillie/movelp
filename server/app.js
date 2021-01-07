@@ -62,6 +62,13 @@ app.use(
 );
 
 app.use('/auth', authRoutes);
+app.use('/', (req, res, next) => {
+  if (req.user) {
+    next();
+  } else {
+    res.redirect("/");
+  }
+})
 app.use('/post', postRoutes);
 app.use('/comment', commentRoutes);
 app.use('/user', userRoutes);
