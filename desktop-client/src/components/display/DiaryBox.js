@@ -293,6 +293,7 @@ export default function DiaryBox(props) {
       })}
     <form ref={form} className={classes.root} noValidate autoComplete="off" style={{width: "100%"}} onSubmit={handleCommentSubmit}>
       <Avatar
+        onClick={() => {window.open("/profile/" + props.userId, "_self")}}
         src={props.userProfileImageUrl ? props.userProfileImageUrl : process.env.PUBLIC_URL + '/images/loginImage.png'}
         style={{borderStyle: "solid", borderColor: "#F0F2F5", borderWidth: "2px"}}/>
       <TextField

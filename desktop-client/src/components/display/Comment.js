@@ -75,7 +75,9 @@ export default function Comment(props) {
 
   return <div style={{marginBottom: "1em", textAlign: "left", display: "flex"}} onMouseOver={displayButtons} onMouseOut={hideButtons}>
     <div className={classes.root}>
-      <Avatar src={creatorProfileImageUrl ? creatorProfileImageUrl : process.env.PUBLIC_URL + '/images/loginImage.png'} />
+      <Avatar
+        onClick={() => {window.open("/profile/" + props.creatorId, "_self")}}
+        src={creatorProfileImageUrl ? creatorProfileImageUrl : process.env.PUBLIC_URL + '/images/loginImage.png'} />
     </div>
     <div style={{backgroundColor: "#F0F2F5", paddingLeft: "10px", paddingRight: "10px", borderRadius: "15px",  wordWrap: "break-word", maxWidth: "70%"}}>
       <p style={{bottom: "0", fontFamily: "roboto", fontSize: "0.9em", fontWeight: "700", marginBottom: "0", width: "100%"}}>{props.creatorName}</p>
