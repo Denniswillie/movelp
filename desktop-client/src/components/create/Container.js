@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
     width: isBrowser ? "500px" : "95%",
     height: isBrowser && "500px",
     margin: "auto",
-    marginTop: isBrowser ? window.pageYOffset + (window.innerHeight / 6) : "0",
+    marginTop: window.pageYOffset + (window.innerHeight / 6),
     backgroundColor: "white",
     top: "0",
     bottom: "0",

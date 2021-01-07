@@ -208,16 +208,24 @@ export default function Posts(props) {
 
   function handleEditClick(data) {
     if (data.post.type === PostType.DIARY) {
-      document.body.style.overflow = "hidden";
+      if (isBrowser) {
+        document.body.style.overflow = "hidden";
+      }
       setCreateState({isEditing: true, type: PostType.DIARY, data: data});
     } else if (data.post.type === PostType.RECOMMENDATION) {
-      document.body.style.overflow = "hidden";
+      if (isBrowser) {
+        document.body.style.overflow = "hidden";
+      }
       setCreateState({isEditing: true, type: PostType.RECOMMENDATION, data: data});
     } else if (data.post.type === PostType.GENERAL) {
-      document.body.style.overflow = "hidden";
+      if (isBrowser) {
+        document.body.style.overflow = "hidden";
+      }
       setCreateState({isEditing: true, type: PostType.GENERAL, data: data});
     } else if (data.post.type === PostType.ASK_SUGGESTION) {
-      document.body.style.overflow = "hidden";
+      if (isBrowser) {
+        document.body.style.overflow = "hidden";
+      }
       setCreateState({isEditing: true, type: PostType.ASK_SUGGESTION, data: data});
     }
   }
