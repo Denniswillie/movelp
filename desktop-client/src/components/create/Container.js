@@ -308,17 +308,7 @@ export default function Container(props) {
         <Clear/>
       </IconButton>
       <p style={{fontFamily: "Pacifico", fontSize: "1.5em"}}>{getPostHeader(props.createState.type)}</p>
-      {isSearchingMovie && <Button
-        style={{
-          backgroundColor: "black",
-          color: "white",
-          position: "absolute",
-          top: "30px",
-          left: "30px",
-        }}
-        variant="contained"
-        startIcon={<Backspace />}
-        onClick={handleSearchFieldUnclick}>Back</Button>}
+      {isSearchingMovie && <IconButton style={{position: "absolute",top: "15px",left: "15px"}} onClick={handleSearchFieldUnclick}><Backspace /></IconButton>}
       {props.createState.type !== PostType.ASK_SUGGESTION && <TextField
         label="Movie title"
         variant="outlined"
