@@ -5,6 +5,10 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import PostTypeContext from '../PostTypeContext';
+import {
+  isBrowser,
+  isMobile
+} from "react-device-detect";
 
 const useStyles = makeStyles({
   root: {
@@ -31,6 +35,7 @@ export default function MovieSearch(props) {
     {(props.createInput.chosenMovies.length >= 4 && props.postType !== PostType.RECOMMENDATION) || (props.createInput.chosenMovies.length >= 1 && props.postType === PostType.RECOMMENDATION)
       ? <p style={{fontFamily: "roboto"}}>You can only choose up to {props.postType === PostType.RECOMMENDATION ? "1" : "4"} movies.</p>
       : props.moviesList.reduce((result, movie) => {
+        var counter = 0;
       var imagePath;
       var title;
       if (!movie.poster_path) {
@@ -52,7 +57,8 @@ export default function MovieSearch(props) {
         }
       }
       if (!alreadyChosen) {
-        result.push(<Card className={classes.root} key={movie.id} style={{width: "30%", marginTop: "1em", float: "right", marginRight: "13px"}} onClick={() => {
+        counter++;
+        result.push(<Card className={classes.root} key={movie.id} style={{width: "30%", marginTop: "1em", float: "right", marginRight: "2.5%"}} onClick={() => {
           props.handleMovieClick(movie.id, title);
         }}>
           <CardActionArea>
