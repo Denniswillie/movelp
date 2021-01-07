@@ -9,10 +9,12 @@ export default function Login() {
     window.location.href = "/auth/google";
   }
   return <div id="loginPageContainer">
-    <div id="watchDiaryIntro">
-      <h1 className="WatchDiaryTitle" style={{marginBottom: "0", marginRight: isMobile && "1em"}}>Movelp</h1>
+    <div id="watchDiaryIntro" style={{width: isMobile && "100%"}}>
+      <div style={{textAlign: "center", marginRight: isMobile && "5em", width: "100%"}}>
+        <h1 className="WatchDiaryTitle" style={{marginBottom: "0", marginRight: isMobile && "auto", overflowWrap: "normal"}}>Movelp</h1>
+      </div>
       <div className="WatchDiarySubTitleWrapper">
-        <img src={process.env.PUBLIC_URL + '/images/clapperboard.png'} style={{width: "13em"}} alt="clapperboard"/>
+        <img src={process.env.PUBLIC_URL + '/images/clapperboard.png'} style={{width: isBrowser ? "13em" : "8em"}} alt="clapperboard"/>
         <h3 className="WatchDiarySubTitle" style={{marginTop:"0"}}>Made for all movie lovers.</h3>
       </div>
     </div>
