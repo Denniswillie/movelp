@@ -231,7 +231,7 @@ export default function AskForSuggestionsBox(props) {
       <Avatar
         onClick={() => {window.open("/profile/" + props.userId, "_self")}}
         src={props.userProfileImageUrl ? props.userProfileImageUrl : process.env.PUBLIC_URL + '/images/loginImage.png'}
-        style={{borderStyle: "solid", borderColor: "#F0F2F5", borderWidth: "2px"}}/>
+        style={{borderStyle: "solid", borderColor: "#F0F2F5", borderWidth: "2px", cursor: "pointer"}}/>
       <TextField
         inputRef={commentField}
         label="Write a comment..."
