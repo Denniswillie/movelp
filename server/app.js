@@ -15,7 +15,6 @@ const commentRoutes = require('./routes/comment');
 const userRoutes = require('./routes/user');
 const passport = require('passport');
 const passportSetup = require('./config/passport-setup');
-const sslRedirect = require('heroku-ssl-redirect');
 
 if (inProduction) {
   mongoose.connect("mongodb+srv://admin-dennis:JOUwExYMLOD7KkDn@movelpdb.8hxbz.mongodb.net/movelpDB?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true});
@@ -26,7 +25,6 @@ mongoose.set("useCreateIndex", true);
 mongoose.set('useFindAndModify', false);
 
 if (inProduction) {
-  app.use(sslRedirect());
   app.use(express.static('desktop-client/build'));
   app.get('/profile/*', (req, res) => {
       res.sendFile(path.join(__dirname, '../desktop-client/build/index.html'));
