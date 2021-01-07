@@ -25,9 +25,8 @@ if (inProduction) {
 mongoose.set("useCreateIndex", true);
 mongoose.set('useFindAndModify', false);
 
-app.use(sslRedirect());
-
 if (inProduction) {
+  app.use(sslRedirect());
   app.use(express.static('desktop-client/build'));
   app.get('/profile/*', (req, res) => {
       res.sendFile(path.join(__dirname, '../desktop-client/build/index.html'));
