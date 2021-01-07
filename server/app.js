@@ -15,6 +15,7 @@ const commentRoutes = require('./routes/comment');
 const userRoutes = require('./routes/user');
 const passport = require('passport');
 const passportSetup = require('./config/passport-setup');
+const sslRedirect = require('heroku-ssl-redirect');
 
 if (inProduction) {
   mongoose.connect("mongodb+srv://admin-dennis:JOUwExYMLOD7KkDn@movelpdb.8hxbz.mongodb.net/movelpDB?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true});
