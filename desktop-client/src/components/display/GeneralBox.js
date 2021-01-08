@@ -72,7 +72,6 @@ export default function GeneralBox(props) {
           });
           setNumOfSkip(parseInt(res.nextNumOfSkip, 10));
           setHasMoreComments(res.hasMore);
-          setDisplayComments(true);
         })
         .catch(err => console.log(err));
   }
@@ -144,6 +143,7 @@ export default function GeneralBox(props) {
             setData(prevData => {
               return {...prevData, noOfComments: prevData.noOfComments + 1};
             })
+            setDisplayComments(true);
           })
           .catch(err => console.log(err));
     }
@@ -321,7 +321,7 @@ export default function GeneralBox(props) {
           handleEditCommentUnclick={handleEditCommentUnclick}
           handleDeleteComment={handleDeleteComment}/>
       })}
-      {hasMoreComments && <a onClick={fetchMoreComments} style={{cursor: "pointer", float: "left", fontFamily: "roboto", fontWeight: "700", fontSize: "0.9em"}}>Load more comments...</a>}
+      {(hasMoreComments && displayComments) && <a onClick={fetchMoreComments} style={{cursor: "pointer", float: "left", fontFamily: "roboto", fontWeight: "700", fontSize: "0.9em"}}>Load more comments...</a>}
     <form ref={form} className={classes.root} noValidate autoComplete="off" style={{width: "100%"}} onSubmit={handleCommentSubmit}>
       <Avatar
         onClick={() => {window.open("/profile/" + props.userId, "_self")}}
