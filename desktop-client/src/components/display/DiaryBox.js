@@ -72,6 +72,7 @@ export default function DiaryBox(props) {
           });
           setNumOfSkip(parseInt(res.nextNumOfSkip, 10));
           setHasMoreComments(res.hasMore);
+          setDisplayComments(true);
         })
         .catch(err => console.log(err));
   }
