@@ -50,6 +50,7 @@ export default function MovieInfoBox(props) {
   }, [props.movieId])
   return <div style={{
       width: isBrowser ? "300px" : "100%",
+      height: "50%",
       backgroundColor: "white",
       borderRadius: "5px",
       boxShadow: "0 0 2px #999",
