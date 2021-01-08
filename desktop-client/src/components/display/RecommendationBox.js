@@ -53,12 +53,31 @@ export default function RecommendationBox(props) {
     noOfComments: props.post.noOfComments
   })
 
+  const [numOfSkip, setNumOfSkip] = useState(-1);
+  const [displayComments, setDisplayComments] = useState(true);
+  const [hasMoreComments, setHasMoreComments] = useState(false);
+
+  function fetchMoreComments() {
+    const formData = new FormData();
+    formData.append('postId', props.post._id);
+    formData.append('numOfSkip', numOfSkip);
+    fetch('/comment/get', {method: 'POST', body: formData})
+        .then(res => res.json())
+        .catch(err => console.log(err))
+        .then(res => {
+          setComments(prevData => {
+            return [...res.comments.reverse(), ...prevData];
+          });
+          setNumOfSkip(parseInt(res.nextNumOfSkip, 10));
+          setHasMoreComments(res.hasMore);
+        })
+        .catch(err => console.log(err));
+  }
+
   useEffect(() => {
     const ac = new AbortController();
 
     async function fetchData() {
-      const formData = new FormData();
-      formData.append('postId', props.post._id);
       if (props.post.movieIds.length > 0) {
         var movieDataRaw =
             await fetch("https://api.themoviedb.org/3/movie/" + props.post.movieIds[0] + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
@@ -70,11 +89,18 @@ export default function RecommendationBox(props) {
         await setMovieTitle(title);
       }
 
+      const formData = new FormData();
+      formData.append('postId', props.post._id);
+      formData.append('numOfSkip', numOfSkip);
       fetch('/comment/get', {method: 'POST', body: formData})
           .then(res => res.json())
           .catch(err => console.log(err))
-          .then(res => setComments(res))
-          .catch(err => console.log(err));
+          .then(res => {
+            setComments(res.comments.reverse());
+            setNumOfSkip(parseInt(res.nextNumOfSkip, 10));
+            setHasMoreComments(res.hasMore);
+          })
+          .catch(err => console.log(err))
     }
     fetchData();
 
@@ -88,6 +114,9 @@ export default function RecommendationBox(props) {
   }
 
   function focusCommentField() {
+    if (!displayComments) {
+      setDisplayComments(true);
+    }
     commentField.current.focus();
   }
 
@@ -226,7 +255,13 @@ export default function RecommendationBox(props) {
       {data.isLiked ? <ThumbUpAltIcon /> : <ThumbUpAltOutlinedIcon />}
     </IconButton>
     <span style={{fontFamily: "roboto", marginLeft: "4px"}}>{data.noOfLikes}</span>
-    <IconButton style={{marginLeft: "20px"}}>
+    <IconButton style={{marginLeft: "20px"}} onClick={() => {
+      if (displayComments) {
+        setDisplayComments(false);
+      } else {
+        setDisplayComments(true);
+      }
+    }}>
     <CommentIcon />
     </IconButton>
     <span style={{fontFamily: "roboto", marginLeft: "4px"}}>{data.noOfComments}</span>
@@ -252,7 +287,7 @@ export default function RecommendationBox(props) {
     </Button>}
   </div>
   <div style={{borderTop: "1px solid #9ba89e", padding: "10px"}}>
-    {comments.map(comment => {
+    {displayComments && comments.map(comment => {
       return <Comment
         timeOfCreation={comment.timeOfCreation}
         key={comment._id}
@@ -266,6 +301,7 @@ export default function RecommendationBox(props) {
         handleEditCommentUnclick={handleEditCommentUnclick}
         handleDeleteComment={handleDeleteComment}/>
     })}
+    {hasMoreComments && <a onClick={fetchMoreComments} style={{cursor: "pointer", float: "left", fontFamily: "roboto", fontWeight: "700", fontSize: "0.9em"}}>Load more comments...</a>}
   <form ref={form} className={classes.root} noValidate autoComplete="off" style={{width: "100%"}} onSubmit={handleCommentSubmit}>
     <Avatar
       onClick={() => {window.open("/profile/" + props.userId, "_self")}}

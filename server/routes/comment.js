@@ -34,8 +34,10 @@ router.post('/create', upload.none(), async (req, res) => {
 
 router.post('/get', upload.none(), async (req, res) => {
   const postId = req.body.postId;
-  const comments = await MongoDBCommentManager.get(postId);
-  res.send(comments);
+  const numOfSkip = req.body.numOfSkip;
+  const docs = await MongoDBCommentManager.get(postId, numOfSkip);
+  console.log(docs);
+  res.send(docs);
 });
 
 router.post('/edit', upload.none(), async (req, res) => {

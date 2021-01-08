@@ -12,6 +12,8 @@ const ObjectId = require("mongodb").ObjectID;
 const CommentModel = require('../../models/commentModel');
 const CommentLikeModel = require('../../models/commentLikeModel');
 const MongoDBPostManager = require('./MongoDBPostManager');
+const UNDEFINED = -1;
+const LIMIT = 2;
 
 class MongoDBCommentManager {
   static create(comment) {
@@ -43,12 +45,26 @@ class MongoDBCommentManager {
       .catch(console.log);
   }
 
-  static get(postId) {
-    return CommentModel.find({postId: postId})
-      .then(docs => {
-        return docs;
-      })
-      .catch(console.log);
+  static async  get(postId, numOfSkip) {
+    numOfSkip = parseInt(numOfSkip, 10);
+    try {
+      var docs;
+      var moreDocs;
+      if (numOfSkip === UNDEFINED) {
+        docs = await CommentModel.find({postId: postId}).sort({timeOfCreation: -1}).limit(LIMIT).exec();
+        moreDocs = await CommentModel.find({postId: postId}).sort({timeOfCreation: -1}).skip(LIMIT).limit(LIMIT).exec();
+      } else {
+        docs = await CommentModel.find({postId: postId}).sort({timeOfCreation: -1}).skip(numOfSkip).limit(LIMIT).exec();
+        moreDocs = await CommentModel.find({postId: postId}).sort({timeOfCreation: -1}).skip(numOfSkip + LIMIT).limit(LIMIT).exec();
+      }
+      return {
+        comments: docs,
+        nextNumOfSkip: numOfSkip === UNDEFINED ? LIMIT : numOfSkip + LIMIT,
+        hasMore: moreDocs.length > 0
+      }
+    } catch(err) {
+      console.log(err);
+    }
   }
 
   static delete(commentId) {
