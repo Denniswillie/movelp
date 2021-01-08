@@ -33,7 +33,7 @@ export default function MovieSearch(props) {
     overflow: "auto"}}>
 
     {(props.createInput.chosenMovies.length >= 4 && props.postType !== PostType.RECOMMENDATION) || (props.createInput.chosenMovies.length >= 1 && props.postType === PostType.RECOMMENDATION)
-      ? <p style={{fontFamily: "roboto"}}>You can only choose up to {props.postType === PostType.RECOMMENDATION ? "1" : "4"} movies.</p>
+      ? <p style={{fontFamily: "roboto"}}>You can only choose up to {props.postType === PostType.RECOMMENDATION ? "1" : "4"} movies. Head back to the form, your movies are waiting there :)</p>
       : props.moviesList.reduce((result, movie) => {
         var counter = 0;
       var imagePath;

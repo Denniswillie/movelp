@@ -4,7 +4,8 @@ import PostsFetchTypeContext from './PostsFetchTypeContext';
 import MovieInfoBox from './MovieInfoBox';
 import Navbar from './Navbar';
 import {
-  isBrowser
+  isBrowser,
+  isMobile
 } from "react-device-detect";
 
 export default function Movie(props) {
@@ -42,11 +43,20 @@ export default function Movie(props) {
 
   return <div>
   {(user !== USER_NOT_SET && user !== undefined && user.nickname !== undefined) && <Navbar userId={user._id}/>}
-  <div id="feed" style={{margin: "auto", position: "relative", padding: "1em", textAlign: "center", paddingTop: "5em", display: isBrowser && "flex", width: isBrowser ? "100%" : "90%"}}>
+  {isMobile && <div id="feed" style={{margin: "auto", position: "relative", padding: "1em", textAlign: "center", paddingTop: "5em", display: isBrowser && "flex", width: isBrowser ? "100%" : "90%"}}>
       <MovieInfoBox movieId={movieId}/>
       {user !== USER_NOT_SET && <div style={{margin: "auto"}}>
         <Posts user={user} postRoute={PostsFetchType.MOVIE} movieId={movieId}/>
       </div>}
-    </div>
+    </div>}
+
+
+
+  {isBrowser && <div id="feed" style={{margin: "auto", position: "relative", textAlign: "center", paddingTop: "5em", display: isBrowser && "flex", width: isBrowser ? "100%" : "90%"}}>
+      {user !== USER_NOT_SET && <div style={{marginRight: "2em", marginLeft: "auto"}}>
+        <Posts user={user} postRoute={PostsFetchType.MOVIE} movieId={movieId}/>
+      </div>}
+      <MovieInfoBox movieId={movieId}/>
+    </div>}
   </div>
 }
