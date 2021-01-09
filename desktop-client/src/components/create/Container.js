@@ -72,9 +72,9 @@ export default function Container(props) {
         const promises = [];
         for (var i = 0; i < movieIds.length; i++) {
           var movieDataRaw =
-              await fetch("https://api.themoviedb.org/3/movie/" + props.createState.data.post.movieIds[i] + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
-          if (movieDataRaw.status === 404 || parseInt(props.post.movieIds[i], 10) === 78191 || parseInt(props.post.movieIds[i], 10) === 77169) {
-            movieDataRaw = await fetch("https://api.themoviedb.org/3/tv/" + props.createState.data.post.movieIds[i] + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
+              await fetch("https://api.themoviedb.org/3/movie/" + movieIds[i] + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
+          if (movieDataRaw.status === 404 || parseInt(movieIds[i], 10) === 78191 || parseInt(movieIds[i], 10) === 77169) {
+            movieDataRaw = await fetch("https://api.themoviedb.org/3/tv/" + movieIds[i] + "?api_key=ee1e60bc7d68306eef94c3adc2fdd763&language=en-US");
           }
           const movieData = await movieDataRaw.json();
           const title = movieData.title ? movieData.title : movieData.name;
